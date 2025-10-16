@@ -22,9 +22,9 @@ npm run preview
 
 ## Production URL
 
-**https://loke.tail2d448.ts.net/cards** (Installed in macOS dock)
+**https://loke.tail2d448.ts.net:8443/** (Installed in macOS dock)
 
-The dev server runs on **https://localhost:8080** with HTTPS, proxied through Tailscale serve.
+The dev server runs on **http://localhost:8082**, proxied through Tailscale serve on port 8443.
 
 ## Project Structure
 
