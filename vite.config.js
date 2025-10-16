@@ -3,8 +3,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
+  base: '/',
   plugins: [
-    basicSsl(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg', 'icons/*.png'],
@@ -50,13 +50,14 @@ export default defineConfig({
     })
   ],
   server: {
-    host: '0.0.0.0',
+    host: '127.0.0.1',
     port: 8080,
-    https: true,
+    https: false,
     strictPort: false,
     hmr: {
-      protocol: 'wss',
-      host: 'loke'
+      protocol: 'ws',
+      host: 'loke.tail2d448.ts.net',
+      clientPort: 443
     },
     proxy: {
       '/api': {
