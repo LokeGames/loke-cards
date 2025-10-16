@@ -105,23 +105,23 @@
 
     <!-- Datalist for common state variables -->
     <datalist id="state-variables">
-      <option value="health">
-      <option value="gold">
-      <option value="karma">
-      <option value="progress">
-      <option value="has_key">
-      <option value="has_sword">
-      <option value="has_map">
+      <option value="health"></option>
+      <option value="gold"></option>
+      <option value="karma"></option>
+      <option value="progress"></option>
+      <option value="has_key"></option>
+      <option value="has_sword"></option>
+      <option value="has_map"></option>
     </datalist>
 
     <!-- Datalist for common values -->
     <datalist id="state-values">
-      <option value="true">
-      <option value="false">
-      <option value="0">
-      <option value="10">
-      <option value="50">
-      <option value="100">
+      <option value="true"></option>
+      <option value="false"></option>
+      <option value="0"></option>
+      <option value="10"></option>
+      <option value="50"></option>
+      <option value="100"></option>
     </datalist>
   </div>
 </template>
