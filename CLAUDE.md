@@ -421,3 +421,4 @@ LOKE_ALLOWED_ORIGINS=http://loke-cards:8080   # CORS origins
 - [ ] Create Docker/LXC container setup
 - [ ] Write deployment documentation
 - [ ] Create example project with sample cards
+- game-format se @doc/LOKE-FORMAT-REFERENCE.md
