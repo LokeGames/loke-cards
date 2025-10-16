@@ -8,14 +8,53 @@
 - **Tailwind CSS** - Utility-first styling
 - **Pinia** - State management (officiel Vue store)
 - **Vue Router** - Client-side routing
+- **LocalForage** - Client-side IndexedDB storage (ALREADY IMPLEMENTED ✅)
 - **PWA** (Phase 8) - Valgfrit til sidst
 
 ### Backend
 - **C++ med httplib** - Lightweight HTTP server
-- **SQLite** - Embedded database for scenes/chapters
+- **SQLite** - Server database (master data, source of truth)
 - **JSON** - API kommunikation
 - **Port 3000** - Backend API server
 - **Tailscale** - Netværk (frontend på :8443, backend på :3000)
+
+### Database Architecture (LocalForage + SQLite)
+**PWA Storage** (Browser - LocalForage/IndexedDB) **✅ ALREADY WORKING**:
+- 4 stores: scenes, chapters, drafts, projects (see `src/lib/storage.js`)
+- Drafts: Work in progress scenes with auto-save
+- Offline cache: Last synced data
+- Full CRUD operations implemented
+- Export/import functionality
+
+**Server SQLite Database** (C++ backend):
+- Master data: All projects, chapters, scenes (same schema as LocalForage)
+- Source of truth for multi-user sync
+- Generates `.c` files for loke-engine
+- Timestamps for conflict resolution
+
+**Sync Flow**:
+```
+User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c files → loke-engine
+    (vanilla JS) ↓              (new)         (Phase 3)          (Phase 3.4)
+             Instant UI
+               ↑
+          HTTP GET ←──────── Sync ←──── Server is source of truth
+             (new)              (Phase 2.6)
+```
+
+**Migration Strategy**:
+- ✅ Keep existing LocalForage storage.js (working code!)
+- ✅ Keep existing storage schema (projects, chapters, scenes, choices, state_changes)
+- 🔄 Wrap storage.js functions in Pinia stores (Phase 1.5)
+- 🔄 Add sync layer to POST/GET from C++ server (Phase 2.6)
+- 🔄 Server SQLite mirrors LocalForage schema (Phase 3.1)
+
+**Advantages**:
+- ✅ Reuse existing working storage code
+- ✅ No breaking changes to data model
+- ✅ LocalForage is simpler than sql.js (no WASM overhead)
+- ✅ Offline-first already works
+- ✅ `.c` files are "compiled output" from server database
 
 ### Development Tools
 - **Playwright** - Browser CLI testing
@@ -55,12 +94,12 @@
 - [ ] Document what works from vanilla version
 
 ### 0.2 Vue 3 Project Setup
-- [ ] Remove old dependencies (keep LocalForage for now)
-- [ ] Install Vue 3 + Vite
-- [ ] Install Tailwind CSS (with Vue plugin)
-- [ ] Install Pinia for state management
-- [ ] Install Vue Router
-- [ ] Configure Vite for Vue + Tailwind
+- [ ] Keep existing dependencies: Vite ✅, Tailwind v4 ✅, LocalForage ✅
+- [ ] Install Vue 3 (already in package.json ✅)
+- [ ] Install Pinia (already in package.json ✅)
+- [ ] Install Vue Router (already in package.json ✅)
+- [ ] Configure Vite to use @vitejs/plugin-vue
+- [ ] Migrate Tailwind config for Vue (keep v4 setup)
 - [ ] Test basic Vue + Tailwind works
 
 ### 0.3 C++ Backend Setup
@@ -85,14 +124,15 @@
 ## Phase 1: Core Vue Architecture (Fully Responsive)
 
 ### 1.1 Vue Project Structure
-- [ ] Create `/src/components` struktur
+- [ ] Create `/src/components` struktur (partially done - has Layout, Navigation, Sidebar ✅)
 - [ ] Create `/src/views` for pages
 - [ ] Create `/src/stores` for Pinia
 - [ ] Create `/src/composables` for reusable logic
-- [ ] Create `/src/utils` for helpers
-- [ ] Setup main.js with Vue app
+- [ ] Keep `/src/lib` for utilities (has storage.js ✅, state.js, validation.js ✅, autosave.js ✅)
+- [ ] Setup main.js with Vue app (currently vanilla JS)
 - [ ] Configure router
 - [ ] Configure Pinia store
+- [ ] No database initialization needed - LocalForage ready ✅
 
 ### 1.2 Responsive Layout Components (Mobile-First)
 - [ ] **AppLayout.vue** - Main layout wrapper
@@ -134,24 +174,31 @@
 - [ ] Mobile-friendly transitions
 - [ ] Back button support
 
-### 1.4 Pinia State Store
+### 1.4 Pinia State Store (Wrap existing storage.js)
 - [ ] **projectStore.js** - Project state
   - currentProject
-  - scenes array
-  - chapters array
-  - Actions: loadProject, saveProject
+  - scenes array (from LocalForage storage.js ✅)
+  - chapters array (from LocalForage storage.js ✅)
+  - Actions: Wrap storage.js functions (getCurrentProject, getAllScenes, getAllChapters)
 
 - [ ] **editorStore.js** - Editor state
   - currentScene
   - isDirty (unsaved changes)
-  - Actions: saveScene, loadScene, resetEditor
+  - Actions: Wrap storage.js (saveScene, getScene, saveDraft, getDraft)
+
+- [ ] **syncStore.js** - Sync state (NEW)
+  - lastSyncTime
+  - pendingChanges count
+  - syncStatus (idle, syncing, error)
+  - Actions: syncToServer, pullFromServer, getSyncQueue
+  - Track which scenes need sync (add 'synced' flag to storage.js schema ✅ already there!)
 
 - [ ] **uiStore.js** - UI state
   - sidebarOpen (mobile)
-  - syncStatus
-  - Actions: toggleSidebar, setSyncStatus
+  - currentView
+  - Actions: toggleSidebar, setCurrentView
 
-### 1.5 Responsive Testing
+### 1.6 Responsive Testing
 - [ ] Test på Chrome mobile emulator (375px, 768px, 1024px)
 - [ ] Test med Playwright CLI
 - [ ] Verify hot reload works på alle komponenter
@@ -236,11 +283,13 @@
 - [ ] Disable save når invalid
 - [ ] Visual error indicators (Tailwind)
 
-### 2.5 Auto-save (Composable)
-- [ ] **useAutoSave.js**
-  - Debounced save (2 seconds)
-  - Save to localStorage (draft)
-  - Visual indicator (saving/saved)
+### 2.5 Auto-save (Composable) - REUSE EXISTING
+- [ ] **Migrate lib/autosave.js to composable**
+  - Already has debounced save (2 seconds) ✅
+  - Already saves to LocalForage (saveDraft) ✅
+  - Add: Mark as pending sync (set scene.synced = false)
+  - Keep: Visual indicator (saving/saved)
+  - Add: Syncing state when pushing to server
   - Works på både desktop og mobile
 
 ### 2.6 API Integration
@@ -474,17 +523,41 @@ npm run test:mobile
 
 ## Migration Checklist
 
-### Code to Preserve
-- [x] C code generator logic
-- [x] Scene validation functions
-- [x] Storage schema design
-- [x] LocalForage as fallback
+### Code to Preserve (Vanilla JS → Vue 3)
+- [x] **lib/storage.js** - LocalForage wrapper (KEEP AS-IS ✅)
+  - All CRUD operations working
+  - Schema matches server requirements
+  - Export/import functionality
+  - Just wrap in Pinia stores
 
-### Code to Rewrite
-- [ ] All UI components (Vue SFC)
-- [ ] State management (Pinia)
-- [ ] Routing (Vue Router)
-- [ ] API client (TypeScript/JS)
+- [x] **lib/validation.js** - C identifier validation (KEEP AS-IS ✅)
+  - Reuse in Vue composables
+
+- [x] **lib/autosave.js** - Debounced save logic (MIGRATE TO COMPOSABLE)
+  - Convert to Vue composable
+  - Keep debounce logic
+
+- [x] **C code generator logic** - (MIGRATE TO COMPOSABLE)
+  - Extract from SceneEditor.js
+  - Create useCodeGenerator.js composable
+
+- [ ] **Code generation templates** - Scene function format
+  - Move to separate template file
+  - Reference loke-engine API
+
+### Code to Rewrite (Vanilla JS → Vue SFC)
+- [ ] **components/Layout.js** → **AppLayout.vue**
+- [ ] **components/Navigation.js** → **AppNavigation.vue**
+- [ ] **components/Sidebar.js** → **AppSidebar.vue**
+- [ ] **components/SceneEditor.js** → **SceneEditorView.vue** + child components
+- [ ] **components/CodePreview.js** → **CodePreview.vue**
+- [ ] **lib/state.js** → Pinia stores (projectStore, editorStore, uiStore)
+
+### New Code (Not in Vanilla JS)
+- [ ] Vue Router setup
+- [ ] syncStore.js (for server sync)
+- [ ] API client (HTTP calls to C++ backend)
+- [ ] Server sync logic (LocalForage → Server SQLite)
 
 ### Testing Strategy
 - [ ] Unit tests (Vitest)
