@@ -4,7 +4,7 @@
  */
 
 import { getCurrentProject as loadCurrentProject, saveProject, getStorageStats } from './storage.js';
-import { updateProjectInfo } from '../components/Layout.js';
+import { updateProjectInfo } from '../components/Sidebar.js';
 import { updateSyncStatus } from '../components/Navigation.js';
 
 // Application state
