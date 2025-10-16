@@ -1,31 +1,34 @@
 # TODO - Loke Cards MVP
 
-## Phase 0: Project Setup & Infrastructure
+## Phase 0: Project Setup & Infrastructure ✅ COMPLETED
 
-### 0.1 Initial Project Structure
-- [ ] Initialize npm/yarn project with package.json
-- [ ] Setup Vite with vanilla JS template
-- [ ] Configure Tailwind CSS
-- [ ] Install vite-plugin-pwa for PWA support
-- [ ] Install LocalForage for offline storage
-- [ ] Create basic folder structure (src/, public/, tests/)
-- [ ] Setup .gitignore for node_modules, dist, etc.
+### 0.1 Initial Project Structure ✅ DONE
+- [x] Initialize npm/yarn project with package.json
+- [x] Setup Vite with vanilla JS template
+- [x] Configure Tailwind CSS
+- [x] Install vite-plugin-pwa for PWA support
+- [x] Install LocalForage for offline storage
+- [x] Create basic folder structure (src/, public/, tests/)
+- [x] Setup .gitignore for node_modules, dist, etc.
 
-### 0.2 Git & Documentation Setup
-- [ ] Initialize git repository
-- [ ] Create development branch (dev)
-- [ ] Create doc/ folder for documentation
-- [ ] Create CHANGELOG.md
-- [ ] Create TEST-PROOF.md
-- [ ] Create docs/api.json for API compatibility tracking
-- [ ] Initial commit on dev branch on org LokeGames with gh (its logget in)
+### 0.2 Git & Documentation Setup ✅ DONE
+- [x] Initialize git repository
+- [x] Create development branch (dev)
+- [x] Create doc/ folder for documentation
+- [x] Create CHANGELOG.md
+- [x] Create TEST-PROOF.md
+- [x] Create docs/api.json for API compatibility tracking
+- [x] Initial commit on dev branch on org LokeGames with gh (its logget in)
+- [x] Push to GitHub: https://github.com/LokeGames/loke-cards
 
-### 0.3 Development Environment
-- [ ] Configure Vite dev server
-- [ ] Setup hot module reloading
-- [ ] Configure build scripts in package.json
-- [ ] Test basic Vite + Tailwind setup works
-- [ ] Document build commands in README.md
+### 0.3 Development Environment ✅ DONE
+- [x] Configure Vite dev server
+- [x] Setup hot module reloading
+- [x] Configure build scripts in package.json
+- [x] Test basic Vite + Tailwind setup works
+- [x] Document build commands in README.md
+
+SERVER: Setup server environment for tailscale server and https. the url is https://loke
 
 ## Phase 1: Core Architecture
 

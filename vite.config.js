@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
   plugins: [
+    basicSsl(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg', 'icons/*.png'],
@@ -48,8 +50,21 @@ export default defineConfig({
     })
   ],
   server: {
+    host: '0.0.0.0',
     port: 8080,
-    host: true
+    https: true,
+    strictPort: false,
+    hmr: {
+      protocol: 'wss',
+      host: 'loke'
+    },
+    proxy: {
+      '/api': {
+        target: process.env.VITE_LOKE_ENGINE_API || 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   build: {
     target: 'es2015',
