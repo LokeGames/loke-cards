@@ -20,7 +20,11 @@ npm run build
 npm run preview
 ```
 
-The dev server runs on **http://localhost:8080** (or 8081 if 8080 is in use).
+## Production URL
+
+**https://loke.tail2d448.ts.net/cards** (Installed in macOS dock)
+
+The dev server runs on **https://localhost:8080** with HTTPS, proxied through Tailscale serve.
 
 ## Project Structure
 
@@ -125,8 +129,9 @@ Loke Cards connects to a loke-engine server with REST API:
 
 ```bash
 # .env file
-VITE_LOKE_ENGINE_API=http://loke-engine:3000  # Backend API URL
-VITE_PROJECT_NAME=my-adventure                 # Project name (optional)
+VITE_APP_URL=https://loke.tail2d448.ts.net/cards  # Production URL (fixed)
+VITE_LOKE_ENGINE_API=https://loke.tail2d448.ts.net:3000  # Backend API URL
+VITE_PROJECT_NAME=my-adventure  # Project name (optional)
 ```
 
 ## Deployment
