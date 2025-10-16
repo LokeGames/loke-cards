@@ -8,7 +8,8 @@ import { getAllScenes, getAllChapters, getCurrentProject } from '../lib/storage.
 
 export function createSidebar() {
   const sidebar = document.createElement('aside');
-  sidebar.className = 'fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-white border-l border-gray-200 shadow-xl transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-40 overflow-y-auto';
+  // TEST: Always show sidebar (no translate)
+  sidebar.className = 'fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-white border-l border-gray-200 shadow-xl z-40 overflow-y-auto';
   sidebar.id = 'sidebar';
 
   sidebar.innerHTML = `

@@ -24,7 +24,8 @@ export function createLayout() {
 
   // Create main content area (responsive width based on sidebar)
   const main = document.createElement('main');
-  main.className = 'flex-1 w-full lg:w-auto lg:max-w-none px-4 py-6 lg:mr-80';
+  // Always reserve space for sidebar on desktop (md breakpoint and up)
+  main.className = 'flex-1 w-full md:w-auto md:max-w-none px-4 py-6 md:mr-80';
   main.id = 'main-content';
   wrapper.appendChild(main);
 
