@@ -227,6 +227,12 @@ Layout: @doc/vue-layout.md
 - [x] ThemeToggle component with localStorage ✅
 - [x] System preference detection ✅
 - [x] Dark mode classes on all components ✅
+- [x] **Dark mode text visibility fix (2025-10-16)** ✅
+  - Fixed all view components with proper `dark:text-*` classes
+  - Fixed AppHeader and AppSidebar navigation
+  - Fixed loading screen in index.html
+  - Consistent color mapping: gray-800→gray-100, gray-600→gray-400
+  - Tested on mobile and desktop - both working ✅
 
 ### 1.6 Responsive Testing ✅ COMPLETED
 - [x] Test på Chrome mobile emulator (375px, 768px, 1024px) ✅

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 1 - App Shell Layout - Dark Mode Fix - 2025-10-16
+
+### Fixed
+- **Dark mode text visibility on mobile and desktop**
+  - Added `dark:text-*` classes to all view components (DashboardView, SceneListView, SceneEditorView, ChapterListView)
+  - Fixed AppHeader text colors in dark mode (`dark:text-white`, `dark:text-gray-300`)
+  - Fixed AppSidebar navigation links and section headers in dark mode
+  - Fixed icon colors with group hover states (`dark:text-gray-500 group-hover:dark:text-gray-400`)
+  - Fixed loading screen in `index.html` with dark mode support
+  - Loading spinner now has `dark:border-blue-400` for better visibility
+  - "Loading Loke Cards..." text now readable with `dark:text-gray-400`
+  - Consistent color system: gray-800→gray-100 (headers), gray-600→gray-400 (body text)
+
 ### Phase 1 - App Shell Layout - 2025-10-16
 
 ### Added
