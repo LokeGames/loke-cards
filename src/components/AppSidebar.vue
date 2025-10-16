@@ -15,11 +15,15 @@
 
         <aside class="h-full overflow-auto p-3">
           <ul class="space-y-1 text-sm">
-            <li><RouterLink to="/settings" class="nav-item" @click="ui.closeSidebar()">Settings</RouterLink></li>
+            <li><RouterLink to="/dashboard" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Dashboard</RouterLink></li>
+            <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Scenes</RouterLink></li>
+            <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Chapters</RouterLink></li>
+            <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">C code</RouterLink></li>
+            <li><RouterLink to="/settings" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Settings</RouterLink></li>
           </ul>
 
           <div class="mt-6 px-3">
-            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Project Info</h3>
+            <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Project Info</h3>
             <div class="text-sm text-gray-700 dark:text-gray-300">
               <p class="font-semibold">{{ ui.currentProject?.name || 'No Project' }}</p>
               <p>Scenes: {{ ui.stats.scenes }}</p>
@@ -28,19 +32,19 @@
           </div>
 
           <div class="mt-6 px-3">
-            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Quick Actions</h3>
+            <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Quick Actions</h3>
             <ul class="space-y-1 text-sm">
               <li>
-                <RouterLink to="/scene/new" class="nav-item group" @click="ui.closeSidebar()">
-                  <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <RouterLink to="/scene/new" class="nav-item group flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded" @click="ui.closeSidebar()">
+                  <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
                   New Scene
                 </RouterLink>
               </li>
               <li>
-                <RouterLink to="/chapter/new" class="nav-item group" @click="ui.closeSidebar()">
-                  <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <RouterLink to="/chapter/new" class="nav-item group flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded" @click="ui.closeSidebar()">
+                  <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
                   New Chapter
@@ -56,27 +60,27 @@
   <!-- Desktop Sidebar -->
   <aside class="h-full overflow-auto p-3 bg-gray-50 dark:bg-gray-950 hidden md:block w-64 shrink-0 border-r border-gray-200 dark:border-gray-800">
     <ul class="space-y-1 text-sm">
-      <li><RouterLink to="/dashboard" class="nav-item">Dashboard</RouterLink></li>
-      <li><RouterLink to="/scenes" class="nav-item">Scenes</RouterLink></li>
-      <li><RouterLink to="/chapters" class="nav-item">Chapters</RouterLink></li>
-      <li><RouterLink to="/code" class="nav-item">C code</RouterLink></li>
-      <li><RouterLink to="/settings" class="nav-item">Settings</RouterLink></li>
+      <li><RouterLink to="/dashboard" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Dashboard</RouterLink></li>
+      <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Scenes</RouterLink></li>
+      <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Chapters</RouterLink></li>
+      <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">C code</RouterLink></li>
+      <li><RouterLink to="/settings" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Settings</RouterLink></li>
     </ul>
 
     <div class="mt-6 px-3">
-      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Quick Actions</h3>
+      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Quick Actions</h3>
       <ul class="space-y-1 text-sm">
         <li>
-          <RouterLink to="/scene/new" class="nav-item group">
-            <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <RouterLink to="/scene/new" class="nav-item group flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded">
+            <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             New Scene
           </RouterLink>
         </li>
         <li>
-          <RouterLink to="/chapter/new" class="nav-item group">
-            <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <RouterLink to="/chapter/new" class="nav-item group flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded">
+            <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             New Chapter
