@@ -1,0 +1,26 @@
+{
+  "name": "loke-cards",
+  "version": "0.1.0",
+  "description": "Interactive Fiction Scene Editor for Loke Engine",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["loke-engine", "interactive-fiction", "editor", "pwa"],
+  "author": "LokeGames",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.14",
+    "vite": "^7.1.10",
+    "vite-plugin-pwa": "^1.1.0",
+    "workbox-window": "^7.3.0"
+  },
+  "dependencies": {
+    "localforage": "^1.10.0"
+  }
+}
