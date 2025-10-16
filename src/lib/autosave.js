@@ -88,13 +88,13 @@ export function setupFormAutoSave(form, sceneId, getDataFn) {
   }
 
   // Listen to input events
-  form.addEventListener('input', (e) => {
+  form.addEventListener('input', () => {
     const data = getDataFn();
     autoSave(sceneId, data);
   });
 
   // Force save on form blur (when user leaves the form)
-  form.addEventListener('blur', (e) => {
+  form.addEventListener('blur', () => {
     const data = getDataFn();
     forceSave(sceneId, data);
   }, true); // Use capture phase to catch all blur events

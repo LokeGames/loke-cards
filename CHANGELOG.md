@@ -14,7 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Created `/server` directory with `cpp-httplib` and `sqlite3`.
   - Basic HTTP server on port 3000 with CORS for Tailscale.
   - Makefile for compilation and Doxygen man page generation.
-- Fixed Vite dev server port to 8081 to match Tailscale proxy configuration.
+- Configured ESLint and Prettier for Vue.
+- Added a basic Playwright test script.
+
+### Fixed
+- Vite dev server port to 8081 to match Tailscale proxy configuration.
 
 
 **Decision: Rewrite with Vue 3 + C++ Backend**

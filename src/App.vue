@@ -110,10 +110,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { } from 'vue'
 
 // Demo state
-const synced = ref(true)
+
 </script>
 
 <style>

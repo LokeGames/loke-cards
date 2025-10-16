@@ -3,7 +3,7 @@
  * Reactive state management for loke-cards application
  */
 
-import { getCurrentProject as loadCurrentProject, saveProject, getStorageStats } from './storage.js';
+import { getCurrentProject as loadCurrentProject, getStorageStats } from './storage.js';
 import { updateProjectInfo } from '../components/Sidebar.js';
 import { updateSyncStatus } from '../components/Navigation.js';
 

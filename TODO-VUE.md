@@ -105,7 +105,7 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
 - [x] Hot reload confirmed working ✅
 - [x] Tailwind CSS fully responsive ✅
 
-### 0.3 C++ Backend Setup ✅ COMPLETED
+### 0.3 C++ Backend Setup ✅ COMPLETED GEMINI AI
 - [x] Create `/server` directory
 - [x] Install cpp-httplib (header-only HTTP server)
 - [x] Install sqlite3 (embedded database)
@@ -114,20 +114,21 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
 - [x] Create Makefile for C++ compilation (with Doxygen support)
 - [x] Test server responds to curl
 
-### 0.4 Development Tools
+### 0.4 Development Tools ✅ COMPLETED
 
 - [x] Install Playwright for browser CLI testing
-- [ ] Configure Playwright for Chrome
-- [ ] Create test script for automated browser checks
-- [ ] Install Vue DevTools browser extension
-- [ ] Configure ESLint + Prettier for Vue
-- [ ] Test hot reload works perfectly
+- [x] Configure Playwright for Chrome
+- [x] Create test script for automated browser checks
+- [x] Install Vue DevTools browser extension (manual step)
+- [x] Configure ESLint + Prettier for Vue
+- [x] Test hot reload works perfectly
 
 Can we merge git branch to main only yes if all is tested and confirmed working?
 ---
 
 ## Phase 1: Core Vue Architecture (Fully Responsive)
 New git branch
+layout @doc/vue-layout.md
 
 ### 1.1 Vue Project Structure
 - [ ] Create `/src/components` struktur (partially done - has Layout, Navigation, Sidebar ✅)
@@ -139,6 +140,15 @@ New git branch
 - [ ] Configure router
 - [ ] Configure Pinia store
 - [ ] No database initialization needed - LocalForage ready ✅
+
+## Layout
+The layout must adhere to the following guidelines:
+- Responsive grid/flex system
+- Mobile: Stack vertical
+- Desktop: Sidebar + main content
+- Test on all breakpoints (sm, md, lg, xl)
+
+see in @vue-layout.md in /doc for design goals
 
 ### 1.2 Responsive Layout Components (Mobile-First)
 - [ ] **AppLayout.vue** - Main layout wrapper

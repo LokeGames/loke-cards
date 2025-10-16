@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "playwright test"
+    "test": "playwright test",
+    "lint": "eslint ."
   },
   "keywords": [
     "loke-engine",
@@ -20,9 +21,13 @@
   "devDependencies": {
     "@playwright/test": "^1.56.0",
     "@vitejs/plugin-basic-ssl": "^2.1.0",
+    "@vue/eslint-config-prettier": "^10.2.0",
     "autoprefixer": "^10.4.21",
+    "eslint": "^9.37.0",
+    "eslint-plugin-vue": "^10.5.1",
     "playwright": "^1.56.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
     "sharp": "^0.34.4",
     "tailwindcss": "^3.4.18",
     "vite": "^7.1.10",
