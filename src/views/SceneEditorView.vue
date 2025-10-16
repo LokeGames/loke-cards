@@ -105,6 +105,7 @@ import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useCodeGenerator } from '../composables/useCodeGenerator.js';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
+import api from '../api/client.js';
 
 // Components
 import SceneIdInput from '../components/SceneIdInput.vue';
@@ -187,21 +188,23 @@ async function handleSave() {
   saveStatus.value = null;
 
   try {
-    // TODO: Save to API
-    // const response = await api.saveScene(sceneData);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Save to API
+    if (isEditMode.value) {
+      await api.scenes.update(route.params.id, sceneData);
+    } else {
+      await api.scenes.create(sceneData);
+    }
 
     saveStatus.value = {
       type: 'success',
       message: `Scene "${sceneData.sceneId}" saved successfully!`
     };
 
-    // Clear status after 3 seconds
+    // Clear status after 3 seconds, then redirect
     setTimeout(() => {
       saveStatus.value = null;
-    }, 3000);
+      router.push('/scenes');
+    }, 2000);
 
   } catch (error) {
     saveStatus.value = {
@@ -218,12 +221,29 @@ function handleCancel() {
   router.push('/scenes');
 }
 
-// Load scene data if editing
-onMounted(() => {
+// Load scene data if editing and chapters from API
+onMounted(async () => {
+  try {
+    // Load chapters
+    const chaptersData = await api.chapters.getAll();
+    if (chaptersData && Array.isArray(chaptersData)) {
+      availableChapters.value = chaptersData;
+    }
+  } catch (error) {
+    console.error('Failed to load chapters:', error);
+  }
+
   if (isEditMode.value) {
-    // TODO: Load scene from API
-    // const scene = await api.getScene(route.params.id);
-    // Object.assign(sceneData, scene);
+    try {
+      const scene = await api.scenes.getById(route.params.id);
+      Object.assign(sceneData, scene);
+    } catch (error) {
+      console.error('Failed to load scene:', error);
+      saveStatus.value = {
+        type: 'error',
+        message: `Failed to load scene: ${error.message}`
+      };
+    }
   }
 });
 </script>
