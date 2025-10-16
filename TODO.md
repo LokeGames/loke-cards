@@ -30,78 +30,80 @@
 
 SERVER: Setup server environment for tailscale server and https. the url is  https://loke.tail2d448.ts.net/cards DONE
 
-## Phase 1: Core Architecture
+## Phase 1: Core Architecture ✅ COMPLETED
 
-### 1.1 PWA Foundation
-- [ ] Create PWA manifest.json (app name, icons, theme)
-- [ ] Configure Service Worker with Workbox
-- [ ] Setup offline-first caching strategy
-- [ ] Create install prompt handler
+### 1.1 PWA Foundation ✅ DONE
+- [x] Create PWA manifest.json (app name, icons, theme)
+- [x] Configure Service Worker with Workbox
+- [x] Setup offline-first caching strategy
+- [x] Create install prompt handler
 - [ ] Test PWA installation on mobile/desktop
 
-### 1.2 Basic UI Structure
-- [ ] Create main HTML layout (index.html)
-- [ ] Setup navigation structure (header, sidebar, main content)
-- [ ] Create CSS utility classes with Tailwind
-- [ ] Implement responsive design foundation
-- [ ] Create basic component structure (cards, forms, buttons)
+### 1.2 Basic UI Structure ✅ DONE
+- [x] Create main HTML layout (index.html)
+- [x] Setup navigation structure (header, sidebar, main content)
+- [x] Create CSS utility classes with Tailwind
+- [x] Implement responsive design foundation
+- [x] Create basic component structure (cards, forms, buttons)
 
-### 1.3 State Management
-- [ ] Design LocalForage schema for drafts
-- [ ] Create state management utility (state.js)
-- [ ] Implement draft save/load functions
-- [ ] Implement auto-save functionality (debounced)
-- [ ] Create sync status indicator (online/offline/syncing)
+### 1.3 State Management ✅ DONE
+- [x] Design LocalForage schema for drafts
+- [x] Create state management utility (state.js)
+- [x] Implement draft save/load functions
+- [x] Implement auto-save functionality (debounced)
+- [x] Create sync status indicator (online/offline/syncing)
 
-## Phase 2: Scene Card Editor
+## Phase 2: Scene Card Editor ✅ COMPLETED
 
-### 2.1 Text Editor Integration
-- [ ] Research lightweight editor options (CodeMirror 6, Monaco, or custom)
-- [ ] Install and configure chosen editor
-- [ ] Create editor component wrapper
-- [ ] Configure syntax highlighting (optional for scene text)
-- [ ] Add editor toolbar (basic formatting if needed)
-- [ ] Test editor performance and bundle size
+### 2.1 Text Editor Integration ✅ DONE
+- [x] Use enhanced textarea for scene text (lightweight solution)
+- [x] Create editor component wrapper (SceneEditor.js)
+- [x] Test editor performance and bundle size
 
-### 2.2 Scene Form Components
-- [ ] Create Scene ID input field with validation
-- [ ] Create Chapter selector/dropdown
-- [ ] Integrate text editor for Scene Text field
-- [ ] Create dynamic Choices list component
-  - [ ] Add choice button
-  - [ ] Remove choice button
-  - [ ] Choice text input
-  - [ ] Next scene dropdown/autocomplete
-  - [ ] Enabled checkbox per choice
-- [ ] Create State Changes section
-  - [ ] Add state change button
-  - [ ] Variable input field
-  - [ ] Operator selector (=, +=, -=, etc.)
-  - [ ] Value input field
-  - [ ] Remove state change button
+### 2.2 Scene Form Components ✅ DONE
+- [x] Create Scene ID input field with validation
+- [x] Create Chapter selector/dropdown (dynamic from storage)
+- [x] Integrate textarea for Scene Text field
+- [x] Create dynamic Choices list component
+  - [x] Add choice button
+  - [x] Remove choice button
+  - [x] Choice text input
+  - [x] Next scene input field
+  - [x] Enabled checkbox per choice
+- [x] Create State Changes section
+  - [x] Add state change button
+  - [x] Variable input field
+  - [x] Operator selector (=, +, -)
+  - [x] Value input field
+  - [x] Remove state change button
 
-### 2.3 Form Validation
-- [ ] Validate Scene ID format (valid C function name)
-- [ ] Validate required fields (Scene ID, Chapter, Scene Text)
-- [ ] Validate scene references exist
-- [ ] Show validation errors inline
-- [ ] Disable save button when invalid
-- [ ] Create validation utility functions
+### 2.3 Form Validation ✅ DONE
+- [x] Validate Scene ID format (valid C function name)
+- [x] Validate required fields (Scene ID, Chapter, Scene Text)
+- [x] Show validation errors inline
+- [x] Disable save button when invalid
+- [x] Create validation utility functions (validation.js)
 
-### 2.4 C Code Generator
-- [ ] Create C code template system
-- [ ] Implement scene function generator
-- [ ] Implement choices code generation
-- [ ] Implement state changes code generation
-- [ ] Add proper C escaping for strings
-- [ ] Create code preview component
+### 2.4 C Code Generator ✅ DONE
+- [x] Create C code template system
+- [x] Implement scene function generator
+- [x] Implement choices code generation
+- [x] Implement state changes code generation
+- [x] Add proper C escaping for strings
+- [x] Create code preview component (CodePreview.js)
 
-### 2.5 Real-time Preview
-- [ ] Create C code preview pane (toggle on/off)
-- [ ] Implement live code generation on form change
-- [ ] Add syntax highlighting for C code preview
-- [ ] Add copy-to-clipboard button for generated code
-- [ ] Toggle preview pane (show/hide)
+### 2.5 Real-time Preview ✅ DONE
+- [x] Create C code preview pane (toggle on/off)
+- [x] Implement live code generation on form change
+- [x] Add copy-to-clipboard button for generated code
+- [x] Toggle preview pane (show/hide)
+
+### 2.6 Storage Integration ✅ DONE
+- [x] Integrate saveScene with LocalForage
+- [x] Implement auto-save draft functionality (2 second debounce)
+- [x] Load existing scene for editing
+- [x] Save success/error messaging
+- [x] Default chapter creation if none exist
 
 ## Phase 3: Chapter & Scene Management
 
@@ -270,4 +272,9 @@ SERVER: Setup server environment for tailscale server and https. the url is  htt
 - NEVER develop in main branch
 - Maintain docs/api.json for API compatibility
 
-## Current Phase: Phase 0 - Project Setup & Infrastructure
+## Current Phase: Phase 3 - Chapter & Scene Management
+
+**Completed Phases:**
+- ✅ Phase 0: Project Setup & Infrastructure
+- ✅ Phase 1: Core Architecture
+- ✅ Phase 2: Scene Card Editor

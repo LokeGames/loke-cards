@@ -54,11 +54,7 @@ export default defineConfig({
     port: 8080,
     https: false,
     strictPort: false,
-    hmr: {
-      protocol: 'ws',
-      host: 'loke.tail2d448.ts.net',
-      clientPort: 443
-    },
+
     proxy: {
       '/api': {
         target: process.env.VITE_LOKE_ENGINE_API || 'http://localhost:3000',

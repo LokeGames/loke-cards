@@ -137,6 +137,20 @@ export async function getAllChapters() {
   await chapterStore.iterate((value) => {
     chapters.push(value);
   });
+
+  // Create default chapters if none exist
+  if (chapters.length === 0) {
+    const defaultChapters = [
+      { id: 'chapter01', name: 'Chapter 01', scenes: [], order: 1 },
+      { id: 'chapter02', name: 'Chapter 02', scenes: [], order: 2 }
+    ];
+
+    for (const chapter of defaultChapters) {
+      await saveChapter(chapter);
+      chapters.push(chapter);
+    }
+  }
+
   return chapters.sort((a, b) => a.order - b.order);
 }
 
