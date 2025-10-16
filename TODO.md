@@ -28,7 +28,7 @@
 - [x] Test basic Vite + Tailwind setup works
 - [x] Document build commands in README.md
 
-SERVER: Setup server environment for tailscale server and https. the url is https://loke
+SERVER: Setup server environment for tailscale server and https. the url is  https://loke.tail2d448.ts.net/cards DONE
 
 ## Phase 1: Core Architecture
 

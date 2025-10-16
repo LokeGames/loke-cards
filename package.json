@@ -18,9 +18,11 @@
   "author": "LokeGames",
   "license": "ISC",
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.14",
     "@vitejs/plugin-basic-ssl": "^2.1.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
+    "sharp": "^0.34.4",
     "tailwindcss": "^4.1.14",
     "vite": "^7.1.10",
     "vite-plugin-pwa": "^1.1.0",
