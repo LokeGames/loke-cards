@@ -22,6 +22,28 @@
 - **Vue DevTools** - Browser extension
 - **ESLint + Prettier** - Code quality
 
+### Loke-Engine Integration
+
+**IMPORTANT**: All "card" components (Scene Cards, Chapter Cards) must integrate with **loke-engine**.
+
+**Loke-Engine Documentation Sources**:
+1. **System manpages**: `man loke-engine`, `man loke-scene`, etc.
+2. **Local project**: `~/loke-engine/` directory
+3. **GitHub repository**: Use `gh` command to access `LokeEngine/loke-engine`
+   - Example: `gh repo view LokeEngine/loke-engine`
+   - Example: `gh api repos/LokeEngine/loke-engine/contents/include/loke/scene.h`
+
+**Integration Requirements**:
+- Scene cards generate C code compatible with loke-engine scene API
+- Follow loke-engine function signatures and conventions
+- Use loke-engine GameState structure for state management
+- Reference loke-engine headers in generated code
+- Validate against loke-engine C identifier rules
+
+**Reference Files**:
+- See `/home/ubuntu/loke-cards/CLAUDE.md` for complete loke-engine format reference
+- See `/home/ubuntu/loke-cards/doc/LOKE-FORMAT-REFERENCE.md` for C code generation templates
+
 ---
 
 ## Phase 0: Technology Migration ⏳ IN PROGRESS
@@ -183,11 +205,15 @@
     - Value input
   - Responsive layout
 
-### 2.3 C Code Generator (Composable)
+### 2.3 C Code Generator (Composable) - Loke-Engine Compatible
 - [ ] **useCodeGenerator.js** composable
   - `generateSceneCode(sceneData)` function
   - Proper C string escaping
   - Template system for includes
+  - **Generate loke-engine compatible C code**
+  - **Follow loke-engine scene API (check manpages/docs)**
+  - **Use correct GameState structure**
+  - **Include proper loke-engine headers**
   - Return reactive code string
 
 - [ ] **CodePreview.vue** component
@@ -197,11 +223,13 @@
   - Responsive width
   - Mobile: Full screen modal
 
-### 2.4 Form Validation (Composable)
+### 2.4 Form Validation (Composable) - Loke-Engine Rules
 - [ ] **useSceneValidation.js**
-  - `validateSceneId()` - C identifier check
+  - `validateSceneId()` - C identifier check (loke-engine naming conventions)
   - `validateRequired()` - Required fields
-  - `validateChoices()` - At least one choice
+  - `validateChoices()` - At least one choice (loke-engine minimum)
+  - **Validate against loke-engine GameState variables**
+  - **Check scene function signature compatibility**
   - Return reactive errors object
 
 - [ ] Real-time validation i form
@@ -306,12 +334,16 @@ CREATE TABLE state_changes (
 - [ ] `GET /api/scenes` - List all scenes
 - [ ] Health check endpoint
 
-### 3.4 C Code Generation
+### 3.4 C Code Generation - Loke-Engine Format
 - [ ] `server/codegen.cpp` - C code generator
-- [ ] Scene function template
+- [ ] **Reference loke-engine documentation**:
+  - Check `man loke-scene` for scene API
+  - Read `~/loke-engine/include/loke/scene.h`
+  - Use `gh api repos/LokeEngine/loke-engine` for latest format
+- [ ] Scene function template (loke-engine compatible)
 - [ ] Proper string escaping
-- [ ] Include headers
-- [ ] Generate complete .c files
+- [ ] Include loke-engine headers
+- [ ] Generate complete .c files matching loke-engine structure
 
 ### 3.5 Build System
 - [ ] Makefile for C++ server
