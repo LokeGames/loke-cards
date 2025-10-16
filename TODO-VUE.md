@@ -105,26 +105,29 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
 - [x] Hot reload confirmed working ✅
 - [x] Tailwind CSS fully responsive ✅
 
-### 0.3 C++ Backend Setup
-- [ ] Create `/server` directory
-- [ ] Install cpp-httplib (header-only HTTP server)
-- [ ] Install sqlite3 (embedded database)
-- [ ] Create basic HTTP server on port 3000
-- [ ] Test CORS headers for Tailscale
-- [ ] Create Makefile for C++ compilation
-- [ ] Test server responds to curl
+### 0.3 C++ Backend Setup ✅ COMPLETED
+- [x] Create `/server` directory
+- [x] Install cpp-httplib (header-only HTTP server)
+- [x] Install sqlite3 (embedded database)
+- [x] Create basic HTTP server on port 3000
+- [x] Test CORS headers for Tailscale
+- [x] Create Makefile for C++ compilation (with Doxygen support)
+- [x] Test server responds to curl
 
 ### 0.4 Development Tools
-- [ ] Install Playwright for browser CLI testing
+
+- [x] Install Playwright for browser CLI testing
 - [ ] Configure Playwright for Chrome
 - [ ] Create test script for automated browser checks
 - [ ] Install Vue DevTools browser extension
 - [ ] Configure ESLint + Prettier for Vue
 - [ ] Test hot reload works perfectly
 
+Can we merge git branch to main only yes if all is tested and confirmed working?
 ---
 
 ## Phase 1: Core Vue Architecture (Fully Responsive)
+New git branch
 
 ### 1.1 Vue Project Structure
 - [ ] Create `/src/components` struktur (partially done - has Layout, Navigation, Sidebar ✅)
@@ -167,7 +170,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
   - Props: type, label, error, validation
   - Responsive sizing
   - Tailwind styling
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 1.3 Vue Router Setup
 - [ ] `/` - Dashboard view
 - [ ] `/scenes` - Scene list view
@@ -200,7 +204,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
   - sidebarOpen (mobile)
   - currentView
   - Actions: toggleSidebar, setCurrentView
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 1.6 Responsive Testing
 - [ ] Test på Chrome mobile emulator (375px, 768px, 1024px)
 - [ ] Test med Playwright CLI
@@ -209,7 +214,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
 - [ ] Document all responsive behaviors
 
 ---
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ## Phase 2: Scene Editor (Fully Functional & Responsive)
 
 ### 2.1 Scene Editor View Component
@@ -254,7 +260,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
     - Operator select (=, +=, -=, etc)
     - Value input
   - Responsive layout
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 2.3 C Code Generator (Composable) - Loke-Engine Compatible
 - [ ] **useCodeGenerator.js** composable
   - `generateSceneCode(sceneData)` function
@@ -272,7 +279,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
   - Toggle visibility
   - Responsive width
   - Mobile: Full screen modal
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 2.4 Form Validation (Composable) - Loke-Engine Rules
 - [ ] **useSceneValidation.js**
   - `validateSceneId()` - C identifier check (loke-engine naming conventions)
@@ -307,7 +315,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
 - [ ] **PUT /api/scenes/:id** - Update scene
 - [ ] Test med Playwright CLI
 - [ ] Mobile network simulation
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 2.7 Responsive Testing
 - [ ] Test entire editor på mobile (375px)
 - [ ] Test på tablet (768px)
@@ -320,7 +329,8 @@ User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c f
 ---
 
 ## Phase 3: C++ Backend Implementation
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 3.1 Database Schema (SQLite)
 ```sql
 CREATE TABLE projects (
@@ -366,7 +376,8 @@ CREATE TABLE state_changes (
   FOREIGN KEY(scene_id) REFERENCES scenes(id)
 );
 ```
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 3.2 C++ HTTP Server
 - [ ] `server/main.cpp` - Entry point
 - [ ] `server/routes.cpp` - API routes
@@ -375,7 +386,8 @@ CREATE TABLE state_changes (
 - [ ] CORS headers for Tailscale
 - [ ] JSON serialization/deserialization
 - [ ] Error handling and logging
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 3.3 API Endpoints
 - [ ] `POST /api/scenes` - Create scene
 - [ ] `GET /api/scenes/:id` - Get scene
@@ -386,6 +398,8 @@ CREATE TABLE state_changes (
 - [ ] `GET /api/scenes` - List all scenes
 - [ ] Health check endpoint
 
+### 3Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 3.4 C Code Generation - Loke-Engine Format
 - [ ] `server/codegen.cpp` - C code generator
 - [ ] **Reference loke-engine documentation**:
@@ -396,7 +410,8 @@ CREATE TABLE state_changes (
 - [ ] Proper string escaping
 - [ ] Include loke-engine headers
 - [ ] Generate complete .c files matching loke-engine structure
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 3.5 Build System
 - [ ] Makefile for C++ server
 - [ ] Auto-restart on code change (nodemon-style)
@@ -406,7 +421,8 @@ CREATE TABLE state_changes (
 ---
 
 ## Phase 4: Browser CLI Testing with Playwright
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 4.1 Playwright Setup
 - [ ] Install Playwright
 - [ ] Install Chrome browser binary
@@ -443,7 +459,8 @@ npm run test:mobile
 ---
 
 ## Phase 5: Chapter & Scene Management (Vue)
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 5.1 Chapter Views
 - [ ] **ChapterListView.vue** - List all chapters
 - [ ] **ChapterEditor.vue** - Create/edit chapter
@@ -467,7 +484,8 @@ npm run test:mobile
 ---
 
 ## Phase 6: Polish & Optimization
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 6.1 UI/UX
 - [ ] Toast notifications (Vue component)
 - [ ] Loading states
@@ -492,7 +510,8 @@ npm run test:mobile
 ---
 
 ## Phase 7: Deployment
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 7.1 Production Build
 - [ ] Build Vue app (`npm run build`)
 - [ ] Build C++ server (`make release`)
@@ -514,7 +533,8 @@ npm run test:mobile
 ---
 
 ## Phase 8: PWA (Optional - Sidste fase)
-
+Can we merge git branch to main only yes if all is tested and confirmed working?
+New git branch for dev.
 ### 8.1 PWA Setup
 - [ ] Vite PWA plugin
 - [ ] Service worker
@@ -523,6 +543,7 @@ npm run test:mobile
 - [ ] App manifest
 
 ---
+merge to main
 
 ## Migration Checklist
 

@@ -1,0 +1,49 @@
+.TH "httplib::Stream" 3 "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+httplib::Stream
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual bool \fBis_readable\fP () const =0"
+.br
+.ti -1c
+.RI "virtual bool \fBwait_readable\fP () const =0"
+.br
+.ti -1c
+.RI "virtual bool \fBwait_writable\fP () const =0"
+.br
+.ti -1c
+.RI "virtual ssize_t \fBread\fP (char *ptr, size_t size)=0"
+.br
+.ti -1c
+.RI "virtual ssize_t \fBwrite\fP (const char *ptr, size_t size)=0"
+.br
+.ti -1c
+.RI "virtual void \fBget_remote_ip_and_port\fP (std::string &ip, int &port) const =0"
+.br
+.ti -1c
+.RI "virtual void \fBget_local_ip_and_port\fP (std::string &ip, int &port) const =0"
+.br
+.ti -1c
+.RI "virtual socket_t \fBsocket\fP () const =0"
+.br
+.ti -1c
+.RI "virtual time_t \fBduration\fP () const =0"
+.br
+.ti -1c
+.RI "ssize_t \fBwrite\fP (const char *ptr)"
+.br
+.ti -1c
+.RI "ssize_t \fBwrite\fP (const std::string &s)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

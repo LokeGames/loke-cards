@@ -1,0 +1,125 @@
+.TH "httplib::Response" 3 "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+httplib::Response
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBhas_header\fP (const std::string &key) const"
+.br
+.ti -1c
+.RI "std::string \fBget_header_value\fP (const std::string &key, const char *def='', size_t id=0) const"
+.br
+.ti -1c
+.RI "size_t \fBget_header_value_u64\fP (const std::string &key, size_t def=0, size_t id=0) const"
+.br
+.ti -1c
+.RI "size_t \fBget_header_value_count\fP (const std::string &key) const"
+.br
+.ti -1c
+.RI "void \fBset_header\fP (const std::string &key, const std::string &val)"
+.br
+.ti -1c
+.RI "bool \fBhas_trailer\fP (const std::string &key) const"
+.br
+.ti -1c
+.RI "std::string \fBget_trailer_value\fP (const std::string &key, size_t id=0) const"
+.br
+.ti -1c
+.RI "size_t \fBget_trailer_value_count\fP (const std::string &key) const"
+.br
+.ti -1c
+.RI "void \fBset_redirect\fP (const std::string &url, int status=StatusCode::Found_302)"
+.br
+.ti -1c
+.RI "void \fBset_content\fP (const char *s, size_t n, const std::string &content_type)"
+.br
+.ti -1c
+.RI "void \fBset_content\fP (const std::string &s, const std::string &content_type)"
+.br
+.ti -1c
+.RI "void \fBset_content\fP (std::string &&s, const std::string &content_type)"
+.br
+.ti -1c
+.RI "void \fBset_content_provider\fP (size_t length, const std::string &content_type, ContentProvider provider, ContentProviderResourceReleaser resource_releaser=nullptr)"
+.br
+.ti -1c
+.RI "void \fBset_content_provider\fP (const std::string &content_type, ContentProviderWithoutLength provider, ContentProviderResourceReleaser resource_releaser=nullptr)"
+.br
+.ti -1c
+.RI "void \fBset_chunked_content_provider\fP (const std::string &content_type, ContentProviderWithoutLength provider, ContentProviderResourceReleaser resource_releaser=nullptr)"
+.br
+.ti -1c
+.RI "void \fBset_file_content\fP (const std::string &path, const std::string &content_type)"
+.br
+.ti -1c
+.RI "void \fBset_file_content\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "\fBResponse\fP (const \fBResponse\fP &)=default"
+.br
+.ti -1c
+.RI "\fBResponse\fP & \fBoperator=\fP (const \fBResponse\fP &)=default"
+.br
+.ti -1c
+.RI "\fBResponse\fP (\fBResponse\fP &&)=default"
+.br
+.ti -1c
+.RI "\fBResponse\fP & \fBoperator=\fP (\fBResponse\fP &&)=default"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBversion\fP"
+.br
+.ti -1c
+.RI "int \fBstatus\fP = \-1"
+.br
+.ti -1c
+.RI "std::string \fBreason\fP"
+.br
+.ti -1c
+.RI "Headers \fBheaders\fP"
+.br
+.ti -1c
+.RI "Headers \fBtrailers\fP"
+.br
+.ti -1c
+.RI "std::string \fBbody\fP"
+.br
+.ti -1c
+.RI "std::string \fBlocation\fP"
+.br
+.ti -1c
+.RI "size_t \fBcontent_length_\fP = 0"
+.br
+.ti -1c
+.RI "ContentProvider \fBcontent_provider_\fP"
+.br
+.ti -1c
+.RI "ContentProviderResourceReleaser \fBcontent_provider_resource_releaser_\fP"
+.br
+.ti -1c
+.RI "bool \fBis_chunked_content_provider_\fP = false"
+.br
+.ti -1c
+.RI "bool \fBcontent_provider_success_\fP = false"
+.br
+.ti -1c
+.RI "std::string \fBfile_content_path_\fP"
+.br
+.ti -1c
+.RI "std::string \fBfile_content_content_type_\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

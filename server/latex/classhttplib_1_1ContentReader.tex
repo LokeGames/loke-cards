@@ -1,0 +1,37 @@
+\doxysection{httplib\+::Content\+Reader Class Reference}
+\hypertarget{classhttplib_1_1ContentReader}{}\label{classhttplib_1_1ContentReader}\index{httplib::ContentReader@{httplib::ContentReader}}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_abc8da0da3f914be4fb5cc3bb67d8c443}\label{classhttplib_1_1ContentReader_abc8da0da3f914be4fb5cc3bb67d8c443} 
+using {\bfseries Reader} = std\+::function$<$ bool(Content\+Receiver receiver)$>$
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_adc1050ca227a8b1e1a12000b38e07e29}\label{classhttplib_1_1ContentReader_adc1050ca227a8b1e1a12000b38e07e29} 
+using {\bfseries Form\+Data\+Reader} = std\+::function$<$ bool(Form\+Data\+Header header, Content\+Receiver receiver)$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_a2c122c8d98c1b9bf17270d3237a7be0a}\label{classhttplib_1_1ContentReader_a2c122c8d98c1b9bf17270d3237a7be0a} 
+{\bfseries Content\+Reader} (Reader reader, Form\+Data\+Reader multipart\+\_\+reader)
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_a4a75129eecfd7c9b1d5580437f7ebdf8}\label{classhttplib_1_1ContentReader_a4a75129eecfd7c9b1d5580437f7ebdf8} 
+bool {\bfseries operator()} (Form\+Data\+Header header, Content\+Receiver receiver) const
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_aa6f3ec4f7b8669f1f1249a5fba969d5a}\label{classhttplib_1_1ContentReader_aa6f3ec4f7b8669f1f1249a5fba969d5a} 
+bool {\bfseries operator()} (Content\+Receiver receiver) const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_a1fb51ae3a8bc275f1ef81ab01e85d86b}\label{classhttplib_1_1ContentReader_a1fb51ae3a8bc275f1ef81ab01e85d86b} 
+Reader {\bfseries reader\+\_\+}
+\item 
+\Hypertarget{classhttplib_1_1ContentReader_ace6d95058db590a77023d2e39f4b7f79}\label{classhttplib_1_1ContentReader_ace6d95058db590a77023d2e39f4b7f79} 
+Form\+Data\+Reader {\bfseries formdata\+\_\+reader\+\_\+}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+httplib.\+h\end{DoxyCompactItemize}

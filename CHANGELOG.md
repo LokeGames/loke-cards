@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Migration to Vue 3 - 2025-10-16
 
+### Added
+- C++ backend setup (Phase 0.3)
+  - Created `/server` directory with `cpp-httplib` and `sqlite3`.
+  - Basic HTTP server on port 3000 with CORS for Tailscale.
+  - Makefile for compilation and Doxygen man page generation.
+- Fixed Vite dev server port to 8081 to match Tailscale proxy configuration.
+
+
 **Decision: Rewrite with Vue 3 + C++ Backend**
 
 After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental issues:
