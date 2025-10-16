@@ -54,6 +54,11 @@ export default defineConfig({
     port: 8080,
     https: false,
     strictPort: false,
+    allowedHosts: [
+      'loke.tail2d448.ts.net',
+      'localhost',
+      '127.0.0.1'
+    ],
 
     proxy: {
       '/api': {
