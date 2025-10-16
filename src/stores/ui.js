@@ -3,6 +3,11 @@ import { defineStore } from 'pinia';
 export const useUiStore = defineStore('ui', {
   state: () => ({
     isSidebarOpen: false,
+    currentProject: null,
+    stats: {
+      scenes: 0,
+      chapters: 0,
+    },
   }),
   actions: {
     toggleSidebar() {
@@ -13,6 +18,12 @@ export const useUiStore = defineStore('ui', {
     },
     closeSidebar() {
       this.isSidebarOpen = false;
+    },
+    setCurrentProject(project) {
+      this.currentProject = project;
+    },
+    updateStats(stats) {
+      this.stats = { ...this.stats, ...stats };
     },
   },
 });
