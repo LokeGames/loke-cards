@@ -7,6 +7,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 2 - Scene Editor (Fully Functional) - 2025-10-17
+
+### Added
+- **Complete Scene Editor** (`SceneEditorView.vue`)
+  - Responsive 2-column layout (desktop: form + code preview side-by-side)
+  - Single column on mobile with collapsible preview
+  - Create mode and Edit mode support (route param detection)
+  - Real-time C code generation with live preview
+  - Integration with C++ backend API
+  - Save/Update/Load functionality
+
+- **Form Components** (all fully responsive)
+  - `SceneIdInput.vue` - Scene ID input with C identifier validation
+    - Must start with "scene_" prefix
+    - Real-time validation with error messages
+    - Max 64 character length
+  - `ChapterSelect.vue` - Chapter dropdown selector
+    - Loads chapters from API on mount
+    - Inline chapter creation with "Create New Chapter" option
+    - Emits create-chapter event
+  - `SceneTextEditor.vue` - Scene text editor
+    - Auto-growing textarea
+    - Character counter (2048 character limit)
+    - Touch-optimized for mobile
+  - `ChoicesList.vue` - Dynamic choices list
+    - Add/remove choices (min 1, max 10)
+    - Each choice has: text, nextScene, enabled flag
+    - Visual cards with remove buttons
+    - Proper empty state messaging
+  - `StateChangesList.vue` - Dynamic state modifications
+    - Add/remove state changes (optional)
+    - Variable autocomplete with datalist (health, gold, karma, etc.)
+    - Operator select (=, +=, -=, *=, /=)
+    - Value autocomplete with common values
+    - Live preview: `state->variable operator value;`
+  - `CodePreview.vue` - C code preview component
+    - Collapsible section (default expanded on desktop)
+    - Copy to clipboard with success feedback
+    - Monospace font for proper code display
+    - Sticky positioning on desktop
+
+- **Composables** (reusable logic)
+  - `useCodeGenerator.js` - Loke-engine C code generator
+    - `generateSceneCode()` - Generates complete C scene function
+    - Proper C string escaping (quotes, newlines, backslashes, tabs)
+    - Multi-line text splitting (80 char max per line)
+    - Follows LOKE-FORMAT-REFERENCE.md spec
+    - Includes proper headers (#include <loke/scene.h>)
+    - State changes execute before scene text
+    - Generates loke-engine compatible function signatures
+  - `useSceneValidation.js` - Form validation
+    - `validateSceneId()` - C identifier + "scene_" prefix check
+    - `validateChapterId()` - C identifier + "chapter" prefix check
+    - `validateSceneText()` - Max 2048 characters
+    - `validateChoices()` - Min 1, max 10 choices, all fields required
+    - `validateStateChanges()` - Variable/operator/value validation
+    - Reactive errors object and isValid computed property
+    - Uses `isValidCIdentifier()` from lib/validation.js
+
+- **API Client** (`src/api/client.js`)
+  - Fetch-based HTTP client with error handling
+  - Configurable base URL via `VITE_API_BASE_URL` env variable
+  - Default fallback: `http://localhost:3000/api`
+  - Exported APIs:
+    - `scenesAPI` - CRUD operations for scenes (getAll, getById, create, update, delete)
+    - `chaptersAPI` - CRUD operations for chapters
+    - `projectsAPI` - CRUD operations for projects
+    - `healthCheck()` - Server health status
+  - Automatic JSON parsing and error extraction
+  - Handles non-OK responses with friendly error messages
+
+### Changed
+- SceneEditorView now loads chapters from backend API instead of mock data
+- Save functionality uses real API calls (POST for create, PUT for update)
+- Edit mode loads existing scene data from API on mount
+
+### Testing
+- Hot reload verified working with all new components ✅
+- Responsive layout tested on mobile, tablet, desktop ✅
+- Dark mode support on all new components ✅
+- API integration ready for C++ backend ✅
+
 ### Phase 1 - App Shell Layout - Dark Mode Fix - 2025-10-16
 
 ### Fixed

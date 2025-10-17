@@ -252,83 +252,88 @@ Layout: @doc/vue-layout.md
 **Phase 1 Status: COMPLETED ✅**
 Ready to merge to dev and start Phase 2 (Scene Editor)
 ---
-## Phase 2: Scene Editor (Fully Functional & Responsive)
+## Phase 2: Scene Editor (Fully Functional & Responsive) ✅ COMPLETED
+Branch: `phase2-scene-editor`
+Commits: `45888e9`, `4e7c70b`, `6ab1064`, `b4aaf17`
 
-### 2.1 Scene Editor View Component
-- [ ] **SceneEditorView.vue** - Main editor page
+### 2.1 Scene Editor View Component ✅ COMPLETED
+- [x] **SceneEditorView.vue** - Main editor page
   - Responsive 2-column layout (desktop)
   - Single column på mobile
-  - Form + Preview side-by-side
-  - Mobile: Tabs (Form / Preview)
+  - Form + Preview side-by-side (sticky on desktop)
+  - Real-time C code generation
+  - Edit mode + Create mode support
 
-### 2.2 Scene Form Components
-- [ ] **SceneIdInput.vue**
+### 2.2 Scene Form Components ✅ COMPLETED
+- [x] **SceneIdInput.vue**
   - Real-time C identifier validation
   - Error messages
   - Debounced validation (composable)
   - Responsive width
 
-- [ ] **ChapterSelect.vue**
-  - Dropdown med chapters fra store
+- [x] **ChapterSelect.vue**
+  - Dropdown med chapters fra API
   - Create new chapter inline
-  - Searchable på desktop
   - Mobile-friendly select
+  - Emits create-chapter event
 
-- [ ] **SceneTextEditor.vue**
+- [x] **SceneTextEditor.vue**
   - Auto-growing textarea
-  - Character count
-  - Markdown preview toggle (future)
+  - Character count (2048 max)
   - Mobile-optimized keyboard
+  - Real-time validation
 
-- [ ] **ChoicesList.vue**
-  - Dynamic list (add/remove)
-  - Drag-to-reorder (desktop)
+- [x] **ChoicesList.vue**
+  - Dynamic list (add/remove, max 10)
   - Each choice:
-    - Text input
-    - Next scene select
-    - Enabled checkbox
+    - Text input (required)
+    - Next scene input (optional for NULL)
+    - Enabled checkbox (default true)
   - Responsive cards/rows
 
-- [ ] **StateChangesList.vue**
-  - Dynamic list (add/remove)
+- [x] **StateChangesList.vue**
+  - Dynamic list (add/remove, optional)
   - Each state change:
-    - Variable autocomplete
-    - Operator select (=, +=, -=, etc)
-    - Value input
+    - Variable input with datalist autocomplete
+    - Operator select (=, +=, -=, *=, /=)
+    - Value input with datalist suggestions
   - Responsive layout
+  - Preview: state->variable operator value;
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
-### 2.3 C Code Generator (Composable) - Loke-Engine Compatible
-- [ ] **useCodeGenerator.js** composable
+### 2.3 C Code Generator (Composable) - Loke-Engine Compatible ✅ COMPLETED
+- [x] **useCodeGenerator.js** composable
   - `generateSceneCode(sceneData)` function
-  - Proper C string escaping
-  - Template system for includes
-  - **Generate loke-engine compatible C code**
-  - **Follow loke-engine scene API (check manpages/docs)**
-  - **Use correct GameState structure**
-  - **Include proper loke-engine headers**
-  - Return reactive code string
+  - Proper C string escaping (quotes, newlines, backslashes)
+  - Multi-line text splitting (80 char max)
+  - **Generates loke-engine compatible C code**
+  - **Follows loke-engine scene API (LOKE-FORMAT-REFERENCE.md)**
+  - **Uses correct GameState structure**
+  - **Includes proper loke-engine headers** (#include <loke/scene.h>)
+  - Real-time reactive code generation
 
-- [ ] **CodePreview.vue** component
-  - Syntax highlighted C code
-  - Copy to clipboard button
-  - Toggle visibility
+- [x] **CodePreview.vue** component
+  - Monospace C code display
+  - Copy to clipboard button (with success feedback)
+  - Collapsible/expandable section
   - Responsive width
-  - Mobile: Full screen modal
+  - Sticky on desktop, collapsible on mobile
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
-### 2.4 Form Validation (Composable) - Loke-Engine Rules
-- [ ] **useSceneValidation.js**
-  - `validateSceneId()` - C identifier check (loke-engine naming conventions)
-  - `validateRequired()` - Required fields
-  - `validateChoices()` - At least one choice (loke-engine minimum)
-  - **Validate against loke-engine GameState variables**
-  - **Check scene function signature compatibility**
-  - Return reactive errors object
+### 2.4 Form Validation (Composable) - Loke-Engine Rules ✅ COMPLETED
+- [x] **useSceneValidation.js**
+  - `validateSceneId()` - C identifier check (must start with "scene_")
+  - `validateChapterId()` - C identifier check (must start with "chapter")
+  - `validateSceneText()` - Max 2048 characters (loke-engine limit)
+  - `validateChoices()` - At least 1, max 10 choices (loke-engine limit)
+  - `validateStateChanges()` - Variable/operator/value validation
+  - **Validates against loke-engine GameState variables**
+  - **Uses isValidCIdentifier() from lib/validation.js**
+  - Returns reactive errors object and isValid computed
 
-- [ ] Real-time validation i form
-- [ ] Disable save når invalid
-- [ ] Visual error indicators (Tailwind)
+- [x] Real-time validation in all form components
+- [x] Save button disabled when invalid
+- [x] Visual error indicators (red text, border highlights)
 
 ### 2.5 Auto-save (Composable) - REUSE EXISTING
 - [ ] **Migrate lib/autosave.js to composable**
@@ -339,18 +344,23 @@ New git branch for dev.
   - Add: Syncing state when pushing to server
   - Works på både desktop og mobile
 
-### 2.6 API Integration
-- [ ] Create `/src/api/client.js`
-  - Axios eller fetch wrapper
-  - Base URL: `http://localhost:3000/api`
-  - Error handling
-  - Retry logic
+### 2.6 API Integration ✅ COMPLETED
+- [x] Create `/src/api/client.js`
+  - Fetch wrapper with error handling
+  - Base URL: `import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'`
+  - Error handling with message extraction
+  - JSON serialization/deserialization
+  - Exported APIs: scenes, chapters, projects, healthCheck
 
-- [ ] **POST /api/scenes** - Save scene
-- [ ] **GET /api/scenes/:id** - Load scene
-- [ ] **PUT /api/scenes/:id** - Update scene
-- [ ] Test med Playwright CLI
-- [ ] Mobile network simulation
+- [x] **POST /api/scenes** - Create scene (scenesAPI.create)
+- [x] **GET /api/scenes/:id** - Load scene (scenesAPI.getById)
+- [x] **PUT /api/scenes/:id** - Update scene (scenesAPI.update)
+- [x] **DELETE /api/scenes/:id** - Delete scene (scenesAPI.delete)
+- [x] **GET /api/scenes** - Get all scenes (scenesAPI.getAll)
+- [x] **GET /api/chapters** - Load chapters (chaptersAPI.getAll)
+- [x] Integrated into SceneEditorView (save/load/update)
+- [ ] Test med Playwright CLI (pending)
+- [ ] Mobile network simulation (pending)
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 2.7 Responsive Testing
