@@ -8,8 +8,9 @@
 - **Tailwind CSS** - Utility-first styling
 - **Pinia** - State management (officiel Vue store)
 - **Vue Router** - Client-side routing
-- **LocalForage** - Client-side IndexedDB storage (ALREADY IMPLEMENTED ✅)
-- **PWA** (Phase 8) - Valgfrit til sidst
+- **SQL.js** - SQLite WASM in browser (replaces LocalForage) 🔄 Phase 3A
+- **LocalForage** - Current storage (WORKING ✅, will migrate to SQL.js)
+- **PWA** (Phase 8) - Offline-first with Service Worker
 
 ### Backend
 - **C++ med httplib** - Lightweight HTTP server
@@ -18,43 +19,68 @@
 - **Port 3000** - Backend API server
 - **Tailscale** - Netværk (frontend på :8443, backend på :3000)
 
-### Database Architecture (LocalForage + SQLite)
-**PWA Storage** (Browser - LocalForage/IndexedDB) **✅ ALREADY WORKING**:
-- 4 stores: scenes, chapters, drafts, projects (see `src/lib/storage.js`)
-- Drafts: Work in progress scenes with auto-save
-- Offline cache: Last synced data
-- Full CRUD operations implemented
-- Export/import functionality
+### Database Architecture (SQLite on Both Sides + LibSQL Sync)
 
-**Server SQLite Database** (C++ backend):
-- Master data: All projects, chapters, scenes (same schema as LocalForage)
-- Source of truth for multi-user sync
-- Generates `.c` files for loke-engine
+**NEW APPROACH: SQLite Everywhere** 🔄
+
+**Frontend Storage** (Browser - SQL.js WASM):
+- SQLite database in browser via sql.js (WASM)
+- Same schema as backend for easy sync
+- Replaces LocalForage for consistency
+- Export/import `.db` file for backup
+- Full SQL queries in browser
+
+**Backend Storage** (Server - SQLite native):
+- SQLite database on C++ server
+- Master database, source of truth
+- Generates `.c` files from database
 - Timestamps for conflict resolution
 
-**Sync Flow**:
-```
-User edits → LocalForage → HTTP POST/PUT → Server SQLite → Generate .c files → loke-engine
-    (vanilla JS) ↓              (new)         (Phase 3)          (Phase 3.4)
-             Instant UI
-               ↑
-          HTTP GET ←──────── Sync ←──── Server is source of truth
-             (new)              (Phase 2.6)
-```
+**Sync Strategy** (LibSQL or Custom):
+- **Option A: LibSQL** - Hybrid SQLite with sync built-in
+- **Option B: Custom** - Download/upload .db file
+- **Option C: REST API** - HTTP-based record sync (MVP approach)
 
-**Migration Strategy**:
-- ✅ Keep existing LocalForage storage.js (working code!)
-- ✅ Keep existing storage schema (projects, chapters, scenes, choices, state_changes)
-- 🔄 Wrap storage.js functions in Pinia stores (Phase 1.5)
-- 🔄 Add sync layer to POST/GET from C++ server (Phase 2.6)
-- 🔄 Server SQLite mirrors LocalForage schema (Phase 3.1)
+**Migration Path**:
 
-**Advantages**:
-- ✅ Reuse existing working storage code
-- ✅ No breaking changes to data model
-- ✅ LocalForage is simpler than sql.js (no WASM overhead)
-- ✅ Offline-first already works
-- ✅ `.c` files are "compiled output" from server database
+**Phase 3A: SQLite Frontend** (replaces LocalForage)
+- [ ] 1. Install SQL.js: `npm install sql.js`
+- [ ] 2. Create new `src/lib/database.js` with SQLite wrapper
+- [ ] 3. Keep `src/lib/storage.js` API intact (but use SQL.js internally)
+- [ ] 4. Migrate schema from LocalForage to SQLite tables
+- [ ] 5. Add database export/import (`.db` file)
+- [ ] 6. Test: All existing features work with SQL.js
+
+**Phase 3B: SQLite Backend** (add to C++ server)
+- [ ] 1. Implement SQLite in C++ backend (Phase 3.1 - see below)
+- [ ] 2. Create database schema (projects, chapters, scenes, choices, state_changes)
+- [ ] 3. Replace FileManager with DatabaseManager
+- [ ] 4. Keep `.c` file generation (database → .c files)
+- [ ] 5. Add REST API endpoints for database access
+- [ ] 6. Test: Backend writes to both SQLite and .c files
+
+**Phase 3C: Sync Mechanism** (LibSQL or custom)
+- [ ] 1. Decide: LibSQL vs Custom file sync vs REST API
+- [ ] 2. Implement sync logic in `src/composables/useSync.js`
+- [ ] 3. Add sync status indicator to UI (StatusPill)
+- [ ] 4. Handle conflicts (last-write-wins or manual resolution)
+- [ ] 5. Queue offline changes for later sync
+- [ ] 6. Test: Offline editing → online sync works perfectly
+
+**Advantages of SQLite Sync**:
+- ✅ Same format on frontend and backend
+- ✅ SQL queries work identically everywhere
+- ✅ File-based sync (download/upload .db) is simple
+- ✅ Offline-first with full SQL capabilities
+- ✅ LibSQL provides production-ready sync if needed
+- ✅ Easy backup: just copy the .db file
+- ✅ `.c` files are "build output" from database
+
+**LibSQL Info** (optional enhancement):
+- Turso/LibSQL: SQLite fork with built-in replication
+- Embedded replica on client, primary on server
+- Automatic sync with conflict resolution
+- Can be added later if custom sync isn't sufficient
 
 ### Development Tools
 - **Playwright** - Browser CLI testing

@@ -318,6 +318,96 @@ int main(int argc, char* argv[]) {
             }
         });
 
+    // =============================================================================
+    // SIMPLE API ENDPOINTS (for single-project frontend)
+    // =============================================================================
+    // These wrap the multi-project endpoints with a default project name
+
+    const std::string DEFAULT_PROJECT = "default";
+
+    // POST /api/scenes - Create scene (simple API)
+    svr.Post("/api/scenes",
+        [&file_manager, DEFAULT_PROJECT](const httplib::Request& req, httplib::Response& res) {
+            setup_cors(res);
+
+            try {
+                json scene_data = json::parse(req.body);
+                SceneCard card = parse_scene_json(scene_data);
+
+                // Validate scene ID
+                if (!validate_scene_id(card.scene_id)) {
+                    json error_response = {
+                        {"success", false},
+                        {"error", "Invalid scene ID: must be valid C identifier"}
+                    };
+                    res.status = 400;
+                    res.set_content(error_response.dump(), "application/json");
+                    return;
+                }
+
+                // Generate C code
+                std::string code = generate_scene_code(card);
+
+                // Write scene file
+                bool success = file_manager.write_scene(DEFAULT_PROJECT, card.chapter, card.scene_id, code);
+
+                if (!success) {
+                    json error_response = {
+                        {"success", false},
+                        {"error", "Failed to write scene file"}
+                    };
+                    res.status = 500;
+                    res.set_content(error_response.dump(), "application/json");
+                    return;
+                }
+
+                // Update chapter header
+                std::vector<std::string> scenes = file_manager.list_scenes(DEFAULT_PROJECT, card.chapter);
+                std::string header_code = generate_chapter_header(card.chapter, scenes);
+                file_manager.write_chapter_header(DEFAULT_PROJECT, card.chapter, header_code);
+
+                // Success response
+                json response = {
+                    {"success", true},
+                    {"scene_id", card.scene_id},
+                    {"chapter", card.chapter},
+                    {"file_path", "./" + DEFAULT_PROJECT + "/" + card.chapter + "/" + card.scene_id + ".c"}
+                };
+                res.set_content(response.dump(), "application/json");
+
+            } catch (const json::exception& e) {
+                json error_response = {
+                    {"success", false},
+                    {"error", std::string("JSON parse error: ") + e.what()}
+                };
+                res.status = 400;
+                res.set_content(error_response.dump(), "application/json");
+            } catch (const std::exception& e) {
+                json error_response = {
+                    {"success", false},
+                    {"error", std::string("Server error: ") + e.what()}
+                };
+                res.status = 500;
+                res.set_content(error_response.dump(), "application/json");
+            }
+        });
+
+    // GET /api/chapters - Get all chapters (simple API)
+    svr.Get("/api/chapters",
+        [&file_manager, DEFAULT_PROJECT](const httplib::Request&, httplib::Response& res) {
+            setup_cors(res);
+
+            std::vector<std::string> chapters = file_manager.list_chapters(DEFAULT_PROJECT);
+
+            json response = {
+                {"success", true},
+                {"chapters", chapters},
+                {"count", chapters.size()}
+            };
+
+            res.set_content(response.dump(), "application/json");
+        });
+
     // Start server
     std::cout << "✅ Server ready!\n\n";
 

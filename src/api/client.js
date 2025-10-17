@@ -5,8 +5,9 @@
  * Handles all HTTP requests for scenes, chapters, and projects
  */
 
-// Base URL for API (from environment variable or default)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+// Base URL for API
+// Backend runs on port 3000 via Tailscale: https://loke.tail2d448.ts.net:3000
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://loke.tail2d448.ts.net:3000/api';
 
 /**
  * Generic fetch wrapper with error handling

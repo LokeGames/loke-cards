@@ -38,26 +38,29 @@ bool validate_scene_id(const std::string& scene_id) {
 SceneCard parse_scene_json(const json& json_data) {
     SceneCard card;
 
-    card.scene_id = json_data.value("scene_id", "");
-    card.chapter = json_data.value("chapter", "chapter01");
-    card.scene_text = json_data.value("scene_text", "");
-    card.uses_dynamic_text = json_data.value("uses_dynamic_text", false);
+    // Support both camelCase (from frontend) and snake_case (legacy)
+    card.scene_id = json_data.value("sceneId", json_data.value("scene_id", ""));
+    card.chapter = json_data.value("chapterId", json_data.value("chapter", "chapter01"));
+    card.scene_text = json_data.value("sceneText", json_data.value("scene_text", ""));
+    card.uses_dynamic_text = json_data.value("usesDynamicText", json_data.value("uses_dynamic_text", false));
 
     // Parse choices
     if (json_data.contains("choices") && json_data["choices"].is_array()) {
         for (const auto& choice_json : json_data["choices"]) {
             Choice choice;
             choice.text = choice_json.value("text", "");
-            choice.next_scene = choice_json.value("next_scene", "");
+            // Support both camelCase and snake_case
+            choice.next_scene = choice_json.value("nextScene", choice_json.value("next_scene", ""));
             choice.enabled = choice_json.value("enabled", true);
             choice.condition = choice_json.value("condition", "");
             card.choices.push_back(choice);
         }
     }
 
-    // Parse state changes
-    if (json_data.contains("state_changes") && json_data["state_changes"].is_array()) {
-        for (const auto& change_json : json_data["state_changes"]) {
+    // Parse state changes (support both camelCase stateChanges and snake_case state_changes)
+    const char* state_changes_key = json_data.contains("stateChanges") ? "stateChanges" : "state_changes";
+    if (json_data.contains(state_changes_key) && json_data[state_changes_key].is_array()) {
+        for (const auto& change_json : json_data[state_changes_key]) {
             StateChange change;
             change.variable = change_json.value("variable", "");
             change.op = change_json.value("operator", "=");
