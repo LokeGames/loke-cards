@@ -361,8 +361,8 @@ New git branch for dev.
 - [x] Integrated into SceneEditorView (save/load/update)
 - [ ] Test med Playwright CLI (pending)
 - [ ] Mobile network simulation (pending)
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
+- [ ] Can we merge git branch to main only yes if all is tested and confirmed working?
+- [ ] New git branch for dev.
 ### 2.7 Responsive Testing
 - [ ] Test entire editor på mobile (375px)
 - [ ] Test på tablet (768px)
