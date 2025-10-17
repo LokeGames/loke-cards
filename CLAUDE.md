@@ -423,3 +423,4 @@ LOKE_ALLOWED_ORIGINS=http://loke-cards:8080   # CORS origins
 - [ ] Create example project with sample cards
 - game-format se @doc/LOKE-FORMAT-REFERENCE.md
 - all dev is TDD before uder presentation it is vital
+- Authors is Claude & Twistedbrain
