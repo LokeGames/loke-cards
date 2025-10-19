@@ -116,6 +116,8 @@ static std::string escape_c_string(const std::string &s) {
     return out;
 }
 
+#if 0
+#if 0
 static std::string generate_scene_code_from_json(const std::string &sceneId, const std::string &chapterId, const std::string &json) {
     using namespace mini_json;
     Value root = parse(json);
@@ -188,6 +190,8 @@ static std::string generate_scene_code_from_json(const std::string &sceneId, con
     oss << "}\n";
     return oss.str();
 }
+#endif
+#endif
 
 // use generate_chapter_header_basic from codegen
 

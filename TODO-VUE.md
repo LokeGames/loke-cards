@@ -470,6 +470,8 @@ New git branch for dev.
 - [x] App Header breadcrumbs (from route meta)
 - [x] Active nav highlight in sidebar
 - [x] Editor banners dismissible; focus first invalid field; Reset/Cancel UX
+- [x] Replace window.confirm with accessible modal for Deletes
+- [x] Persist code preview mode (Local/Server)
 
 ### Next up
 - [x] Integrate proper JSON library (vendored header-only `server/include/mini_json.hpp`)

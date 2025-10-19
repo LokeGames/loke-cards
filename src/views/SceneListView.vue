@@ -35,16 +35,22 @@
       </ul>
     </div>
   </div>
+  <AppModal :open="confirmOpen" title="Delete Scene" @close="confirmOpen=false; pendingDeleteId=''" @confirm="confirmDelete">
+    Are you sure you want to delete <code class="font-mono">{{ pendingDeleteId }}</code>? This cannot be undone.
+  </AppModal>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllScenes as getAllScenesLocal } from '../lib/storage.js';
+import AppModal from '../components/AppModal.vue';
 
 const scenes = ref([]);
 const loading = ref(true);
 const error = ref('');
+const confirmOpen = ref(false);
+const pendingDeleteId = ref('');
 
 onMounted(async () => {
   try {
@@ -65,15 +71,21 @@ onMounted(async () => {
 
 async function deleteScene(id) {
   if (!id) return;
-  const confirmDelete = window.confirm(`Delete scene "${id}"? This cannot be undone.`);
-  if (!confirmDelete) return;
+  pendingDeleteId.value = id;
+  confirmOpen.value = true;
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId.value) return;
   try {
-    await api.scenes.delete(id);
-    // Refresh list
+    await api.scenes.delete(pendingDeleteId.value);
     const data = await api.scenes.getAll();
     scenes.value = Array.isArray(data) ? data : [];
   } catch (e) {
     error.value = `Failed to delete scene: ${e.message}`;
+  } finally {
+    confirmOpen.value = false;
+    pendingDeleteId.value = '';
   }
 }
 </script>

@@ -40,6 +40,8 @@
           :choices="sceneData.choices"
           @update:choices="sceneData.choices = $event"
           :errors="validation.errors.value.choices"
+          :allScenes="allScenes"
+          :currentChapterId="sceneData.chapterId"
         />
 
         <!-- State Changes List -->
@@ -167,7 +169,8 @@ const saveStatus = ref(null);
 const initialSnapshot = ref('');
 const serverCodeStatus = ref(null);
 const serverCode = ref('');
-const codeViewMode = ref('local'); // 'local' | 'server'
+const codeViewMode = ref(localStorage.getItem('codeViewMode') || 'local'); // 'local' | 'server'
+const allScenes = ref([]);
 
 // Composables
 const codeGenerator = useCodeGenerator();
@@ -181,6 +184,10 @@ const generatedCode = computed(() => {
 const displayedCode = computed(() => {
   if (codeViewMode.value === 'server' && serverCode.value) return serverCode.value;
   return generatedCode.value;
+});
+
+watch(codeViewMode, (val) => {
+  try { localStorage.setItem('codeViewMode', val); } catch {}
 });
 
 // Enable realtime validation (fixes sticky error state until blur)
@@ -349,6 +356,19 @@ onMounted(async () => {
     } catch (e2) {
       console.error('Failed to load chapters:', error);
     }
+  }
+
+  // Load scenes for choices suggestions
+  try {
+    const scenesData = await api.scenes.getAll();
+    if (scenesData && Array.isArray(scenesData)) {
+      allScenes.value = scenesData.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
+    }
+  } catch (e) {
+    try {
+      const localScenes = await getAllScenesLocal();
+      allScenes.value = localScenes.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapter || s.chapterId }));
+    } catch {}
   }
 
   // Preselect chapter from query string if provided

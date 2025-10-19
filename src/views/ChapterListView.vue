@@ -40,16 +40,22 @@
     </div>
   </div>
   
+  <AppModal :open="confirmOpen" title="Delete Chapter" @close="confirmOpen=false; pendingDeleteId=''" @confirm="confirmDelete">
+    Are you sure you want to delete <code class="font-mono">{{ pendingDeleteId }}</code>? This cannot be undone.
+  </AppModal>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal } from '../lib/storage.js';
+import AppModal from '../components/AppModal.vue';
 
 const chapters = ref([]);
 const loading = ref(true);
 const error = ref('');
+const confirmOpen = ref(false);
+const pendingDeleteId = ref('');
 
 onMounted(async () => {
   try {
@@ -69,14 +75,21 @@ onMounted(async () => {
 
 async function deleteChapter(id) {
   if (!id) return;
-  const confirmDelete = window.confirm(`Delete chapter "${id}"? This cannot be undone.`);
-  if (!confirmDelete) return;
+  pendingDeleteId.value = id;
+  confirmOpen.value = true;
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId.value) return;
   try {
-    await api.chapters.delete(id);
+    await api.chapters.delete(pendingDeleteId.value);
     const data = await api.chapters.getAll();
     chapters.value = Array.isArray(data) ? data : [];
   } catch (e) {
     error.value = `Failed to delete chapter: ${e.message}`;
+  } finally {
+    confirmOpen.value = false;
+    pendingDeleteId.value = '';
   }
 }
 </script>
