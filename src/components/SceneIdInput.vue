@@ -5,6 +5,7 @@
       <span class="text-red-500">*</span>
     </label>
     <input
+      id="scene-id"
       :value="modelValue"
       @input="handleInput"
       @blur="handleBlur"

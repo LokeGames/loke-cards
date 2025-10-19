@@ -31,6 +31,8 @@
           </div>
           <div class="flex items-center gap-2">
             <RouterLink :to="{ name: 'NewScene', query: { chapter: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
+            <RouterLink :to="{ name: 'EditChapter', params: { id: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <button @click="deleteChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
         <li v-if="chapters.length === 0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No chapters yet. Create one to get started.</li>
@@ -38,16 +40,22 @@
     </div>
   </div>
   
+  <AppModal :open="confirmOpen" title="Delete Chapter" @close="confirmOpen=false; pendingDeleteId=''" @confirm="confirmDelete">
+    Are you sure you want to delete <code class="font-mono">{{ pendingDeleteId }}</code>? This cannot be undone.
+  </AppModal>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal } from '../lib/storage.js';
+import AppModal from '../components/AppModal.vue';
 
 const chapters = ref([]);
 const loading = ref(true);
 const error = ref('');
+const confirmOpen = ref(false);
+const pendingDeleteId = ref('');
 
 onMounted(async () => {
   try {
@@ -64,6 +72,26 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+async function deleteChapter(id) {
+  if (!id) return;
+  pendingDeleteId.value = id;
+  confirmOpen.value = true;
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId.value) return;
+  try {
+    await api.chapters.delete(pendingDeleteId.value);
+    const data = await api.chapters.getAll();
+    chapters.value = Array.isArray(data) ? data : [];
+  } catch (e) {
+    error.value = `Failed to delete chapter: ${e.message}`;
+  } finally {
+    confirmOpen.value = false;
+    pendingDeleteId.value = '';
+  }
+}
 </script>
 
 <style scoped>

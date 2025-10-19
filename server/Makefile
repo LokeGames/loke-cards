@@ -1,11 +1,12 @@
 CXX ?= clang++
-CXXFLAGS ?= -I. -std=c++17 -pthread -O0 -g -Wall -Wextra
+CXXFLAGS ?= -I. -Iinclude -std=c++17 -pthread -O0 -g -Wall -Wextra
 LDFLAGS = -lsqlite3
 
 all: server
 
-server: main.cpp
-	$(CXX) $(CXXFLAGS) -o server main.cpp $(LDFLAGS)
+SRC := main.cpp src/codegen.cpp
+server: $(SRC)
+	$(CXX) $(CXXFLAGS) -o server $(SRC) $(LDFLAGS)
 
 # ===== Loke Engine integration (compile generated scenes) =====
 # Set LOKE_ENGINE_INC to the include directory that contains loke/scene.h

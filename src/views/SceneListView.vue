@@ -28,22 +28,29 @@
           </div>
           <div class="flex items-center gap-2">
             <RouterLink :to="{ name: 'EditScene', params: { id: sc.sceneId || sc.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <button @click="deleteScene(sc.sceneId || sc.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
         <li v-if="scenes.length === 0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No scenes yet. Create one to get started.</li>
       </ul>
     </div>
   </div>
+  <AppModal :open="confirmOpen" title="Delete Scene" @close="confirmOpen=false; pendingDeleteId=''" @confirm="confirmDelete">
+    Are you sure you want to delete <code class="font-mono">{{ pendingDeleteId }}</code>? This cannot be undone.
+  </AppModal>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllScenes as getAllScenesLocal } from '../lib/storage.js';
+import AppModal from '../components/AppModal.vue';
 
 const scenes = ref([]);
 const loading = ref(true);
 const error = ref('');
+const confirmOpen = ref(false);
+const pendingDeleteId = ref('');
 
 onMounted(async () => {
   try {
@@ -61,6 +68,26 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+async function deleteScene(id) {
+  if (!id) return;
+  pendingDeleteId.value = id;
+  confirmOpen.value = true;
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId.value) return;
+  try {
+    await api.scenes.delete(pendingDeleteId.value);
+    const data = await api.scenes.getAll();
+    scenes.value = Array.isArray(data) ? data : [];
+  } catch (e) {
+    error.value = `Failed to delete scene: ${e.message}`;
+  } finally {
+    confirmOpen.value = false;
+    pendingDeleteId.value = '';
+  }
+}
 </script>
 
 <style scoped>

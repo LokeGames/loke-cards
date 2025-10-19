@@ -22,6 +22,9 @@ npm run dev:kill-ports
 # Hot reload the backend (auto rebuild+restart on changes) + Vite
 npm run dev:full:watch
 
+# Use external/real backend (only Vite; no stub backend)
+VITE_DEV_PORT=8081 npm run dev:real
+
 # Build for production
 npm run build
 
@@ -163,6 +166,10 @@ Loke Cards connects to a loke-engine server with REST API:
 VITE_APP_URL=https://loke.tail2d448.ts.net/cards  # Production URL (fixed)
 VITE_LOKE_ENGINE_API=https://loke.tail2d448.ts.net:3000  # Backend API URL
 VITE_PROJECT_NAME=my-adventure  # Project name (optional)
+
+# Backend CORS (dev server)
+# Allow frontend origin during development (default "*")
+# CORS_ALLOW_ORIGIN=http://127.0.0.1:8081
 ```
 
 ## Deployment
@@ -182,6 +189,19 @@ docker run -d \
 ```
 
 Each project gets its own loke-cards instance paired with its own loke-engine instance.
+
+### Systemd (optional)
+An example unit file is provided at `server/systemd/loke-cards-backend.service`.
+
+Steps (adapt paths as needed):
+1. Copy files to server: `/opt/loke-cards/`
+2. Build backend: `cd /opt/loke-cards/server && make`
+3. Install unit: `sudo cp /opt/loke-cards/server/systemd/loke-cards-backend.service /etc/systemd/system/`
+4. Reload units: `sudo systemctl daemon-reload`
+5. Enable + start: `sudo systemctl enable --now loke-cards-backend`
+6. Check logs: `journalctl -u loke-cards-backend -f`
+
+Set `CORS_ALLOW_ORIGIN` in the unit file to match your frontend origin.
 
 ## Documentation
 

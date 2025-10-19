@@ -225,4 +225,12 @@ export default {
       return apiFetch('/build/artifacts');
     },
   },
+  codegen: {
+    async sceneCode(id) {
+      return fetch(`${API_BASE_URL}/scenes/${id}/code`).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.text();
+      });
+    },
+  },
 };

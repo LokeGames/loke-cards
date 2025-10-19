@@ -40,6 +40,8 @@
           :choices="sceneData.choices"
           @update:choices="sceneData.choices = $event"
           :errors="validation.errors.value.choices"
+          :allScenes="allScenes"
+          :currentChapterId="sceneData.chapterId"
         />
 
         <!-- State Changes List -->
@@ -64,21 +66,44 @@
           >
             Cancel
           </button>
+          <button
+            @click="handleReset"
+            class="flex-1 sm:flex-initial px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors"
+          >
+            Reset
+          </button>
         </div>
 
         <!-- Save Status -->
-        <div v-if="saveStatus" class="p-4 rounded-lg" :class="{
+        <div v-if="saveStatus" class="p-4 rounded-lg flex items-start justify-between gap-3" :class="{
           'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400': saveStatus.type === 'success',
           'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400': saveStatus.type === 'error'
         }">
-          {{ saveStatus.message }}
+          <span>{{ saveStatus.message }}</span>
+          <button @click="saveStatus = null" class="text-sm opacity-70 hover:opacity-100">✕</button>
         </div>
       </div>
 
       <!-- Right Column: Code Preview (desktop) / Collapsible (mobile) -->
       <div class="lg:sticky lg:top-6 lg:self-start">
+        <!-- Code View Mode Switch -->
+        <div class="flex items-center gap-2 mb-2">
+          <button
+            class="px-2 py-1 text-xs rounded"
+            :class="codeViewMode==='local' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'"
+            @click="codeViewMode='local'"
+          >Local Code</button>
+          <button
+            class="px-2 py-1 text-xs rounded"
+            :disabled="!serverCode"
+            :class="codeViewMode==='server' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50'"
+            @click="codeViewMode='server'"
+            title="Generate on Server first"
+          >Server Code</button>
+        </div>
+
         <CodePreview
-          :code="generatedCode"
+          :code="displayedCode"
           :collapsible="true"
         />
 
@@ -87,6 +112,10 @@
           <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Quick Tips
           </h3>
+          <div class="flex items-center gap-2 mb-3">
+            <button @click="fetchServerCode" class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300">Generate on Server</button>
+            <span v-if="serverCodeStatus" class="text-xs" :class="serverCodeStatus.type==='error' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">{{ serverCodeStatus.message }}</span>
+          </div>
           <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
             <li>• Scene ID must start with "scene_" (e.g., scene_forest_entrance)</li>
             <li>• Choices are optional (0–10). None adds a default "Continue"</li>
@@ -137,6 +166,11 @@ const isEditMode = computed(() => !!route.params.id);
 // UI state
 const isSaving = ref(false);
 const saveStatus = ref(null);
+const initialSnapshot = ref('');
+const serverCodeStatus = ref(null);
+const serverCode = ref('');
+const codeViewMode = ref(localStorage.getItem('codeViewMode') || 'local'); // 'local' | 'server'
+const allScenes = ref([]);
 
 // Composables
 const codeGenerator = useCodeGenerator();
@@ -145,6 +179,22 @@ const validation = useSceneValidation(sceneData);
 // Generated code (reactive)
 const generatedCode = computed(() => {
   return codeGenerator.generateSceneCode(sceneData);
+});
+
+const displayedCode = computed(() => {
+  if (codeViewMode.value === 'server' && serverCode.value) return serverCode.value;
+  return generatedCode.value;
+});
+
+watch(codeViewMode, (val) => {
+  try { localStorage.setItem('codeViewMode', val); } catch {}
+});
+
+// Enable realtime validation (fixes sticky error state until blur)
+onMounted(() => {
+  if (validation.enableRealtimeValidation) {
+    validation.enableRealtimeValidation();
+  }
 });
 
 // Validate individual field
@@ -188,6 +238,16 @@ async function handleSave() {
       type: 'error',
       message: 'Please fix validation errors before saving'
     };
+    // Focus first invalid field
+    try {
+      if (validation.errors.value.sceneId) {
+        document.getElementById('scene-id')?.focus();
+      } else if (validation.errors.value.chapterId) {
+        document.getElementById('chapter-select')?.focus();
+      } else if (validation.errors.value.sceneText) {
+        document.getElementById('scene-text')?.focus();
+      }
+    } catch {}
     return;
   }
 
@@ -248,9 +308,37 @@ async function handleSave() {
   }
 }
 
+// Clear global error banner when user edits again
+watch(
+  () => ({
+    sceneId: sceneData.sceneId,
+    chapterId: sceneData.chapterId,
+    sceneText: sceneData.sceneText,
+    choices: sceneData.choices,
+    stateChanges: sceneData.stateChanges,
+  }),
+  () => {
+    if (saveStatus.value && saveStatus.value.type === 'error') {
+      saveStatus.value = null;
+    }
+  },
+  { deep: true }
+);
+
 // Handle cancel
 function handleCancel() {
+  if (isDirty.value) {
+    const ok = window.confirm('Discard changes and leave?');
+    if (!ok) return;
+  }
   router.push('/scenes');
+}
+
+// Reset form to initial snapshot
+function handleReset() {
+  if (!initialSnapshot.value) return;
+  const data = JSON.parse(initialSnapshot.value);
+  Object.assign(sceneData, data);
 }
 
 // Load scene data if editing and chapters from API
@@ -270,6 +358,19 @@ onMounted(async () => {
     }
   }
 
+  // Load scenes for choices suggestions
+  try {
+    const scenesData = await api.scenes.getAll();
+    if (scenesData && Array.isArray(scenesData)) {
+      allScenes.value = scenesData.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
+    }
+  } catch (e) {
+    try {
+      const localScenes = await getAllScenesLocal();
+      allScenes.value = localScenes.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapter || s.chapterId }));
+    } catch {}
+  }
+
   // Preselect chapter from query string if provided
   if (route.query.chapter) {
     sceneData.chapterId = String(route.query.chapter);
@@ -287,7 +388,42 @@ onMounted(async () => {
       };
     }
   }
+  // Capture initial snapshot after load/create
+  try {
+    initialSnapshot.value = JSON.stringify(sceneData);
+  } catch {
+    initialSnapshot.value = '';
+  }
 });
+
+// Fetch server-generated code for current scene
+async function fetchServerCode() {
+  serverCodeStatus.value = null;
+  try {
+    if (!sceneData.sceneId) {
+      serverCodeStatus.value = { type: 'error', message: 'Set Scene ID first' };
+      return;
+    }
+    // Ensure the scene exists on backend before codegen
+    try {
+      if (isEditMode.value) {
+        await api.scenes.update(route.params.id, sceneData);
+      } else {
+        await api.scenes.create(sceneData);
+      }
+    } catch (e) {
+      // ignore; codegen might still work if scene already exists
+    }
+    const code = await api.codegen.sceneCode(sceneData.sceneId);
+    if (code) {
+      serverCode.value = code;
+      codeViewMode.value = 'server';
+      serverCodeStatus.value = { type: 'success', message: 'Server code generated' };
+    }
+  } catch (e) {
+    serverCodeStatus.value = { type: 'error', message: `Server codegen failed: ${e.message}` };
+  }
+}
 </script>
 
 <style scoped>

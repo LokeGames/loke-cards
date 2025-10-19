@@ -7,5 +7,6 @@
 void scene_forrest(GameState* state);
 void scene_hills(GameState* state);
 void scene_house(GameState* state);
+void scene_path(GameState* state);
 
 #endif // CHAPTER01_H

@@ -431,18 +431,11 @@ CREATE TABLE state_changes (
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 3.2 C++ HTTP Server
-- [ ] `server/main.cpp` - Entry point
-- [ ] `server/routes.cpp` - API routes
-- [ ] `server/database.cpp` - SQLite wrapper
-- [ ] `server/models.cpp` - Data models
-- [ ] CORS headers for Tailscale
-- [ ] JSON serialization/deserialization
-- [ ] Error handling and logging
-  
-Progress (dev bootstrap):
-- [x] Basic SQLite API implemented in `server/main.cpp` (single file) for fast dev
-- [x] Basic validation for `sceneId`, `chapterId`
-- [x] Build endpoint `POST /api/build` writes `.c` files to `server/output/`
+- [x] `server/main.cpp` - Single-file dev bootstrap (entry + routes + DB)
+- [ ] Split into `server/routes.cpp`, `server/database.cpp`, `server/models.cpp` (later)
+- [x] CORS headers for Tailscale (config via `CORS_ALLOW_ORIGIN`)
+- [ ] JSON parser integration (replace naive extraction)
+- [ ] Error handling and logging improvements
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 3.3 API Endpoints
@@ -455,6 +448,8 @@ New git branch for dev.
 - [x] `GET /api/scenes` - List all scenes (basic)
 - [x] Health check endpoint
 - [x] Add `GET /api/chapters/:id`, `PUT /api/chapters/:id`, `DELETE /api/chapters/:id`
+- [x] Build endpoints: `POST /api/build` (generate .c/.h), `GET /api/build/artifacts`
+- [x] `GET /api/scenes/:id/code` - On-demand server-side codegen
 - [ ] Replace naive JSON parsing with proper parser and validation
 - [ ] Normalize schema (columns for `chapter_id`, `scene_text`, etc.)
 - [ ] Input validation + error codes
@@ -462,33 +457,47 @@ New git branch for dev.
 ### 3.4 Dev Orchestration
 - [x] One-command dev (frontend + backend): `npm run dev:full`
 - [x] Fixed Vite port with `VITE_DEV_PORT`; auto-kill conflicting ports
-- [ ] Add `dev:real` to run real DB server separately when ready
+- [x] Add `dev:real` to run real DB server separately (no backend)
 
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
+### 3.5 Frontend Management Actions
+- [x] Scenes list delete action
+- [x] Chapters list delete action
+- [x] Build UI in Settings (run + list artifacts)
+- [x] Sync local data to server (Settings)
+- [x] Edit Chapter flow (route + editor)
+- [x] Scene Editor: on-demand server codegen button
+- [x] Scene Editor: toggle between Local/Server code preview
+- [x] App Header breadcrumbs (from route meta)
+- [x] Active nav highlight in sidebar
+- [x] Editor banners dismissible; focus first invalid field; Reset/Cancel UX
+- [x] Replace window.confirm with accessible modal for Deletes
+- [x] Persist code preview mode (Local/Server)
+
+### Next up
+- [x] Integrate proper JSON library (vendored header-only `server/include/mini_json.hpp`)
+- [x] Extend server-side codegen to include choices and stateChanges
+- [ ] UI polish: edit Scene small enhancements; better error banners
+- [ ] Playwright tests for delete/sync/build flows
+- [x] Optional: `dev:real` script for external backend usage (see `npm run dev:real`)
 ### 3.4 C Code Generation - Loke-Engine Format
-- [ ] `server/codegen.cpp` - C code generator
+- [x] `server/codegen.cpp` - C code generator (module + header)
 - [ ] **Reference loke-engine documentation**:
   - Check `man loke-scene` for scene API
   - Read `~/loke-engine/include/loke/scene.h`
   - Use `gh api repos/LokeEngine/loke-engine` for latest format
 - [x] Scene function template (basic) — generated per scene during build
-- [ ] Proper string escaping
-- [ ] Include loke-engine headers
-- [ ] Generate complete .c files matching loke-engine structure
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
+- [x] Proper string escaping (basic)
+- [x] Include loke-engine headers
+- [x] Generate complete .c files matching loke-engine structure (text, state, options)
 ### 3.5 Build System
-- [ ] Makefile for C++ server
-- [ ] Auto-restart on code change (nodemon-style)
-- [ ] Systemd service (for Tailscale deployment)
-- [ ] Test compilation on Ubuntu
+- [x] Makefile for C++ server (multi-file, include/)
+- [x] Auto-restart on code change (watch scripts)
+- [x] Systemd service (example unit provided)
+- [ ] Test compilation on Ubuntu (manual)
 
 ---
 
 ## Phase 4: Browser CLI Testing with Playwright
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
 ### 4.1 Playwright Setup
 - [ ] Install Playwright
 - [ ] Install Chrome browser binary
@@ -496,9 +505,13 @@ New git branch for dev.
 - [ ] Create `/tests` directory
 
 ### 4.2 Test Scripts
-- [ ] `test-layout.spec.js` - Test responsive layout
-- [ ] `test-editor.spec.js` - Test scene editor
-- [ ] `test-api.spec.js` - Test API integration
+- [x] `build-ui.spec.js` - Build UI runs and artifacts list renders
+- [x] `server-codegen.spec.js` - On-demand server codegen and toggle
+- [x] `chapter-crud.spec.js` - Chapter create/delete via UI
+- [x] `scene-crud.spec.js` - Scene create/delete via UI
+- [ ] `test-layout.spec.js` - Responsive layout
+- [ ] `test-editor.spec.js` - Scene editor form flows
+- [ ] `test-api.spec.js` - API integration (extra flows)
 - [ ] `test-mobile.spec.js` - Mobile-specific tests
 
 ### 4.3 CLI Commands
@@ -525,8 +538,6 @@ npm run test:mobile
 ---
 
 ## Phase 5: Chapter & Scene Management (Vue)
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
 ### 5.1 Chapter Views
 - [ ] **ChapterListView.vue** - List all chapters
 - [ ] **ChapterEditor.vue** - Create/edit chapter

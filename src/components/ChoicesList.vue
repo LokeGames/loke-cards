@@ -66,9 +66,11 @@
             :value="choice.nextScene"
             @input="updateChoice(index, 'nextScene', $event.target.value)"
             type="text"
-            placeholder="scene_forest_path (or leave empty for NULL)"
+            list="scenes-datalist"
+            placeholder="Type to search... (or leave empty for NULL)"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-500">Suggestions show scene and chapter. Value is the scene function name.</p>
         </div>
 
         <!-- Enabled Checkbox -->
@@ -90,6 +92,9 @@
     <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
       {{ choices.length }}/{{ maxChoices }} choices. If none, a default "Continue" will be generated.
     </p>
+    <datalist id="scenes-datalist">
+      <option v-for="s in scenesList" :key="s.id" :value="s.id">{{ s.id }} ({{ s.chapterId || s.chapter || '—' }})</option>
+    </datalist>
   </div>
 </template>
 
@@ -104,6 +109,14 @@ const props = defineProps({
   errors: {
     type: Array,
     default: () => []
+  },
+  allScenes: {
+    type: Array,
+    default: () => []
+  },
+  currentChapterId: {
+    type: String,
+    default: ''
   },
   maxChoices: {
     type: Number,
@@ -129,12 +142,26 @@ function removeChoice(index) {
   emit('update:choices', newChoices);
 }
 
-function updateChoice(index, field, value) {
-  const newChoices = [...props.choices];
-  newChoices[index] = {
-    ...newChoices[index],
-    [field]: value
-  };
-  emit('update:choices', newChoices);
-}
+  function updateChoice(index, field, value) {
+    const newChoices = [...props.choices];
+    newChoices[index] = {
+      ...newChoices[index],
+      [field]: value
+    };
+    emit('update:choices', newChoices);
+  }
+
+  // Scenes datalist
+  const scenesList = computed(() => {
+    const all = props.allScenes || [];
+    if (!props.currentChapterId) return all;
+    const inChapter = [];
+    const others = [];
+    for (const s of all) {
+      const chap = s.chapterId || s.chapter || '';
+      if (chap === props.currentChapterId) inChapter.push(s);
+      else others.push(s);
+    }
+    return [...inChapter, ...others];
+  });
 </script>

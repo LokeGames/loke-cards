@@ -43,6 +43,13 @@ const routes = [
     meta: { title: 'New Chapter' }
   },
   {
+    path: '/chapter/:id',
+    name: 'EditChapter',
+    component: () => import('../views/ChapterEditorView.vue'),
+    props: true,
+    meta: { title: 'Edit Chapter' }
+  },
+  {
     path: '/code',
     name: 'Code',
     component: () => import('../views/CodeView.vue'),
