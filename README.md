@@ -10,8 +10,17 @@ Loke Cards provides simple form-based "cards" for writing scenes and chapters di
 # Install dependencies
 npm install
 
-# Run development server
-npm run dev
+# Run frontend dev server (fixed port)
+VITE_DEV_PORT=8081 npm run dev
+
+# Run frontend + C++ backend together (port 8081 + 3000)
+npm run dev:full
+
+# If a previous dev instance was running on the same ports, kill them
+npm run dev:kill-ports
+
+# Hot reload the backend (auto rebuild+restart on changes) + Vite
+npm run dev:full:watch
 
 # Build for production
 npm run build
@@ -24,7 +33,7 @@ npm run preview
 
 **https://loke.tail2d448.ts.net:8443/** (Installed in macOS dock)
 
-The dev server runs on **http://localhost:8082**, proxied through Tailscale serve on port 8443.
+Default dev server: **http://127.0.0.1:8081** (set via `VITE_DEV_PORT`).
 
 ## Project Structure
 
@@ -95,6 +104,11 @@ This project follows **TDD (Test-Driven Development)**:
   - Commit and push frequently
   - Before release: merge to main with full documentation
 
+### Testing locally
+- Ensure the dev server is running on the same port as Playwright’s baseURL.
+- Override the test base URL with: `PW_BASE_URL=http://127.0.0.1:8081 npm test`.
+- Or let Playwright start the server: `PW_WEB_SERVER=1 PW_BASE_URL=http://127.0.0.1:8081 npm test`.
+
 ## Loke Engine Integration
 
 Loke Cards generates C code that interfaces with the loke-engine scene API:
@@ -112,6 +126,23 @@ void scene_forest_entrance(GameState* state) {
 ```
 
 See **LOKE-FORMAT-REFERENCE.md** for complete format documentation.
+
+### Compile generated C locally (optional)
+The dev backend can export generated scenes as `.c` files to `server/output/` via:
+
+```bash
+curl -X POST http://127.0.0.1:3000/api/build
+```
+
+To compile these `.c` files (only to object files), point `LOKE_ENGINE_INC` to your Loke Engine headers and run:
+
+```bash
+cd server
+export LOKE_ENGINE_INC=/opt/homebrew/include   # path containing loke/scene.h
+make build-scenes
+```
+
+Objects are created in `server/build/`. This validates includes; linking a full binary requires the actual Loke Engine libs and is out of scope for the dev server.
 
 ## API Endpoints (Server Side)
 

@@ -8,6 +8,15 @@ This document provides context for the Gemini Code Assistant to understand and e
 
 The core purpose of this application is to abstract away the complexities of writing C code by providing a user-friendly "card" interface for scenes and chapters. It generates C code compliant with the `loke-engine` API, as detailed in `LOKE-FORMAT-REFERENCE.md`.
 
+### UI/UX Design Principles (from `doc/vue-layout.md`)
+
+-   **Full screen**: Always occupy `100vw × 100vh`. No `max-w` containers.
+-   **App shell**: Stable frame (header + sidebar) with scroll **inside content**, not on the page.
+-   **Responsive app, not responsive page**: Layout adapts, but content does **not** narrow to a centered column.
+-   **Themeable**: Tailwind `dark` variant with user toggle + `localStorage` persistence.
+-   **Keyboard-friendly**: Skip links, focus rings, ARIA landmarks.
+-   **Panel-first**: Editor/Inspector/Preview panels as flexible/resizable regions.
+
 ## Technology Stack
 
 - **Build Tool:** Vite
@@ -15,6 +24,7 @@ The core purpose of this application is to abstract away the complexities of wri
 - **Styling:** Tailwind CSS
 - **Offline Storage:** `localforage` (IndexedDB/localStorage wrapper)
 - **PWA:** `vite-plugin-pwa` with Workbox for service worker management.
+- **Testing:** Test-Driven Development (TDD) with Playwright for automated browser checks and layout picture generation.
 
 ## Building and Running the Project
 

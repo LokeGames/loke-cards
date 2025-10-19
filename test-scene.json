@@ -1,0 +1,18 @@
+{
+  "scene_id": "forest_entrance",
+  "chapter": "chapter01",
+  "scene_text": "You stand at the entrance to a dark forest.\\nA narrow path leads deeper into the trees.\\n",
+  "choices": [
+    {
+      "text": "Enter the forest",
+      "next_scene": "scene_forest_path",
+      "enabled": true
+    },
+    {
+      "text": "Return to village",
+      "next_scene": "scene_village",
+      "enabled": true
+    }
+  ],
+  "state_changes": []
+}

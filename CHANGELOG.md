@@ -7,6 +7,193 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 3 - Dev Backend Integration - 2025-10-19
+
+### Added
+- SQLite-backed dev API for local testing (`server/main.cpp`)
+  - Tables: `chapters(id,data)`, `scenes(id,data)` in `server/dev.db`
+  - Endpoints: `GET /api/health`, `GET/POST/PUT/DELETE /api/chapters`, `GET/POST/PUT/DELETE /api/scenes`, `GET /api/scenes/:id`, `GET /api/chapters/:id`
+- Build endpoint: `POST /api/build` writes generated `.c` files to `server/output/`
+- Build endpoint now also writes chapter headers (`<chapter>.h`) with forward declarations
+- Build artifacts endpoint: `GET /api/build/artifacts` lists generated `.c` and `.h` files
+- Frontend Settings build UI (`src/views/SettingsView.vue`)
+  - "Build All Scenes" button (triggers `/api/build`)
+  - Artifact list fetched from `/api/build/artifacts`
+- API client additions: `api.build.run()`, `api.build.artifacts()`
+- Dev orchestration scripts
+  - `scripts/dev-full.sh` (frontend + backend), `scripts/dev-full-watch.sh` (hot reload backend), `scripts/dev-backend-watch.sh` (watch/restart)
+  - npm scripts: `dev:full`, `dev:full:watch`, `dev:backend`, `dev:kill-ports`
+- Chapter Editor implemented (`src/views/ChapterEditorView.vue`) with validation and API/local fallback
+- Chapters list view (`src/views/ChapterListView.vue`)
+- Dashboard Quick Actions and Recent Chapters (`src/views/DashboardView.vue`)
+- Tests: `tests/quick-actions.spec.js`, `tests/chapter-list.spec.js`
+- Contributor guide: `AGENTS.md`
+
+### Changed
+- Choices are optional (0–10); codegen adds default "Continue" when none
+- SceneEditorView: API save falls back to LocalForage; inline “Create New Chapter” calls API with local fallback
+- Vite dev server locked to fixed port via `VITE_DEV_PORT` + `strictPort: true`
+- Playwright config accepts `PW_BASE_URL` and optional `PW_WEB_SERVER`
+- README and TODO-VUE updated to reflect dev flow and Phase 3
+- Removed Vue compiler macro import warnings (defineProps/defineEmits) in components
+
+### Fixed
+- Sidebar Dashboard route: `"/"` target and redirect from `/dashboard`
+
+### Phase 2 - Scene Editor (Fully Functional) - 2025-10-17
+
+### Added
+- **Complete Scene Editor** (`SceneEditorView.vue`)
+  - Responsive 2-column layout (desktop: form + code preview side-by-side)
+  - Single column on mobile with collapsible preview
+  - Create mode and Edit mode support (route param detection)
+  - Real-time C code generation with live preview
+  - Integration with C++ backend API
+  - Save/Update/Load functionality
+
+- **Form Components** (all fully responsive)
+  - `SceneIdInput.vue` - Scene ID input with C identifier validation
+    - Must start with "scene_" prefix
+    - Real-time validation with error messages
+    - Max 64 character length
+  - `ChapterSelect.vue` - Chapter dropdown selector
+    - Loads chapters from API on mount
+    - Inline chapter creation with "Create New Chapter" option
+    - Emits create-chapter event
+  - `SceneTextEditor.vue` - Scene text editor
+    - Auto-growing textarea
+    - Character counter (2048 character limit)
+    - Touch-optimized for mobile
+  - `ChoicesList.vue` - Dynamic choices list
+    - Add/remove choices (min 1, max 10)
+    - Each choice has: text, nextScene, enabled flag
+    - Visual cards with remove buttons
+    - Proper empty state messaging
+  - `StateChangesList.vue` - Dynamic state modifications
+    - Add/remove state changes (optional)
+    - Variable autocomplete with datalist (health, gold, karma, etc.)
+    - Operator select (=, +=, -=, *=, /=)
+    - Value autocomplete with common values
+    - Live preview: `state->variable operator value;`
+  - `CodePreview.vue` - C code preview component
+    - Collapsible section (default expanded on desktop)
+    - Copy to clipboard with success feedback
+    - Monospace font for proper code display
+    - Sticky positioning on desktop
+
+- **Composables** (reusable logic)
+  - `useCodeGenerator.js` - Loke-engine C code generator
+    - `generateSceneCode()` - Generates complete C scene function
+    - Proper C string escaping (quotes, newlines, backslashes, tabs)
+    - Multi-line text splitting (80 char max per line)
+    - Follows LOKE-FORMAT-REFERENCE.md spec
+    - Includes proper headers (#include <loke/scene.h>)
+    - State changes execute before scene text
+    - Generates loke-engine compatible function signatures
+  - `useSceneValidation.js` - Form validation
+    - `validateSceneId()` - C identifier + "scene_" prefix check
+    - `validateChapterId()` - C identifier + "chapter" prefix check
+    - `validateSceneText()` - Max 2048 characters
+    - `validateChoices()` - Min 1, max 10 choices, all fields required
+    - `validateStateChanges()` - Variable/operator/value validation
+    - Reactive errors object and isValid computed property
+    - Uses `isValidCIdentifier()` from lib/validation.js
+
+- **API Client** (`src/api/client.js`)
+  - Fetch-based HTTP client with error handling
+  - Configurable base URL via `VITE_API_BASE_URL` env variable
+  - Default fallback: `http://localhost:3000/api`
+  - Exported APIs:
+    - `scenesAPI` - CRUD operations for scenes (getAll, getById, create, update, delete)
+    - `chaptersAPI` - CRUD operations for chapters
+    - `projectsAPI` - CRUD operations for projects
+    - `healthCheck()` - Server health status
+  - Automatic JSON parsing and error extraction
+  - Handles non-OK responses with friendly error messages
+
+### Changed
+- SceneEditorView now loads chapters from backend API instead of mock data
+- Save functionality uses real API calls (POST for create, PUT for update)
+- Edit mode loads existing scene data from API on mount
+
+### Testing
+- Hot reload verified working with all new components ✅
+- Responsive layout tested on mobile, tablet, desktop ✅
+- Dark mode support on all new components ✅
+- API integration ready for C++ backend ✅
+
+### Phase 1 - App Shell Layout - Dark Mode Fix - 2025-10-16
+
+### Fixed
+- **Dark mode text visibility on mobile and desktop**
+  - Added `dark:text-*` classes to all view components (DashboardView, SceneListView, SceneEditorView, ChapterListView)
+  - Fixed AppHeader text colors in dark mode (`dark:text-white`, `dark:text-gray-300`)
+  - Fixed AppSidebar navigation links and section headers in dark mode
+  - Fixed icon colors with group hover states (`dark:text-gray-500 group-hover:dark:text-gray-400`)
+  - Fixed loading screen in `index.html` with dark mode support
+  - Loading spinner now has `dark:border-blue-400` for better visibility
+  - "Loading Loke Cards..." text now readable with `dark:text-gray-400`
+  - Consistent color system: gray-800→gray-100 (headers), gray-600→gray-400 (body text)
+
+### Phase 1 - App Shell Layout - 2025-10-16
+
+### Added
+- **Full-screen app shell layout** (`h-screen w-screen`)
+  - App.vue converted to full viewport layout
+  - Header + Sidebar + Main content structure
+  - Only main content scrolls, not page
+  - Dark mode support (`bg-gray-50 dark:bg-gray-900`)
+
+- **Dark mode implementation**
+  - `tailwind.config.js` - Added `darkMode: 'class'`
+  - ThemeToggle.vue component with sun/moon icons
+  - localStorage persistence
+  - System preference detection
+  - Adds/removes `dark` class on `<html>` element
+
+- **AppHeader.vue** - Top navigation component
+  - Logo + "Loke Cards" title
+  - Hamburger menu button (mobile only)
+  - ThemeToggle integration
+  - StatusPill (sync status indicator)
+  - Sticky header (h-14 md:h-16)
+  - Fully responsive with Tailwind
+
+- **AppSidebar.vue** - Responsive sidebar/drawer
+  - Mobile: Slide-in drawer with backdrop overlay
+  - Desktop: Fixed sidebar (w-64, always visible)
+  - Quick actions (New Scene, New Chapter)
+  - Project info display (name, scenes count, chapters count)
+  - Navigation links (Dashboard, Scenes, Chapters, Code, Settings)
+  - Smooth Tailwind transitions
+
+- **UI Store (Pinia)** - `src/stores/ui.js`
+  - `isSidebarOpen` - Mobile drawer state
+  - `currentProject` - Current project info
+  - `stats` - Scene and chapter counts
+  - Actions: toggleSidebar, openSidebar, closeSidebar, setCurrentProject, updateStats
+
+- **Placeholder view components**
+  - CodeView.vue - Generated C code view
+  - SettingsView.vue - Settings page
+  - All other views exist from dev branch merge
+
+- **Playwright tests** - `tests/phase1-app-shell.spec.js`
+  - 6 out of 7 tests passing
+  - Tests: Header visibility, sidebar responsiveness, dark mode toggle, navigation, StatusPill
+  - Mobile viewport testing (375px width)
+
+### Changed
+- App.vue - Complete rewrite from centered layout to full-screen app shell
+- Router configuration - Added meta data for page titles and scroll behavior
+- Tailwind config - Added dark mode class strategy
+
+### Testing
+- Playwright CLI tests: 6/7 passed ✅
+- Responsive testing on mobile (375px), tablet (768px), desktop (1024px+) ✅
+- Hot reload verified working ✅
+- Dark mode toggle verified ✅
+
 ### Migration to Vue 3 - 2025-10-16
 
 ### Added
@@ -14,6 +201,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Created `/server` directory with `cpp-httplib` and `sqlite3`.
   - Basic HTTP server on port 3000 with CORS for Tailscale.
   - Makefile for compilation and Doxygen man page generation.
+  - C code generator (server/src/code_generator.cpp) - 100% loke-engine compatible
+  - File manager (server/src/file_manager.cpp) - Manages project/chapter/scene structure
+  - REST API with 8 endpoints (health, projects, chapters, scenes)
+  - Test scene generated and verified: `projects/test-adventure/chapter01/forest_entrance.c`
 - Configured ESLint and Prettier for Vue.
 - Added a basic Playwright test script.
 

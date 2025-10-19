@@ -52,9 +52,9 @@ export default defineConfig({
   ],
   server: {
     host: '127.0.0.1',
-    port: 8081,
+    port: Number(process.env.VITE_DEV_PORT || process.env.PORT || 8081),
     https: false,
-    strictPort: false,
+    strictPort: true,
     allowedHosts: [
       'loke.tail2d448.ts.net',
       'localhost',

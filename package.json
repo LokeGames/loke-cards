@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:backend": "bash -c 'cd server && make && ./server'",
+    "dev:full": "bash scripts/dev-full.sh",
+    "dev:full:watch": "bash scripts/dev-full-watch.sh",
+    "dev:kill-ports": "bash -lc 'lsof -tiTCP:${VITE_DEV_PORT:-8081} -sTCP:LISTEN | xargs -r kill -9; lsof -tiTCP:${BACKEND_PORT:-3000} -sTCP:LISTEN | xargs -r kill -9'",
     "build": "vite build",
     "preview": "vite preview",
     "test": "playwright test",
