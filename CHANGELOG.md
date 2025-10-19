@@ -16,10 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build endpoint: `POST /api/build` writes generated `.c` files to `server/output/`
 - Build endpoint now also writes chapter headers (`<chapter>.h`) with forward declarations
 - Build artifacts endpoint: `GET /api/build/artifacts` lists generated `.c` and `.h` files
+- Server-side codegen now parses basic choices/stateChanges from JSON (naive parser)
 - Frontend Settings build UI (`src/views/SettingsView.vue`)
   - "Build All Scenes" button (triggers `/api/build`)
   - Artifact list fetched from `/api/build/artifacts`
 - API client additions: `api.build.run()`, `api.build.artifacts()`
+ - Settings: Sync local data (LocalForage) to server
+ - Chapter editor supports edit mode; Chapters list adds Edit/Delete actions
+ - Scenes list adds Delete action
 - Dev orchestration scripts
   - `scripts/dev-full.sh` (frontend + backend), `scripts/dev-full-watch.sh` (hot reload backend), `scripts/dev-backend-watch.sh` (watch/restart)
   - npm scripts: `dev:full`, `dev:full:watch`, `dev:backend`, `dev:kill-ports`

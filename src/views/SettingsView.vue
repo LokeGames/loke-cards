@@ -25,17 +25,33 @@
         </ul>
       </div>
     </section>
+
+    <!-- Sync Section -->
+    <section class="p-4 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Sync Local Data</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Push locally saved chapters and scenes (LocalForage) to the backend API.</p>
+      <div class="flex items-center gap-3 mb-3">
+        <button @click="runSync" :disabled="syncing" class="px-4 py-2 rounded bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-sm font-medium">
+          {{ syncing ? 'Syncing…' : 'Sync to Server' }}
+        </button>
+        <span v-if="syncStatus" :class="syncStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'" class="text-sm">{{ syncStatus.message }}</span>
+      </div>
+      <p class="text-xs text-gray-500 dark:text-gray-500">Tip: Use this if you created data while the backend was offline.</p>
+    </section>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
+import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 
 const building = ref(false);
 const buildStatus = ref(null);
 const artifacts = ref([]);
 const artifactsLoading = ref(true);
+const syncing = ref(false);
+const syncStatus = ref(null);
 
 async function loadArtifacts() {
   artifactsLoading.value = true;
@@ -65,4 +81,52 @@ async function runBuild() {
 }
 
 onMounted(loadArtifacts);
+
+async function runSync() {
+  syncing.value = true;
+  syncStatus.value = null;
+  try {
+    // Pull local data
+    const [localChapters, localScenes] = await Promise.all([
+      getAllChaptersLocal(),
+      getAllScenesLocal(),
+    ]);
+    let pushedChapters = 0;
+    let pushedScenes = 0;
+    // Push chapters
+    for (const ch of localChapters) {
+      if (ch && ch.id) {
+        try {
+          await api.chapters.create({ id: ch.id, name: ch.name || ch.id });
+          pushedChapters++;
+        } catch (e) {
+          // ignore per-item errors, continue
+        }
+      }
+    }
+    // Push scenes
+    for (const sc of localScenes) {
+      const payload = {
+        sceneId: sc.sceneId || sc.id,
+        chapterId: sc.chapter || sc.chapterId,
+        sceneText: sc.sceneText || '',
+        choices: sc.choices || [],
+        stateChanges: sc.stateChanges || [],
+      };
+      if (payload.sceneId && payload.chapterId) {
+        try {
+          await api.scenes.create(payload);
+          pushedScenes++;
+        } catch (e) {
+          // ignore per-item errors, continue
+        }
+      }
+    }
+    syncStatus.value = { type: 'success', message: `Synced ${pushedChapters} chapters, ${pushedScenes} scenes.` };
+  } catch (e) {
+    syncStatus.value = { type: 'error', message: `Sync failed: ${e.message}` };
+  } finally {
+    syncing.value = false;
+  }
+}
 </script>

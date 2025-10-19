@@ -431,18 +431,11 @@ CREATE TABLE state_changes (
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 3.2 C++ HTTP Server
-- [ ] `server/main.cpp` - Entry point
-- [ ] `server/routes.cpp` - API routes
-- [ ] `server/database.cpp` - SQLite wrapper
-- [ ] `server/models.cpp` - Data models
-- [ ] CORS headers for Tailscale
-- [ ] JSON serialization/deserialization
-- [ ] Error handling and logging
-  
-Progress (dev bootstrap):
-- [x] Basic SQLite API implemented in `server/main.cpp` (single file) for fast dev
-- [x] Basic validation for `sceneId`, `chapterId`
-- [x] Build endpoint `POST /api/build` writes `.c` files to `server/output/`
+- [x] `server/main.cpp` - Single-file dev bootstrap (entry + routes + DB)
+- [ ] Split into `server/routes.cpp`, `server/database.cpp`, `server/models.cpp` (later)
+- [x] CORS headers for Tailscale (config via `CORS_ALLOW_ORIGIN`)
+- [ ] JSON parser integration (replace naive extraction)
+- [ ] Error handling and logging improvements
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 3.3 API Endpoints
@@ -455,6 +448,7 @@ New git branch for dev.
 - [x] `GET /api/scenes` - List all scenes (basic)
 - [x] Health check endpoint
 - [x] Add `GET /api/chapters/:id`, `PUT /api/chapters/:id`, `DELETE /api/chapters/:id`
+- [x] Build endpoints: `POST /api/build` (generate .c/.h), `GET /api/build/artifacts`
 - [ ] Replace naive JSON parsing with proper parser and validation
 - [ ] Normalize schema (columns for `chapter_id`, `scene_text`, etc.)
 - [ ] Input validation + error codes
@@ -463,6 +457,20 @@ New git branch for dev.
 - [x] One-command dev (frontend + backend): `npm run dev:full`
 - [x] Fixed Vite port with `VITE_DEV_PORT`; auto-kill conflicting ports
 - [ ] Add `dev:real` to run real DB server separately when ready
+
+### 3.5 Frontend Management Actions
+- [x] Scenes list delete action
+- [x] Chapters list delete action
+- [x] Build UI in Settings (run + list artifacts)
+- [x] Sync local data to server (Settings)
+- [x] Edit Chapter flow (route + editor)
+
+### Next up
+- [ ] Integrate proper JSON library (no network — vendor header-only if possible)
+- [ ] Extend server-side codegen to include choices and stateChanges
+- [ ] UI polish: edit Scene small enhancements; better error banners
+- [ ] Playwright tests for delete/sync/build flows
+- [ ] Optional: `dev:real` script for external backend usage
 
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.

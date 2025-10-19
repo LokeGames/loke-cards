@@ -2,7 +2,7 @@
   <div class="chapter-editor-view p-4 md:p-6 max-w-3xl mx-auto">
     <div class="mb-6">
       <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-        Create New Chapter
+        {{ isEditMode ? 'Edit Chapter' : 'Create New Chapter' }}
       </h1>
       <p class="text-gray-600 dark:text-gray-400">Define a chapter identifier and optional display name.</p>
     </div>
@@ -60,14 +60,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { reactive, ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import BaseInput from '../components/BaseInput.vue';
 import BaseButton from '../components/BaseButton.vue';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
 
 const router = useRouter();
+const route = useRoute();
 
 // Form state
 const chapter = reactive({
@@ -77,6 +78,7 @@ const chapter = reactive({
 
 const saveStatus = ref(null);
 const isSaving = ref(false);
+const isEditMode = computed(() => !!route.params.id);
 
 // Reuse chapterId validation from scene validation composable
 const dummySceneData = reactive({ sceneId: '', chapterId: '' });
@@ -98,7 +100,11 @@ async function handleSave() {
   saveStatus.value = null;
 
   try {
-    await api.chapters.create({ id: chapter.chapterId, name: chapter.name });
+    if (isEditMode.value) {
+      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name });
+    } else {
+      await api.chapters.create({ id: chapter.chapterId, name: chapter.name });
+    }
     saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" created.` };
     setTimeout(() => {
       saveStatus.value = null;
@@ -124,6 +130,20 @@ async function handleSave() {
 function handleCancel() {
   router.push('/chapters');
 }
+
+onMounted(async () => {
+  if (isEditMode.value) {
+    try {
+      const data = await api.chapters.getById(route.params.id);
+      if (data && data.id) {
+        chapter.chapterId = data.id;
+        chapter.name = data.name || '';
+      }
+    } catch (e) {
+      saveStatus.value = { type: 'error', message: `Failed to load chapter: ${e.message}` };
+    }
+  }
+});
 </script>
 
 <style scoped>

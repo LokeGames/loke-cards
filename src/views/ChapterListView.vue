@@ -31,6 +31,8 @@
           </div>
           <div class="flex items-center gap-2">
             <RouterLink :to="{ name: 'NewScene', query: { chapter: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
+            <RouterLink :to="{ name: 'EditChapter', params: { id: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <button @click="deleteChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
         <li v-if="chapters.length === 0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No chapters yet. Create one to get started.</li>
@@ -64,6 +66,19 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+async function deleteChapter(id) {
+  if (!id) return;
+  const confirmDelete = window.confirm(`Delete chapter "${id}"? This cannot be undone.`);
+  if (!confirmDelete) return;
+  try {
+    await api.chapters.delete(id);
+    const data = await api.chapters.getAll();
+    chapters.value = Array.isArray(data) ? data : [];
+  } catch (e) {
+    error.value = `Failed to delete chapter: ${e.message}`;
+  }
+}
 </script>
 
 <style scoped>

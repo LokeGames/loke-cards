@@ -147,6 +147,13 @@ const generatedCode = computed(() => {
   return codeGenerator.generateSceneCode(sceneData);
 });
 
+// Enable realtime validation (fixes sticky error state until blur)
+onMounted(() => {
+  if (validation.enableRealtimeValidation) {
+    validation.enableRealtimeValidation();
+  }
+});
+
 // Validate individual field
 function validateField(fieldName) {
   if (fieldName === 'sceneId') {
@@ -247,6 +254,23 @@ async function handleSave() {
     isSaving.value = false;
   }
 }
+
+// Clear global error banner when user edits again
+watch(
+  () => ({
+    sceneId: sceneData.sceneId,
+    chapterId: sceneData.chapterId,
+    sceneText: sceneData.sceneText,
+    choices: sceneData.choices,
+    stateChanges: sceneData.stateChanges,
+  }),
+  () => {
+    if (saveStatus.value && saveStatus.value.type === 'error') {
+      saveStatus.value = null;
+    }
+  },
+  { deep: true }
+);
 
 // Handle cancel
 function handleCancel() {

@@ -28,6 +28,7 @@
           </div>
           <div class="flex items-center gap-2">
             <RouterLink :to="{ name: 'EditScene', params: { id: sc.sceneId || sc.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <button @click="deleteScene(sc.sceneId || sc.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
         <li v-if="scenes.length === 0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No scenes yet. Create one to get started.</li>
@@ -61,6 +62,20 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+async function deleteScene(id) {
+  if (!id) return;
+  const confirmDelete = window.confirm(`Delete scene "${id}"? This cannot be undone.`);
+  if (!confirmDelete) return;
+  try {
+    await api.scenes.delete(id);
+    // Refresh list
+    const data = await api.scenes.getAll();
+    scenes.value = Array.isArray(data) ? data : [];
+  } catch (e) {
+    error.value = `Failed to delete scene: ${e.message}`;
+  }
+}
 </script>
 
 <style scoped>
