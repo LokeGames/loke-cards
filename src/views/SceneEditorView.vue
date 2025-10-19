@@ -89,7 +89,7 @@
           </h3>
           <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
             <li>• Scene ID must start with "scene_" (e.g., scene_forest_entrance)</li>
-            <li>• At least one choice is required (max 10)</li>
+            <li>• Choices are optional (0–10). None adds a default "Continue"</li>
             <li>• Use \n in scene text for newlines</li>
             <li>• State changes are optional but executed before text displays</li>
             <li>• Code is auto-generated as you type</li>
@@ -106,6 +106,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCodeGenerator } from '../composables/useCodeGenerator.js';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
+import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
 
 // Components
 import SceneIdInput from '../components/SceneIdInput.vue';
@@ -123,19 +124,12 @@ const sceneData = reactive({
   sceneId: '',
   chapterId: '',
   sceneText: '',
-  choices: [{
-    text: '',
-    nextScene: '',
-    enabled: true
-  }],
+  choices: [],
   stateChanges: []
 });
 
-// Available chapters (TODO: load from API/storage)
-const availableChapters = ref([
-  { id: 'chapter01', name: 'Chapter 1' },
-  { id: 'chapter02', name: 'Chapter 2' }
-]);
+// Available chapters (loaded from API or local storage)
+const availableChapters = ref([]);
 
 // Edit mode check
 const isEditMode = computed(() => !!route.params.id);
@@ -163,12 +157,25 @@ function validateField(fieldName) {
 }
 
 // Handle create new chapter
-function handleCreateChapter(chapterId) {
-  // Add new chapter to available chapters
-  availableChapters.value.push({
-    id: chapterId,
-    name: chapterId
-  });
+async function handleCreateChapter(chapterId) {
+  try {
+    // Persist chapter via API, then add to local list
+    await api.chapters.create({ id: chapterId, name: chapterId });
+    availableChapters.value.push({ id: chapterId, name: chapterId });
+    saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" created.` };
+    setTimeout(() => (saveStatus.value = null), 1200);
+  } catch (err) {
+    // Fallback: save locally when offline
+    try {
+      await saveChapterLocal({ id: chapterId, name: chapterId, scenes: [], order: Date.now() });
+      availableChapters.value.push({ id: chapterId, name: chapterId });
+      saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" saved locally (offline).` };
+      setTimeout(() => (saveStatus.value = null), 1600);
+    } catch (e2) {
+      console.error('Failed to create chapter:', err);
+      saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+    }
+  }
 }
 
 // Handle save
@@ -207,10 +214,35 @@ async function handleSave() {
     }, 2000);
 
   } catch (error) {
-    saveStatus.value = {
-      type: 'error',
-      message: `Failed to save scene: ${error.message}`
-    };
+    // Offline/local fallback: persist scene to LocalForage
+    try {
+      const localScene = {
+        id: sceneData.sceneId,
+        sceneId: sceneData.sceneId,
+        chapter: sceneData.chapterId,
+        sceneText: sceneData.sceneText,
+        choices: sceneData.choices,
+        stateChanges: sceneData.stateChanges,
+        generatedCode: generatedCode.value,
+        synced: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      await saveSceneLocal(localScene);
+      saveStatus.value = {
+        type: 'success',
+        message: `Scene "${sceneData.sceneId}" saved locally (offline).`
+      };
+      setTimeout(() => {
+        saveStatus.value = null;
+        router.push('/scenes');
+      }, 1600);
+    } catch (e2) {
+      saveStatus.value = {
+        type: 'error',
+        message: `Failed to save scene: ${error.message}`
+      };
+    }
   } finally {
     isSaving.value = false;
   }
@@ -230,7 +262,17 @@ onMounted(async () => {
       availableChapters.value = chaptersData;
     }
   } catch (error) {
-    console.error('Failed to load chapters:', error);
+    // Fallback to local storage when offline or backend unavailable
+    try {
+      availableChapters.value = await getAllChaptersLocal();
+    } catch (e2) {
+      console.error('Failed to load chapters:', error);
+    }
+  }
+
+  // Preselect chapter from query string if provided
+  if (route.query.chapter) {
+    sceneData.chapterId = String(route.query.chapter);
   }
 
   if (isEditMode.value) {

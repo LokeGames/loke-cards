@@ -2,8 +2,7 @@
   <div class="choices-list">
     <div class="flex items-center justify-between mb-2">
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        Choices
-        <span class="text-red-500">*</span>
+        Choices <span class="text-xs text-gray-500 dark:text-gray-500 font-normal">(optional)</span>
       </label>
       <button
         @click="addChoice"
@@ -89,7 +88,7 @@
     </div>
 
     <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
-      {{ choices.length }}/{{ maxChoices }} choices (at least 1 required)
+      {{ choices.length }}/{{ maxChoices }} choices. If none, a default "Continue" will be generated.
     </p>
   </div>
 </template>

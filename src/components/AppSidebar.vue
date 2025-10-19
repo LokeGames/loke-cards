@@ -15,7 +15,7 @@
 
         <aside class="h-full overflow-auto p-3">
           <ul class="space-y-1 text-sm">
-            <li><RouterLink to="/dashboard" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Dashboard</RouterLink></li>
+            <li><RouterLink to="/" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Dashboard</RouterLink></li>
             <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Scenes</RouterLink></li>
             <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Chapters</RouterLink></li>
             <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">C code</RouterLink></li>
@@ -60,7 +60,7 @@
   <!-- Desktop Sidebar -->
   <aside class="h-full overflow-auto p-3 bg-gray-50 dark:bg-gray-950 hidden md:block w-64 shrink-0 border-r border-gray-200 dark:border-gray-800">
     <ul class="space-y-1 text-sm">
-      <li><RouterLink to="/dashboard" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Dashboard</RouterLink></li>
+      <li><RouterLink to="/" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Dashboard</RouterLink></li>
       <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Scenes</RouterLink></li>
       <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Chapters</RouterLink></li>
       <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">C code</RouterLink></li>

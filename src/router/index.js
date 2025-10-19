@@ -8,6 +8,10 @@ const routes = [
     meta: { title: 'Dashboard' }
   },
   {
+    path: '/dashboard',
+    redirect: '/',
+  },
+  {
     path: '/scenes',
     name: 'SceneList',
     component: () => import('../views/SceneListView.vue'),

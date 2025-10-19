@@ -8,6 +8,7 @@
       :id="id"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
+      @blur="$emit('blur')"
       :class="[
         'block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
         error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',

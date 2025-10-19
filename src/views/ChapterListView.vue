@@ -1,14 +1,70 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Chapters</h1>
-    <p class="text-gray-600 dark:text-gray-400">Manage chapters and their organization.</p>
+  <div class="p-6 max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Chapters</h1>
+      <RouterLink
+        to="/chapter/new"
+        class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium"
+      >
+        New Chapter
+      </RouterLink>
+    </div>
+
+    <p class="text-gray-600 dark:text-gray-400 mb-4">Manage chapters and their organization.</p>
+
+    <div v-if="error" class="p-3 rounded border border-red-200 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
+      {{ error }}
+    </div>
+
+    <div v-else>
+      <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+        Total: {{ chapters.length }}
+      </div>
+
+      <div v-if="loading" class="text-gray-600 dark:text-gray-400">Loading chapters…</div>
+
+      <ul v-else class="divide-y divide-gray-200 dark:divide-gray-800 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <li v-for="ch in chapters" :key="ch.id" class="p-3 flex items-center justify-between">
+          <div>
+            <div class="font-medium text-gray-800 dark:text-gray-100">{{ ch.name || ch.id }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">ID: {{ ch.id }}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <RouterLink :to="{ name: 'NewScene', query: { chapter: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
+          </div>
+        </li>
+        <li v-if="chapters.length === 0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No chapters yet. Create one to get started.</li>
+      </ul>
+    </div>
   </div>
+  
 </template>
 
 <script setup>
-// Script setup for ChapterListView
+import { ref, onMounted } from 'vue';
+import api from '../api/client.js';
+import { getAllChapters as getAllChaptersLocal } from '../lib/storage.js';
+
+const chapters = ref([]);
+const loading = ref(true);
+const error = ref('');
+
+onMounted(async () => {
+  try {
+    const data = await api.chapters.getAll();
+    chapters.value = Array.isArray(data) ? data : [];
+  } catch (e) {
+    // Fallback to local storage when offline or backend unavailable
+    try {
+      chapters.value = await getAllChaptersLocal();
+    } catch (e2) {
+      error.value = `Failed to load chapters: ${e.message}`;
+    }
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <style scoped>
-/* Scoped styles for ChapterListView */
 </style>

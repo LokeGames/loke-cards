@@ -105,8 +105,18 @@ async function handleSave() {
       router.push('/chapters');
     }, 1200);
   } catch (err) {
-    saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+    try {
+      await saveChapterLocal({ id: chapter.chapterId, name: chapter.name, scenes: [], order: Date.now() });
+      saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" saved locally (offline).` };
+      setTimeout(() => {
+        saveStatus.value = null;
+        router.push('/chapters');
+      }, 1400);
+    } catch (e2) {
+      saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+    }
   } finally {
+
     isSaving.value = false;
   }
 }

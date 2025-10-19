@@ -60,15 +60,16 @@ export function useSceneValidation(sceneData) {
    * Should follow convention: chapter01 or chapter01_name
    */
   function validateChapterId(chapterId) {
-    if (!chapterId || chapterId.trim() === '') {
+    const id = (chapterId || '').trim();
+    if (!id) {
       return 'Chapter ID is required';
     }
 
-    if (!isValidCIdentifier(chapterId)) {
+    if (!isValidCIdentifier(id)) {
       return 'Chapter ID must be a valid C identifier';
     }
 
-    if (!chapterId.startsWith('chapter')) {
+    if (!id.toLowerCase().startsWith('chapter')) {
       return 'Chapter ID should start with "chapter" (e.g., chapter01)';
     }
 
@@ -121,7 +122,7 @@ export function useSceneValidation(sceneData) {
    */
   function validateChoices(choices) {
     if (!choices || choices.length === 0) {
-      return 'At least one choice is required';
+      return { general: '', choices: [] };
     }
 
     if (choices.length > 10) {
@@ -131,10 +132,7 @@ export function useSceneValidation(sceneData) {
     // Validate each individual choice
     const choiceErrors = choices.map((choice, i) => validateChoice(choice, i));
 
-    return {
-      general: '',
-      choices: choiceErrors
-    };
+    return { general: '', choices: choiceErrors };
   }
 
   /**

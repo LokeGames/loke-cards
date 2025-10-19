@@ -5,8 +5,8 @@
  * Handles all HTTP requests for scenes, chapters, and projects
  */
 
-// Base URL for API (from environment variable or default)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+// Base URL for API (from environment variable or default to relative '/api' so Vite proxy works in dev)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * Generic fetch wrapper with error handling

@@ -10,8 +10,11 @@ Loke Cards provides simple form-based "cards" for writing scenes and chapters di
 # Install dependencies
 npm install
 
-# Run development server (fixed port)
+# Run frontend dev server (fixed port)
 VITE_DEV_PORT=8081 npm run dev
+
+# Run frontend + C++ backend together (port 8081 + 3000)
+npm run dev:full
 
 # Build for production
 npm run build
