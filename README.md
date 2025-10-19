@@ -10,8 +10,8 @@ Loke Cards provides simple form-based "cards" for writing scenes and chapters di
 # Install dependencies
 npm install
 
-# Run development server
-npm run dev
+# Run development server (fixed port)
+VITE_DEV_PORT=8081 npm run dev
 
 # Build for production
 npm run build
@@ -24,7 +24,7 @@ npm run preview
 
 **https://loke.tail2d448.ts.net:8443/** (Installed in macOS dock)
 
-The dev server runs on **http://localhost:8082**, proxied through Tailscale serve on port 8443.
+Default dev server: **http://127.0.0.1:8081** (set via `VITE_DEV_PORT`).
 
 ## Project Structure
 
@@ -94,6 +94,11 @@ This project follows **TDD (Test-Driven Development)**:
   - NEVER develop in main branch
   - Commit and push frequently
   - Before release: merge to main with full documentation
+
+### Testing locally
+- Ensure the dev server is running on the same port as Playwright’s baseURL.
+- Override the test base URL with: `PW_BASE_URL=http://127.0.0.1:8081 npm test`.
+- Or let Playwright start the server: `PW_WEB_SERVER=1 PW_BASE_URL=http://127.0.0.1:8081 npm test`.
 
 ## Loke Engine Integration
 

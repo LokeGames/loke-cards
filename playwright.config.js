@@ -1,6 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-export default defineConfig({
+// Allow overriding the base URL, e.g.: PW_BASE_URL=http://127.0.0.1:8083 npm test
+const BASE_URL = process.env.PW_BASE_URL || 'http://127.0.0.1:8081';
+
+const config = defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -8,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://127.0.0.1:8081',
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
   },
 
@@ -18,10 +21,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-
-  // webServer: {
-  //   command: 'npm run dev',
-  //   url: 'http://127.0.0.1:8081',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
+
+// Optional: let Playwright start the dev server when PW_WEB_SERVER=1
+if (process.env.PW_WEB_SERVER) {
+  config.webServer = {
+    command: 'npm run dev',
+    url: BASE_URL,
+    reuseExistingServer: !process.env.CI,
+  };
+}
+
+export default config;
