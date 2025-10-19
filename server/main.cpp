@@ -4,6 +4,7 @@
 #include <string>
 #include <mutex>
 #include <sstream>
+#include <iomanip>
 #include <cctype>
 #include <fstream>
 #include <sys/stat.h>
@@ -13,6 +14,8 @@
 #include <set>
 #include <sqlite3.h>
 #include "httplib.h"
+#include "include/mini_json.hpp"
+#include "include/codegen.hpp"
 
 static std::mutex db_mutex;
 static sqlite3* db = nullptr;
@@ -113,122 +116,46 @@ static std::string escape_c_string(const std::string &s) {
     return out;
 }
 
-// --- Minimal JSON helpers (naive) ---
-static std::string get_string_in(const std::string &obj, const std::string &key) {
-    std::string pat = "\"" + key + "\"";
-    size_t p = obj.find(pat);
-    if (p == std::string::npos) return "";
-    p = obj.find(':', p);
-    if (p == std::string::npos) return "";
-    // skip spaces
-    while (p < obj.size() && (obj[p] == ':' || obj[p] == ' ')) p++;
-    if (p >= obj.size() || obj[p] != '"') return "";
-    size_t q = obj.find('"', p + 1);
-    if (q == std::string::npos) return "";
-    return obj.substr(p + 1, q - (p + 1));
-}
-
-static bool get_bool_in(const std::string &obj, const std::string &key, bool defval = true) {
-    std::string pat = "\"" + key + "\"";
-    size_t p = obj.find(pat);
-    if (p == std::string::npos) return defval;
-    p = obj.find(':', p);
-    if (p == std::string::npos) return defval;
-    while (p < obj.size() && (obj[p] == ':' || obj[p] == ' ')) p++;
-    if (obj.compare(p, 4, "true") == 0) return true;
-    if (obj.compare(p, 5, "false") == 0) return false;
-    return defval;
-}
-
-static std::string get_raw_in(const std::string &obj, const std::string &key) {
-    std::string pat = "\"" + key + "\"";
-    size_t p = obj.find(pat);
-    if (p == std::string::npos) return "";
-    p = obj.find(':', p);
-    if (p == std::string::npos) return "";
-    p++;
-    while (p < obj.size() && (obj[p] == ' ')) p++;
-    // if string
-    if (p < obj.size() && obj[p] == '"') {
-        size_t q = obj.find('"', p + 1);
-        if (q == std::string::npos) return "";
-        return obj.substr(p + 1, q - (p + 1));
-    }
-    // else until comma or end brace
-    size_t q = p;
-    while (q < obj.size() && obj[q] != ',' && obj[q] != '}' && obj[q] != '\n') q++;
-    return obj.substr(p, q - p);
-}
-
-static std::string extract_array(const std::string &json, const std::string &key) {
-    std::string pat = "\"" + key + "\"";
-    size_t p = json.find(pat);
-    if (p == std::string::npos) return "";
-    p = json.find('[', p);
-    if (p == std::string::npos) return "";
-    int depth = 0;
-    size_t start = p;
-    for (size_t i = p; i < json.size(); ++i) {
-        if (json[i] == '[') depth++;
-        else if (json[i] == ']') {
-            depth--;
-            if (depth == 0) {
-                return json.substr(start, i - start + 1);
-            }
-        }
-    }
-    return "";
-}
-
-static std::vector<std::string> split_top_level_objects(const std::string &arrayStr) {
-    std::vector<std::string> objs;
-    int depth = 0;
-    bool in_array = false;
-    size_t cur_start = std::string::npos;
-    for (size_t i = 0; i < arrayStr.size(); ++i) {
-        char c = arrayStr[i];
-        if (!in_array) {
-            if (c == '[') in_array = true;
-            continue;
-        }
-        if (c == '{') {
-            if (depth == 0) cur_start = i;
-            depth++;
-        } else if (c == '}') {
-            depth--;
-            if (depth == 0 && cur_start != std::string::npos) {
-                objs.push_back(arrayStr.substr(cur_start, i - cur_start + 1));
-                cur_start = std::string::npos;
-            }
-        }
-    }
-    return objs;
-}
-
 static std::string generate_scene_code_from_json(const std::string &sceneId, const std::string &chapterId, const std::string &json) {
-    std::string sceneText = get_string_in(json, "sceneText");
-    // Parse choices
-    std::vector<std::tuple<std::string, std::string, bool>> choices; // text, nextScene, enabled
-    std::string choicesArr = extract_array(json, "choices");
-    if (!choicesArr.empty()) {
-        for (const auto &obj : split_top_level_objects(choicesArr)) {
-            std::string text = get_string_in(obj, "text");
-            std::string next = get_string_in(obj, "nextScene");
-            bool en = get_bool_in(obj, "enabled", true);
-            if (!text.empty()) choices.emplace_back(text, next, en);
-        }
-    }
-    // Parse state changes
+    using namespace mini_json;
+    Value root = parse(json);
+    std::string sceneText;
+    std::vector<std::tuple<std::string, std::string, bool>> choices;
     struct State { std::string var, op, val; };
     std::vector<State> states;
-    std::string statesArr = extract_array(json, "stateChanges");
-    if (!statesArr.empty()) {
-        for (const auto &obj : split_top_level_objects(statesArr)) {
-            State s;
-            s.var = get_string_in(obj, "variable");
-            s.op = get_string_in(obj, "operator");
-            s.val = get_raw_in(obj, "value");
-            if (!s.var.empty() && !s.op.empty() && !s.val.empty()) states.push_back(s);
+
+    if (root.isObject()) {
+        const Value &txt = root["sceneText"];
+        if (txt.isString()) sceneText = txt.s;
+        const Value &arrC = root["choices"];
+        if (arrC.isArray()) {
+            for (const auto &item : arrC.a) {
+                if (!item.isObject()) continue;
+                std::string text, next; bool en = true;
+                const Value &t = item.o.count("text")? item.o.at("text") : Value();
+                const Value &n = item.o.count("nextScene")? item.o.at("nextScene") : Value();
+                const Value &e = item.o.count("enabled")? item.o.at("enabled") : Value();
+                if (t.isString()) text = t.s;
+                if (n.isString()) next = n.s;
+                if (e.isBool()) en = e.b;
+                if (!text.empty()) choices.emplace_back(text, next, en);
+            }
+        }
+        const Value &arrS = root["stateChanges"];
+        if (arrS.isArray()) {
+            for (const auto &item : arrS.a) {
+                if (!item.isObject()) continue;
+                State st;
+                const Value &v = item.o.count("variable")? item.o.at("variable") : Value();
+                const Value &op = item.o.count("operator")? item.o.at("operator") : Value();
+                const Value &val = item.o.count("value")? item.o.at("value") : Value();
+                if (v.isString()) st.var = v.s;
+                if (op.isString()) st.op = op.s;
+                if (val.isBool()) st.val = val.b ? "true" : "false";
+                else if (val.isNumber()) st.val = num_to_str(val.n);
+                else if (val.isString()) st.val = val.s; // user-provided token
+                if (!st.var.empty() && !st.op.empty() && !st.val.empty()) states.push_back(st);
+            }
         }
     }
 
@@ -239,7 +166,6 @@ static std::string generate_scene_code_from_json(const std::string &sceneId, con
     }
     oss << "\nvoid " << sceneId << "(GameState* state) {\n";
     oss << "    SceneContext* ctx = get_current_context();\n";
-    // State changes first
     if (!states.empty()) {
         oss << "    // State modifications\n";
         for (const auto &st : states) {
@@ -257,32 +183,13 @@ static std::string generate_scene_code_from_json(const std::string &sceneId, con
             oss << "    scene_add_option(ctx, \"" << escape_c_string(t) << "\", " << (n.empty()? "NULL" : n) << ", " << (e?"true":"false") << ");\n";
         }
     } else {
-        // Default option if none provided
         oss << "    scene_add_option(ctx, \"Continue\", NULL, true);\n";
     }
     oss << "}\n";
     return oss.str();
 }
 
-static std::string generate_chapter_header_basic(const std::string &chapterId, const std::vector<std::string> &sceneIds) {
-    std::ostringstream oss;
-    std::string guard = chapterId;
-    for (auto &c : guard) c = std::toupper(c);
-    guard += "_H";
-    oss << "#ifndef " << guard << "\n";
-    oss << "#define " << guard << "\n\n";
-    oss << "#include <loke/scene.h>\n";
-    if (!sceneIds.empty()) {
-        oss << "\n// Forward declarations for all scenes in this chapter\n";
-        for (const auto &sid : sceneIds) {
-            oss << "void " << sid << "(GameState* state);\n";
-        }
-    } else {
-        oss << "\n// No scenes yet\n";
-    }
-    oss << "\n#endif // " << guard << "\n";
-    return oss.str();
-}
+// use generate_chapter_header_basic from codegen
 
 static bool ensure_dir(const std::string &path) {
     struct stat st;
@@ -433,6 +340,38 @@ int main(void) {
         } else {
             res.status = 404;
             res.set_content("{\"message\":\"Scene not found\"}", "application/json");
+        }
+        sqlite3_finalize(stmt);
+    });
+
+    // Generate code for a single scene (on-demand)
+    svr.Get(R"(/api/scenes/(.+)/code)", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("DB read failed", "text/plain");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        int rc = sqlite3_step(stmt);
+        if (rc == SQLITE_ROW) {
+            const unsigned char* data = sqlite3_column_text(stmt, 0);
+            std::string json = data ? reinterpret_cast<const char*>(data) : std::string();
+            std::string sceneId = json_get_string_field(json, "sceneId");
+            if (sceneId.empty()) sceneId = json_get_string_field(json, "id");
+            std::string chapterId = json_get_string_field(json, "chapterId");
+            if (sceneId.empty()) {
+                res.status = 400;
+                res.set_content("Invalid scene", "text/plain");
+            } else {
+                auto code = generate_scene_code_from_json(sceneId, chapterId, json);
+                res.set_content(code, "text/plain");
+            }
+        } else {
+            res.status = 404;
+            res.set_content("Scene not found", "text/plain");
         }
         sqlite3_finalize(stmt);
     });
@@ -600,3 +539,15 @@ int main(void) {
     std::cout << "SQLite API server is running on http://127.0.0.1:3000" << std::endl;
     svr.listen("0.0.0.0", 3000);
 }
+    auto num_to_str = [](double d) {
+        std::ostringstream os;
+        os << std::setprecision(15) << d;
+        std::string s = os.str();
+        // trim trailing zeros and possible trailing dot
+        if (s.find('.') != std::string::npos) {
+            while (!s.empty() && s.back() == '0') s.pop_back();
+            if (!s.empty() && s.back() == '.') s.pop_back();
+        }
+        if (s.empty()) s = "0";
+        return s;
+    };

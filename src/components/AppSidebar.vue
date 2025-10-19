@@ -98,5 +98,8 @@ const ui = useUiStore();
 </script>
 
 <style scoped>
-/* Add any component specific styles here */
+/* Active link styling */
+.nav-item.router-link-active {
+  @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white;
+}
 </style>

@@ -245,6 +245,26 @@ export function useSceneValidation(sceneData) {
         errors.value.sceneText = validateSceneText(newVal);
       }
     );
+
+    // Re‑validate choices when edited (add/remove/change)
+    watch(
+      () => sceneData.choices,
+      (newVal) => {
+        const v = validateChoices(newVal || []);
+        errors.value.choices = v.choices || [];
+      },
+      { deep: true }
+    );
+
+    // Re‑validate state changes when edited (add/remove/change)
+    watch(
+      () => sceneData.stateChanges,
+      (newVal) => {
+        const v = validateStateChanges(newVal || []);
+        errors.value.stateChanges = v.stateChanges || [];
+      },
+      { deep: true }
+    );
   }
 
   return {

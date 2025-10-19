@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build endpoint now also writes chapter headers (`<chapter>.h`) with forward declarations
 - Build artifacts endpoint: `GET /api/build/artifacts` lists generated `.c` and `.h` files
 - Server-side codegen now parses basic choices/stateChanges from JSON (naive parser)
+- Scene Editor: Local/Server code preview toggle; server code generated on demand
+- UI polish: Breadcrumbs in header, active nav highlight, dismissible banners, first-invalid focus, Reset/Cancel UX
 - Frontend Settings build UI (`src/views/SettingsView.vue`)
   - "Build All Scenes" button (triggers `/api/build`)
   - Artifact list fetched from `/api/build/artifacts`
@@ -27,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev orchestration scripts
   - `scripts/dev-full.sh` (frontend + backend), `scripts/dev-full-watch.sh` (hot reload backend), `scripts/dev-backend-watch.sh` (watch/restart)
   - npm scripts: `dev:full`, `dev:full:watch`, `dev:backend`, `dev:kill-ports`
+  - `dev:real` (Vite only; use external backend)
+  
+### Build System
+- Makefile compiles multi-file backend (`src/codegen.cpp`) with `-Iinclude`
+- Example systemd unit at `server/systemd/loke-cards-backend.service`
 - Chapter Editor implemented (`src/views/ChapterEditorView.vue`) with validation and API/local fallback
 - Chapters list view (`src/views/ChapterListView.vue`)
 - Dashboard Quick Actions and Recent Chapters (`src/views/DashboardView.vue`)
@@ -40,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Playwright config accepts `PW_BASE_URL` and optional `PW_WEB_SERVER`
 - README and TODO-VUE updated to reflect dev flow and Phase 3
 - Removed Vue compiler macro import warnings (defineProps/defineEmits) in components
+- Scene Editor UX: live re-validation (choices/stateChanges), Reset button, focus first invalid field, cancel confirm on unsaved changes
 
 ### Fixed
 - Sidebar Dashboard route: `"/"` target and redirect from `/dashboard`

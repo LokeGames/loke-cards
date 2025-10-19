@@ -20,7 +20,7 @@
         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Artifacts</h3>
         <div v-if="artifactsLoading" class="text-sm text-gray-600 dark:text-gray-400">Loading…</div>
         <ul v-else class="list-disc ml-5 text-sm text-gray-700 dark:text-gray-300">
-          <li v-for="name in artifacts" :key="name">{{ name }}</li>
+          <li v-for="name in artifacts" :key="name"><code class="font-mono">{{ name }}</code></li>
           <li v-if="artifacts.length === 0" class="list-none text-gray-500 dark:text-gray-500">No files yet. Run Build to generate .c files.</li>
         </ul>
       </div>

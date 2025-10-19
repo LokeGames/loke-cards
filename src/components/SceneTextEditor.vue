@@ -5,6 +5,7 @@
       <span class="text-red-500">*</span>
     </label>
     <textarea
+      id="scene-text"
       :value="modelValue"
       @input="handleInput"
       rows="6"
