@@ -217,4 +217,12 @@ export default {
   chapters: chaptersAPI,
   projects: projectsAPI,
   healthCheck,
+  build: {
+    async run() {
+      return apiFetch('/build', { method: 'POST' });
+    },
+    async artifacts() {
+      return apiFetch('/build/artifacts');
+    },
+  },
 };

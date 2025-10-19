@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 3 - Dev Backend Integration - 2025-10-19
+
+### Added
+- SQLite-backed dev API for local testing (`server/main.cpp`)
+  - Tables: `chapters(id,data)`, `scenes(id,data)` in `server/dev.db`
+  - Endpoints: `GET /api/health`, `GET/POST/PUT/DELETE /api/chapters`, `GET/POST/PUT/DELETE /api/scenes`, `GET /api/scenes/:id`, `GET /api/chapters/:id`
+- Build endpoint: `POST /api/build` writes generated `.c` files to `server/output/`
+- Build endpoint now also writes chapter headers (`<chapter>.h`) with forward declarations
+- Build artifacts endpoint: `GET /api/build/artifacts` lists generated `.c` and `.h` files
+- Frontend Settings build UI (`src/views/SettingsView.vue`)
+  - "Build All Scenes" button (triggers `/api/build`)
+  - Artifact list fetched from `/api/build/artifacts`
+- API client additions: `api.build.run()`, `api.build.artifacts()`
+- Dev orchestration scripts
+  - `scripts/dev-full.sh` (frontend + backend), `scripts/dev-full-watch.sh` (hot reload backend), `scripts/dev-backend-watch.sh` (watch/restart)
+  - npm scripts: `dev:full`, `dev:full:watch`, `dev:backend`, `dev:kill-ports`
+- Chapter Editor implemented (`src/views/ChapterEditorView.vue`) with validation and API/local fallback
+- Chapters list view (`src/views/ChapterListView.vue`)
+- Dashboard Quick Actions and Recent Chapters (`src/views/DashboardView.vue`)
+- Tests: `tests/quick-actions.spec.js`, `tests/chapter-list.spec.js`
+- Contributor guide: `AGENTS.md`
+
+### Changed
+- Choices are optional (0–10); codegen adds default "Continue" when none
+- SceneEditorView: API save falls back to LocalForage; inline “Create New Chapter” calls API with local fallback
+- Vite dev server locked to fixed port via `VITE_DEV_PORT` + `strictPort: true`
+- Playwright config accepts `PW_BASE_URL` and optional `PW_WEB_SERVER`
+- README and TODO-VUE updated to reflect dev flow and Phase 3
+- Removed Vue compiler macro import warnings (defineProps/defineEmits) in components
+
+### Fixed
+- Sidebar Dashboard route: `"/"` target and redirect from `/dashboard`
+
 ### Phase 2 - Scene Editor (Fully Functional) - 2025-10-17
 
 ### Added

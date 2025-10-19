@@ -286,9 +286,10 @@ Commits: `45888e9`, `4e7c70b`, `6ab1064`, `b4aaf17`
 - [x] **ChoicesList.vue**
   - Dynamic list (add/remove, max 10)
   - Each choice:
-    - Text input (required)
+    - Text input (required if present)
     - Next scene input (optional for NULL)
     - Enabled checkbox (default true)
+  - Choices are OPTIONAL (0–10). If none, generator adds default "Continue".
   - Responsive cards/rows
 
 - [x] **StateChangesList.vue**
@@ -325,7 +326,7 @@ New git branch for dev.
   - `validateSceneId()` - C identifier check (must start with "scene_")
   - `validateChapterId()` - C identifier check (must start with "chapter")
   - `validateSceneText()` - Max 2048 characters (loke-engine limit)
-  - `validateChoices()` - At least 1, max 10 choices (loke-engine limit)
+  - `validateChoices()` - 0–10 choices supported (default Continue if none)
   - `validateStateChanges()` - Variable/operator/value validation
   - **Validates against loke-engine GameState variables**
   - **Uses isValidCIdentifier() from lib/validation.js**
@@ -359,24 +360,29 @@ New git branch for dev.
 - [x] **GET /api/scenes** - Get all scenes (scenesAPI.getAll)
 - [x] **GET /api/chapters** - Load chapters (chaptersAPI.getAll)
 - [x] Integrated into SceneEditorView (save/load/update)
-- [ ] Test med Playwright CLI (pending)
-- [ ] Mobile network simulation (pending)
-- [ ] Can we merge git branch to main only yes if all is tested and confirmed working?
-- [ ] New git branch for dev.
-### 2.7 Responsive Testing
-- [ ] Test entire editor på mobile (375px)
-- [ ] Test på tablet (768px)
-- [ ] Test på desktop (1024px+)
-- [ ] Verify form works med touch
-- [ ] Test keyboard navigation
-- [ ] Playwright automation test
-- [ ] Document all edge cases
+- [x] Inline "Create New Chapter" now calls API; falls back to LocalForage offline
+- [x] Scene save falls back to LocalForage offline when API fails
+
+
 
 ---
 
 ## Phase 3: C++ Backend Implementation
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
+### 3.0 Dev Bootstrap — Minimal SQLite API ✅ COMPLETED (basic)
+- [x] Add SQLite-backed dev API in `server/main.cpp`
+- [x] DB file: `server/dev.db`; tables: `chapters(id TEXT, data TEXT)`, `scenes(id TEXT, data TEXT)`
+- [x] Endpoints implemented:
+  - `GET /api/health`
+  - `GET /api/chapters`, `POST /api/chapters` (upsert by `id`)
+  - `GET /api/scenes`, `GET /api/scenes/:id`, `POST /api/scenes` (upsert by `sceneId|id`), `PUT /api/scenes/:id`, `DELETE /api/scenes/:id`
+- [x] Frontend proxy to `/api` via Vite; one-command dev runner
+- [x] Dev orchestration:
+  - `npm run dev:full` (starts backend + Vite), `npm run dev:backend`, `npm run dev:kill-ports`
+
+Note: JSON persists as text in `data` column for now (quick bootstrap). Proper schema/validation planned below.
+
 ### 3.1 Database Schema (SQLite)
 ```sql
 CREATE TABLE projects (
@@ -432,19 +438,33 @@ New git branch for dev.
 - [ ] CORS headers for Tailscale
 - [ ] JSON serialization/deserialization
 - [ ] Error handling and logging
+  
+Progress (dev bootstrap):
+- [x] Basic SQLite API implemented in `server/main.cpp` (single file) for fast dev
+- [x] Basic validation for `sceneId`, `chapterId`
+- [x] Build endpoint `POST /api/build` writes `.c` files to `server/output/`
 Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 3.3 API Endpoints
-- [ ] `POST /api/scenes` - Create scene
-- [ ] `GET /api/scenes/:id` - Get scene
-- [ ] `PUT /api/scenes/:id` - Update scene
-- [ ] `DELETE /api/scenes/:id` - Delete scene
-- [ ] `GET /api/chapters` - List chapters
-- [ ] `POST /api/chapters` - Create chapter
-- [ ] `GET /api/scenes` - List all scenes
-- [ ] Health check endpoint
+- [x] `POST /api/scenes` - Create/upsert scene (basic)
+- [x] `GET /api/scenes/:id` - Get scene (basic)
+- [x] `PUT /api/scenes/:id` - Update scene (basic)
+- [x] `DELETE /api/scenes/:id` - Delete scene (basic)
+- [x] `GET /api/chapters` - List chapters (basic)
+- [x] `POST /api/chapters` - Create/upsert chapter (basic)
+- [x] `GET /api/scenes` - List all scenes (basic)
+- [x] Health check endpoint
+- [x] Add `GET /api/chapters/:id`, `PUT /api/chapters/:id`, `DELETE /api/chapters/:id`
+- [ ] Replace naive JSON parsing with proper parser and validation
+- [ ] Normalize schema (columns for `chapter_id`, `scene_text`, etc.)
+- [ ] Input validation + error codes
 
-### 3Can we merge git branch to main only yes if all is tested and confirmed working?
+### 3.4 Dev Orchestration
+- [x] One-command dev (frontend + backend): `npm run dev:full`
+- [x] Fixed Vite port with `VITE_DEV_PORT`; auto-kill conflicting ports
+- [ ] Add `dev:real` to run real DB server separately when ready
+
+Can we merge git branch to main only yes if all is tested and confirmed working?
 New git branch for dev.
 ### 3.4 C Code Generation - Loke-Engine Format
 - [ ] `server/codegen.cpp` - C code generator
@@ -452,7 +472,7 @@ New git branch for dev.
   - Check `man loke-scene` for scene API
   - Read `~/loke-engine/include/loke/scene.h`
   - Use `gh api repos/LokeEngine/loke-engine` for latest format
-- [ ] Scene function template (loke-engine compatible)
+- [x] Scene function template (basic) — generated per scene during build
 - [ ] Proper string escaping
 - [ ] Include loke-engine headers
 - [ ] Generate complete .c files matching loke-engine structure

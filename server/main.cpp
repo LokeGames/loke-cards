@@ -1,74 +1,447 @@
+// Phase 3: Minimal SQLite-backed API for local dev/testing
 #include <iostream>
 #include <vector>
 #include <string>
 #include <mutex>
+#include <sstream>
+#include <cctype>
+#include <filesystem>
+#include <fstream>
+#include <unordered_map>
+#include <set>
+#include <sqlite3.h>
 #include "httplib.h"
 
-// Very small in-memory dev stub for /api endpoints used by the frontend.
-// This is NOT a production backend, only to enable local testing with Vite.
+static std::mutex db_mutex;
+static sqlite3* db = nullptr;
 
-static std::vector<std::string> chapters;   // store raw JSON bodies (objects)
-static std::vector<std::string> scenes;     // store raw JSON bodies (objects)
-static std::mutex storage_mutex;
-
-static std::string to_json_array(const std::vector<std::string> &items) {
-    std::string out = "[";
-    for (size_t i = 0; i < items.size(); ++i) {
-        out += items[i];
-        if (i + 1 < items.size()) out += ",";
+static int open_db(const std::string &path) {
+    int rc = sqlite3_open(path.c_str(), &db);
+    if (rc != SQLITE_OK) return rc;
+    const char* ddl_chapters = "CREATE TABLE IF NOT EXISTS chapters (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
+    const char* ddl_scenes   = "CREATE TABLE IF NOT EXISTS scenes (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
+    char* errmsg = nullptr;
+    if (sqlite3_exec(db, ddl_chapters, nullptr, nullptr, &errmsg) != SQLITE_OK) {
+        std::cerr << "DB error: " << errmsg << std::endl;
+        sqlite3_free(errmsg);
     }
-    out += "]";
+    if (sqlite3_exec(db, ddl_scenes, nullptr, nullptr, &errmsg) != SQLITE_OK) {
+        std::cerr << "DB error: " << errmsg << std::endl;
+        sqlite3_free(errmsg);
+    }
+    return SQLITE_OK;
+}
+
+// Extremely naive JSON extractor for string field values: "key":"value"
+// Assumes double quotes and no escaped quotes in value.
+static std::string json_get_string_field(const std::string &json, const std::string &key) {
+    std::string pat = "\"" + key + "\"";
+    size_t p = json.find(pat);
+    if (p == std::string::npos) return "";
+    p = json.find(':', p);
+    if (p == std::string::npos) return "";
+    p = json.find('"', p);
+    if (p == std::string::npos) return "";
+    size_t q = json.find('"', p + 1);
+    if (q == std::string::npos) return "";
+    return json.substr(p + 1, q - (p + 1));
+}
+
+static std::string json_array_from_rows(sqlite3_stmt* stmt) {
+    std::ostringstream oss;
+    oss << "[";
+    bool first = true;
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const unsigned char* data = sqlite3_column_text(stmt, 0);
+        if (!first) oss << ",";
+        first = false;
+        oss << (data ? reinterpret_cast<const char*>(data) : "null");
+    }
+    oss << "]";
+    return oss.str();
+}
+
+static void upsert_row(const std::string &table, const std::string &id, const std::string &data, httplib::Response &res) {
+    if (id.empty() || data.empty()) {
+        res.status = 400;
+        res.set_content("{\"message\":\"Missing id or body\"}", "application/json");
+        return;
+    }
+    std::lock_guard<std::mutex> lock(db_mutex);
+    sqlite3_stmt* stmt = nullptr;
+    std::string sql = "INSERT INTO " + table + " (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data=excluded.data";
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        res.status = 500;
+        res.set_content("{\"message\":\"DB prepare failed\"}", "application/json");
+        return;
+    }
+    sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, data.c_str(), -1, SQLITE_TRANSIENT);
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        res.status = 500;
+        res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+        return;
+    }
+    sqlite3_finalize(stmt);
+    res.set_content(data, "application/json");
+}
+
+static bool is_valid_c_identifier(const std::string &s) {
+    if (s.empty() || !(std::isalpha(s[0]) || s[0] == '_')) return false;
+    for (char c : s) {
+        if (!(std::isalnum(c) || c == '_')) return false;
+    }
+    return true;
+}
+
+static std::string escape_c_string(const std::string &s) {
+    std::string out;
+    out.reserve(s.size() * 2);
+    for (char c : s) {
+        switch (c) {
+            case '\\': out += "\\\\"; break;
+            case '"': out += "\\\""; break;
+            case '\n': out += "\\n"; break;
+            case '\t': out += "\\t"; break;
+            case '\r': /* skip */ break;
+            default: out += c; break;
+        }
+    }
     return out;
 }
 
+static std::string generate_scene_code_basic(const std::string &sceneId, const std::string &chapterId, const std::string &sceneText) {
+    std::ostringstream oss;
+    oss << "#include <loke/scene.h>\n";
+    if (!chapterId.empty()) {
+        oss << "#include \"" << chapterId << ".h\"\n";
+    }
+    oss << "\nvoid " << sceneId << "(GameState* state) {\n";
+    oss << "    SceneContext* ctx = get_current_context();\n";
+    if (!sceneText.empty()) {
+        oss << "    scene_set_text(ctx, \"" << escape_c_string(sceneText) << "\");\n";
+    }
+    // Default option if none provided server-side
+    oss << "    scene_add_option(ctx, \"Continue\", NULL, true);\n";
+    oss << "}\n";
+    return oss.str();
+}
+
+static std::string generate_chapter_header_basic(const std::string &chapterId, const std::vector<std::string> &sceneIds) {
+    std::ostringstream oss;
+    std::string guard = chapterId;
+    for (auto &c : guard) c = std::toupper(c);
+    guard += "_H";
+    oss << "#ifndef " << guard << "\n";
+    oss << "#define " << guard << "\n\n";
+    oss << "#include <loke/scene.h>\n";
+    if (!sceneIds.empty()) {
+        oss << "\n// Forward declarations for all scenes in this chapter\n";
+        for (const auto &sid : sceneIds) {
+            oss << "void " << sid << "(GameState* state);\n";
+        }
+    } else {
+        oss << "\n// No scenes yet\n";
+    }
+    oss << "\n#endif // " << guard << "\n";
+    return oss.str();
+}
+
+static bool ensure_dir(const std::filesystem::path &p) {
+    std::error_code ec;
+    if (std::filesystem::exists(p, ec)) return true;
+    return std::filesystem::create_directories(p, ec);
+}
+
 int main(void) {
+    // Open DB file in project dir; for dev simplicity use file "dev.db" in server folder
+    if (open_db("dev.db") != SQLITE_OK) {
+        std::cerr << "Failed to open SQLite database" << std::endl;
+        return 1;
+    }
+
     httplib::Server svr;
 
-    // Simple health check
+    // Health
     svr.Get("/api/health", [](const httplib::Request &, httplib::Response &res) {
         res.set_content("{\"status\":\"ok\"}", "application/json");
     });
 
     // Chapters
+    svr.Get(R"(/api/chapters/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        int rc = sqlite3_step(stmt);
+        if (rc == SQLITE_ROW) {
+            const unsigned char* data = sqlite3_column_text(stmt, 0);
+            res.set_content(data ? reinterpret_cast<const char*>(data) : "null", "application/json");
+        } else {
+            res.status = 404;
+            res.set_content("{\"message\":\"Chapter not found\"}", "application/json");
+        }
+        sqlite3_finalize(stmt);
+    });
+
     svr.Get("/api/chapters", [](const httplib::Request &, httplib::Response &res) {
-        std::lock_guard<std::mutex> lock(storage_mutex);
-        res.set_content(to_json_array(chapters), "application/json");
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        auto json = json_array_from_rows(stmt);
+        sqlite3_finalize(stmt);
+        res.set_content(json, "application/json");
     });
 
     svr.Post("/api/chapters", [](const httplib::Request &req, httplib::Response &res) {
-        std::lock_guard<std::mutex> lock(storage_mutex);
-        // naive: assume req.body is a JSON object, store as-is
         if (req.body.empty()) {
             res.status = 400;
             res.set_content("{\"message\":\"Empty body\"}", "application/json");
             return;
         }
-        chapters.push_back(req.body);
-        res.set_content(req.body, "application/json");
+        std::string id = json_get_string_field(req.body, "id");
+        if (id.empty() || !is_valid_c_identifier(id) || id.rfind("chapter", 0) != 0) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Invalid chapter id\"}", "application/json");
+            return;
+        }
+        upsert_row("chapters", id, req.body, res);
+    });
+
+    svr.Put(R"(/api/chapters/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        if (req.body.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Empty body\"}", "application/json");
+            return;
+        }
+        upsert_row("chapters", id, req.body, res);
+    });
+
+    svr.Delete(R"(/api/chapters/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "DELETE FROM chapters WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            sqlite3_finalize(stmt);
+            res.status = 500;
+            res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+            return;
+        }
+        sqlite3_finalize(stmt);
+        res.set_content("{\"ok\":true}", "application/json");
     });
 
     // Scenes
     svr.Get("/api/scenes", [](const httplib::Request &, httplib::Response &res) {
-        std::lock_guard<std::mutex> lock(storage_mutex);
-        res.set_content(to_json_array(scenes), "application/json");
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        auto json = json_array_from_rows(stmt);
+        sqlite3_finalize(stmt);
+        res.set_content(json, "application/json");
+    });
+
+    svr.Get(R"(/api/scenes/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        int rc = sqlite3_step(stmt);
+        if (rc == SQLITE_ROW) {
+            const unsigned char* data = sqlite3_column_text(stmt, 0);
+            res.set_content(data ? reinterpret_cast<const char*>(data) : "null", "application/json");
+        } else {
+            res.status = 404;
+            res.set_content("{\"message\":\"Scene not found\"}", "application/json");
+        }
+        sqlite3_finalize(stmt);
     });
 
     svr.Post("/api/scenes", [](const httplib::Request &req, httplib::Response &res) {
-        std::lock_guard<std::mutex> lock(storage_mutex);
         if (req.body.empty()) {
             res.status = 400;
             res.set_content("{\"message\":\"Empty body\"}", "application/json");
             return;
         }
-        scenes.push_back(req.body);
-        res.set_content(req.body, "application/json");
+        // Prefer "sceneId" if present, otherwise "id"
+        std::string id = json_get_string_field(req.body, "sceneId");
+        if (id.empty()) id = json_get_string_field(req.body, "id");
+        std::string chapterId = json_get_string_field(req.body, "chapterId");
+        std::string sceneText = json_get_string_field(req.body, "sceneText");
+        if (id.empty() || !is_valid_c_identifier(id) || id.rfind("scene_", 0) != 0) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Invalid sceneId\"}", "application/json");
+            return;
+        }
+        if (chapterId.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Missing chapterId\"}", "application/json");
+            return;
+        }
+        upsert_row("scenes", id, req.body, res);
     });
 
-    // Legacy test endpoint
-    svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
-        res.set_content("Hello World!", "text/plain");
+    svr.Put(R"(/api/scenes/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        if (req.body.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Empty body\"}", "application/json");
+            return;
+        }
+        if (id.empty() || !is_valid_c_identifier(id) || id.rfind("scene_", 0) != 0) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Invalid sceneId\"}", "application/json");
+            return;
+        }
+        upsert_row("scenes", id, req.body, res);
     });
 
-    std::cout << "Dev API server is running on http://127.0.0.1:3000" << std::endl;
+    svr.Delete(R"(/api/scenes/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "DELETE FROM scenes WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            sqlite3_finalize(stmt);
+            res.status = 500;
+            res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+            return;
+        }
+        sqlite3_finalize(stmt);
+        res.set_content("{\"ok\":true}", "application/json");
+    });
+
+    // Build/export: generate .c files from scenes JSON and chapter .h headers
+    svr.Post("/api/build", [](const httplib::Request &, httplib::Response &res) {
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        // Write into the backend working directory under ./output
+        std::filesystem::path outdir = std::filesystem::path("output");
+        if (!ensure_dir(outdir)) {
+            sqlite3_finalize(stmt);
+            res.status = 500;
+            res.set_content("{\"message\":\"Failed to create output dir\"}", "application/json");
+            return;
+        }
+        size_t sceneCount = 0;
+        std::unordered_map<std::string, std::vector<std::string>> chapterScenes;
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            const unsigned char* data = sqlite3_column_text(stmt, 0);
+            if (!data) continue;
+            std::string json = reinterpret_cast<const char*>(data);
+            std::string sceneId = json_get_string_field(json, "sceneId");
+            if (sceneId.empty()) sceneId = json_get_string_field(json, "id");
+            std::string chapterId = json_get_string_field(json, "chapterId");
+            std::string sceneText = json_get_string_field(json, "sceneText");
+            if (sceneId.empty()) continue;
+            std::string code = generate_scene_code_basic(sceneId, chapterId, sceneText);
+            std::filesystem::path outfile = outdir / (sceneId + ".c");
+            std::ofstream ofs(outfile);
+            if (ofs) {
+                ofs << code;
+                ofs.close();
+                ++sceneCount;
+            }
+            if (!chapterId.empty()) {
+                chapterScenes[chapterId].push_back(sceneId);
+            }
+        }
+        sqlite3_finalize(stmt);
+
+        // Determine chapters — prefer explicit chapters table, fall back to chapterIds seen in scenes
+        std::set<std::string> chapterIds;
+        sqlite3_stmt* ch = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters ORDER BY id", -1, &ch, nullptr) == SQLITE_OK) {
+            while (sqlite3_step(ch) == SQLITE_ROW) {
+                const unsigned char* data = sqlite3_column_text(ch, 0);
+                if (!data) continue;
+                std::string json = reinterpret_cast<const char*>(data);
+                std::string cid = json_get_string_field(json, "id");
+                if (!cid.empty()) chapterIds.insert(cid);
+            }
+        }
+        if (ch) sqlite3_finalize(ch);
+        if (chapterIds.empty()) {
+            for (const auto &kv : chapterScenes) chapterIds.insert(kv.first);
+        }
+
+        size_t headerCount = 0;
+        for (const auto &cid : chapterIds) {
+            auto it = chapterScenes.find(cid);
+            const auto &scenesForChapter = (it != chapterScenes.end()) ? it->second : std::vector<std::string>{};
+            std::string header = generate_chapter_header_basic(cid, scenesForChapter);
+            std::filesystem::path hfile = outdir / (cid + ".h");
+            std::ofstream hofs(hfile);
+            if (hofs) {
+                hofs << header;
+                hofs.close();
+                ++headerCount;
+            }
+        }
+
+        std::ostringstream resp;
+        resp << "{\"ok\":true,\"scenes\":" << sceneCount << ",\"chapters\":" << headerCount << "}";
+        res.set_content(resp.str(), "application/json");
+    });
+
+    // List generated artifacts in ./output
+    svr.Get("/api/build/artifacts", [](const httplib::Request &, httplib::Response &res) {
+        std::filesystem::path outdir = std::filesystem::path("output");
+        ensure_dir(outdir);
+        std::ostringstream oss;
+        oss << "[";
+        bool first = true;
+        std::error_code ec;
+        for (auto &entry : std::filesystem::directory_iterator(outdir, ec)) {
+            if (ec) break;
+            if (!entry.is_regular_file()) continue;
+            auto p = entry.path();
+            if (p.extension() == ".c" || p.extension() == ".h") {
+                if (!first) oss << ",";
+                first = false;
+                oss << "\"" << p.filename().string() << "\"";
+            }
+        }
+        oss << "]";
+        res.set_content(oss.str(), "application/json");
+    });
+
+    std::cout << "SQLite API server is running on http://127.0.0.1:3000" << std::endl;
     svr.listen("0.0.0.0", 3000);
 }
