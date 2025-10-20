@@ -1,46 +1,9 @@
 import { defineStore } from 'pinia';
 import api from '@graph/api/client.js';
 import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, getScene as getSceneLocal, saveScene as saveSceneLocal, saveChapter as saveChapterLocal, deleteScene as deleteSceneLocal, deleteChapter as deleteChapterLocal } from '@graph/lib/storage.js';
+import { normalizeChapter as normalizeChapterShape, normalizeChapters, normalizeScene as normalizeSceneShape, normalizeScenes } from '@graph/lib/normalize.js';
 
-function normalizeChapter(ch) {
-  let src = ch;
-  if (ch && ch.data) {
-    try {
-      const parsed = typeof ch.data === 'string' ? JSON.parse(ch.data) : ch.data;
-      src = { ...parsed, id: ch.id || parsed.id };
-    } catch (_) {
-      // keep original
-    }
-  }
-  return {
-    id: src.id || src.chapterId || src.name || 'chapter',
-    title: src.name || src.title || src.id || src.chapterId || 'Chapter',
-    position: src.position || undefined,
-  };
-}
-
-function normalizeScene(sc) {
-  let src = sc;
-  if (sc && sc.data) {
-    try {
-      const parsed = typeof sc.data === 'string' ? JSON.parse(sc.data) : sc.data;
-      src = { ...parsed, id: sc.id || parsed.id };
-    } catch (_) {
-      // keep original
-    }
-  }
-  const id = src.id || src.sceneId;
-  // Skip orphan position-only records (no sceneId)
-  if (!id || id === 'undefined') return null;
-  return {
-    id,
-    chapterId: src.chapterId || src.chapter || '',
-    title: src.title || src.sceneId || id,
-    sceneText: src.sceneText || src.text || '',
-    choices: Array.isArray(src.choices) ? src.choices : [],
-    position: src.position || undefined,
-  };
-}
+// Use shared normalizers
 
 export const useGraphStore = defineStore('graph', {
   state: () => ({ chapters: [], scenes: [], loading: false }),
@@ -54,8 +17,20 @@ export const useGraphStore = defineStore('graph', {
         try { scenes = await api.scenes.getAll(); } catch (error) { console.error(error); scenes = await getAllScenesLocal(); }
         if (!Array.isArray(chapters) || chapters.length === 0) { try { chapters = await getAllChaptersLocal(); } catch (error) { console.error(error); } }
         if (!Array.isArray(scenes) || scenes.length === 0) { try { scenes = await getAllScenesLocal(); } catch (error) { console.error(error); } }
-        this.chapters = chapters.map(normalizeChapter).filter(Boolean);
-        this.scenes = scenes.map(normalizeScene).filter(Boolean);
+        this.chapters = normalizeChapters(chapters).map((c) => ({
+          id: c.id,
+          title: c.name || c.title || c.id,
+          position: c.position || undefined,
+        }));
+        this.scenes = normalizeScenes(scenes).map((s) => ({
+          id: s.sceneId, // internal id is canonical sceneId
+          sceneId: s.sceneId,
+          chapterId: s.chapterId || '',
+          title: s.title || s.sceneId,
+          sceneText: s.sceneText || '',
+          choices: Array.isArray(s.choices) ? s.choices : [],
+          position: s.position || undefined,
+        }));
       } finally { this.loading = false; }
     },
     async loadChapter() { await this.loadGlobal(); return true; },
@@ -87,8 +62,8 @@ export const useGraphStore = defineStore('graph', {
         if (!scene.choices.some((c) => c && c.nextScene === targetSceneId)) { scene.choices.push({ text: 'Continue', nextScene: targetSceneId, enabled: true }); }
         await saveSceneLocal(scene);
         const idx = this.scenes.findIndex((x) => x.id === sourceSceneId);
-        if (idx >= 0) { const normalized = normalizeScene(scene); this.scenes[idx] = { ...this.scenes[idx], choices: normalized.choices }; }
-        try { await api.scenes.update(sourceSceneId, { sceneId: scene.sceneId || scene.id, chapterId: scene.chapterId || scene.chapter, sceneText: scene.sceneText || '', choices: scene.choices || [], stateChanges: scene.stateChanges || [] }); } catch (error) { console.error(error); }
+        if (idx >= 0) { const normalized = normalizeSceneShape(scene); this.scenes[idx] = { ...this.scenes[idx], choices: normalized.choices }; }
+        try { await api.scenes.update(sourceSceneId, { sceneId: scene.sceneId, chapterId: scene.chapterId || scene.chapter, sceneText: scene.sceneText || '', choices: scene.choices || [], stateChanges: scene.stateChanges || [] }); } catch (error) { console.error(error); }
         return true;
       } catch (error) { console.error(error); return false; }
     },

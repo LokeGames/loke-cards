@@ -1,3 +1,4 @@
+import { normalizeScene, normalizeScenes, normalizeChapters } from '../lib/normalize.js';
 const ENV_BASE = import.meta.env.VITE_API_BASE_URL;
 const DEFAULT_ABSOLUTE = 'http://127.0.0.1:3000/api';
 const API_BASE_URL = ENV_BASE || '/api';
@@ -21,11 +22,48 @@ async function apiFetch(endpoint, options = {}) {
   } catch (error) { console.error(`API Error [${endpoint}]:`, error); throw error; }
 }
 
-export const scenesAPI = { async getAll() { return apiFetch('/scenes'); }, async getById(id) { return apiFetch(`/scenes/${id}`); }, async create(sceneData) { return apiFetch('/scenes', { method: 'POST', body: JSON.stringify(sceneData) }); }, async update(id, sceneData) { return apiFetch(`/scenes/${id}`, { method: 'PUT', body: JSON.stringify(sceneData) }); }, async delete(id) { return apiFetch(`/scenes/${id}`, { method: 'DELETE' }); } };
-export const chaptersAPI = { async getAll() { return apiFetch('/chapters'); }, async getById(id) { return apiFetch(`/chapters/${id}`); }, async create(chapterData) { return apiFetch('/chapters', { method: 'POST', body: JSON.stringify(chapterData) }); }, async update(id, chapterData) { return apiFetch(`/chapters/${id}`, { method: 'PUT', body: JSON.stringify(chapterData) }); }, async delete(id) { return apiFetch(`/chapters/${id}`, { method: 'DELETE' }); } };
+export const scenesAPI = {
+  async getAll() {
+    const res = await apiFetch('/scenes');
+    return normalizeScenes(res);
+  },
+  async getById(id) {
+    const res = await apiFetch(`/scenes/${id}`);
+    return normalizeScene(res);
+  },
+  async create(sceneData) {
+    const payload = {
+      ...sceneData,
+      id: sceneData.sceneId || sceneData.id,
+      chapter: sceneData.chapterId || sceneData.chapter,
+    };
+    return apiFetch('/scenes', { method: 'POST', body: JSON.stringify(payload) });
+  },
+  async update(id, sceneData) {
+    const payload = {
+      ...sceneData,
+      id: sceneData.sceneId || sceneData.id,
+      chapter: sceneData.chapterId || sceneData.chapter,
+    };
+    return apiFetch(`/scenes/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+  },
+  async delete(id) {
+    return apiFetch(`/scenes/${id}`, { method: 'DELETE' });
+  },
+};
+
+export const chaptersAPI = {
+  async getAll() {
+    const res = await apiFetch('/chapters');
+    return normalizeChapters(res);
+  },
+  async getById(id) { return apiFetch(`/chapters/${id}`); },
+  async create(chapterData) { return apiFetch('/chapters', { method: 'POST', body: JSON.stringify(chapterData) }); },
+  async update(id, chapterData) { return apiFetch(`/chapters/${id}`, { method: 'PUT', body: JSON.stringify(chapterData) }); },
+  async delete(id) { return apiFetch(`/chapters/${id}`, { method: 'DELETE' }); },
+};
 export const projectsAPI = { async getAll() { return apiFetch('/projects'); }, async getCurrent() { return apiFetch('/projects/current'); }, async getById(id) { return apiFetch(`/projects/${id}`); }, async create(projectData) { return apiFetch('/projects', { method: 'POST', body: JSON.stringify(projectData) }); }, async update(id, projectData) { return apiFetch(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(projectData) }); }, async delete(id) { return apiFetch(`/projects/${id}`, { method: 'DELETE' }); } };
 
 export async function healthCheck() { return await ensureBackend(); }
 
 export default { scenes: scenesAPI, chapters: chaptersAPI, projects: projectsAPI, healthCheck, build: { async run() { return apiFetch('/build', { method: 'POST' }); }, async artifacts() { return apiFetch('/build/artifacts'); } }, codegen: { async sceneCode(id) { return fetch(`${API_BASE_URL}/scenes/${id}/code`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); }); } } };
-

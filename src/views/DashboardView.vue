@@ -24,6 +24,7 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal } from '../lib/storage.js';
+import { normalizeScenes } from '../lib/normalize.js';
 import DashboardQuickActions from '../components/dashboard/DashboardQuickActions.vue'
 import DashboardStats from '../components/dashboard/DashboardStats.vue'
 import DashboardRecentChapters from '../components/dashboard/DashboardRecentChapters.vue'
@@ -59,28 +60,12 @@ onMounted(async () => {
   } finally {
     chaptersLoading.value = false;
   }
-  // scenes for stats (normalize server rows)
+  // scenes for stats
   try {
     const s = await api.scenes.getAll();
-    const normalize = (row) => {
-      let src = row;
-      if (row == null) return null;
-      if (typeof row === 'string') {
-        try { src = JSON.parse(row); } catch { return null; }
-      }
-      if (row && row.data) {
-        try {
-          const parsed = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
-          src = { ...parsed };
-          if (!src.id && row.id) src.id = row.id;
-        } catch {}
-      }
-      if (!src.id && src.sceneId) src.id = src.sceneId;
-      return src;
-    };
-    scenes.value = (Array.isArray(s) ? s : []).map(normalize).filter(Boolean);
+    scenes.value = Array.isArray(s) ? s : [];
   } catch (e) {
-    try { scenes.value = await getAllScenesLocal(); }
+    try { scenes.value = normalizeScenes(await getAllScenesLocal()); }
     catch { scenesError.value = `Failed to load scenes: ${e.message}`; }
   } finally {
     scenesLoading.value = false;

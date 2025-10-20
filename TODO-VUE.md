@@ -633,6 +633,21 @@ Scope: Navigation hardening, toasts, skeletons, error monitor, cleanup
 ---
 
 ## Phase 7: PWA Offline‑First + Sync (moved before Deploy)
+
+Status: IN PROGRESS (started 2025-10-20)
+Branch: `phase7-offline-sync`
+
+Scope and approach
+- Keep dependencies unchanged (no new packages); use manual SW where possible.
+- Implement 7.1 → 7.6 sequentially with Playwright coverage for each.
+- Wire into existing `StatusPill` and storage without breaking online flows.
+
+Immediate next steps
+- [ ] Register service worker in `index.html`/`src/main.js` (guarded for prod/dev).
+- [ ] Add `public/sw.js` scaffold: cache app‑shell and API fallbacks.
+- [ ] Create `src/stores/syncStore.js` skeleton with state + no‑op actions.
+- [ ] Add sync status plumbing to `StatusPill` (read from `syncStore`).
+- [ ] Add Playwright skeleton: offline context and basic navigation while offline.
 Branch: `phase7-offline-sync`
 
 Mål: Frontend kan køre helt offline (mobil), og sync’er ændringer til server SQLite when online igen. Single‑user → simple LWW (last‑write‑wins) er OK.

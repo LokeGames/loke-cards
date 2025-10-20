@@ -383,20 +383,20 @@ onMounted(async () => {
   // Load scenes for choices suggestions
   try {
     // Merge server and local scenes for suggestions
-    const scenesData = await api.scenes.getAll();
+    const scenesData = await api.scenes.getAll(); // already normalized
     const localScenes = await getAllScenesLocal().catch(() => []);
-    const normalize = (s) => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter });
     const byId = new Map();
-    (Array.isArray(scenesData) ? scenesData : []).forEach(s => byId.set(normalize(s).id, normalize(s)));
+    (Array.isArray(scenesData) ? scenesData : []).forEach(s => byId.set(s.sceneId, { id: s.sceneId, chapterId: s.chapterId }));
     (Array.isArray(localScenes) ? localScenes : []).forEach(s => {
-      const n = normalize(s);
-      if (!byId.has(n.id)) byId.set(n.id, n);
+      const id = s.sceneId || s.id;
+      const chapterId = s.chapterId || s.chapter;
+      if (id && !byId.has(id)) byId.set(id, { id, chapterId });
     });
     allScenes.value = Array.from(byId.values());
   } catch (e) {
     try {
       const localScenes = await getAllScenesLocal();
-      allScenes.value = localScenes.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapter || s.chapterId }));
+      allScenes.value = (Array.isArray(localScenes) ? localScenes : []).map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
     } catch {}
   }
 
@@ -407,8 +407,21 @@ onMounted(async () => {
 
   if (isEditMode.value) {
     try {
-      const scene = await api.scenes.getById(route.params.id);
+      const raw = await api.scenes.getById(route.params.id);
+      // Normalize possible legacy shapes from server/local storage
+      const scene = {
+        ...raw,
+        sceneId: raw.sceneId || raw.id || '',
+        id: raw.id || raw.sceneId || '',
+        chapterId: raw.chapterId || raw.chapter || '',
+        choices: Array.isArray(raw.choices) ? raw.choices : [],
+        stateChanges: Array.isArray(raw.stateChanges) ? raw.stateChanges : [],
+      };
       Object.assign(sceneData, scene);
+      // Ensure chapter option exists even if not loaded from API/local
+      if (scene.chapterId && !availableChapters.value.some(c => c.id === scene.chapterId)) {
+        availableChapters.value.push({ id: scene.chapterId, name: scene.chapterId });
+      }
     } catch (error) {
       console.error('Failed to load scene:', error);
       saveStatus.value = {

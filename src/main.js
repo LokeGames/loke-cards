@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import './styles/main.css'
 import { setupErrorMonitoring } from './plugins/error-monitor'
+import { startSyncHeartbeat } from './plugins/sync-heartbeat'
 
 // Create Vue app
 const app = createApp(App)
@@ -24,3 +25,20 @@ if (import.meta.env.DEV) {
 app.mount('#app')
 
 console.log('🚀 Loke Cards Vue 3 initialized!')
+
+// Register Service Worker in production
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => {
+        console.log('[SW] registered', reg.scope)
+      })
+      .catch((err) => {
+        console.warn('[SW] registration failed', err)
+      })
+  })
+}
+
+// Start live backend heartbeat (updates sync status)
+startSyncHeartbeat(pinia)

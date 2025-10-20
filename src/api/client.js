@@ -17,7 +17,31 @@ const ABSOLUTE_BASE_URL = (ENV_BASE && /^https?:/i.test(ENV_BASE)) ? ENV_BASE : 
 
 let backendHealthy = null; // null = unknown, true/false known
 let lastHealthCheck = 0;
-const HEALTH_TTL_MS = 4000;
+const HEALTH_TTL_MS = 2000;
+
+// Manual override to simulate offline (Phase 7 testing)
+let FORCE_OFFLINE = false;
+export function setForceOffline(v) {
+  FORCE_OFFLINE = !!v;
+}
+
+// Force a real-time health probe (ignores TTL cache)
+export async function forceHealthCheck() {
+  if (FORCE_OFFLINE) {
+    backendHealthy = false;
+    lastHealthCheck = Date.now();
+    return false;
+  }
+  try {
+    await withTimeout((signal) => fetch(`${ABSOLUTE_BASE_URL}/health`, { signal }), 900);
+    backendHealthy = true;
+  } catch (_) {
+    backendHealthy = false;
+  } finally {
+    lastHealthCheck = Date.now();
+  }
+  return backendHealthy;
+}
 
 function withTimeout(promise, ms = 800) {
   const ctl = new AbortController();
@@ -28,6 +52,11 @@ function withTimeout(promise, ms = 800) {
 }
 
 async function ensureBackend() {
+  if (FORCE_OFFLINE) {
+    backendHealthy = false;
+    lastHealthCheck = Date.now();
+    return false;
+  }
   const now = Date.now();
   if (backendHealthy !== null && now - lastHealthCheck < HEALTH_TTL_MS) return backendHealthy;
   try {
@@ -56,6 +85,10 @@ async function apiFetch(endpoint, options = {}) {
   const config = { ...defaultOptions, ...options };
 
   try {
+    // Respect forced offline
+    if (FORCE_OFFLINE) {
+      throw new Error('BACKEND_OFFLINE');
+    }
     // If using proxied relative '/api' and backend is known offline, short‑circuit to avoid Vite proxy errors
     if (API_BASE_URL.startsWith('/') && (await ensureBackend()) === false) {
       throw new Error('BACKEND_OFFLINE');
@@ -78,6 +111,9 @@ async function apiFetch(endpoint, options = {}) {
 }
 
 async function apiFetchAbs(endpoint, options = {}) {
+  if (FORCE_OFFLINE) {
+    throw new Error('BACKEND_OFFLINE');
+  }
   const url = `${ABSOLUTE_BASE_URL}${endpoint}`;
   const defaultOptions = { headers: { 'Content-Type': 'application/json' } };
   const config = { ...defaultOptions, ...options };
@@ -90,6 +126,8 @@ async function apiFetchAbs(endpoint, options = {}) {
   if (contentType.includes('application/json')) return await response.json();
   return await response.text();
 }
+
+import { normalizeScene, normalizeScenes, normalizeChapters } from '../lib/normalize.js';
 
 /**
  * Scene API endpoints
@@ -108,18 +146,21 @@ export const scenesAPI = {
       if (healthy) {
         try {
           const res = await apiFetch('/scenes');
-          if (Array.isArray(res) && res.length > 0) return res;
+          if (Array.isArray(res) && res.length > 0) return normalizeScenes(res);
           // fallback to absolute if proxy yields empty
-          return await apiFetchAbs('/scenes');
+          const abs = await apiFetchAbs('/scenes');
+          return normalizeScenes(abs);
         } catch (_) {
           // fallback absolute
-          return await apiFetchAbs('/scenes');
+          const abs = await apiFetchAbs('/scenes');
+          return normalizeScenes(abs);
         }
       }
       // unhealthy: short circuit (will be caught by callers)
     }
     // Absolute by default
-    return apiFetchAbs('/scenes');
+    const abs = await apiFetchAbs('/scenes');
+    return normalizeScenes(abs);
   },
 
   /**
@@ -130,7 +171,8 @@ export const scenesAPI = {
    * @returns {Promise<Scene>}
    */
   async getById(id) {
-    return apiFetch(`/scenes/${id}`);
+    const res = await apiFetch(`/scenes/${id}`);
+    return normalizeScene(res);
   },
 
   /**
@@ -147,9 +189,14 @@ export const scenesAPI = {
    * @returns {Promise<Scene>}
    */
   async create(sceneData) {
+    const payload = {
+      ...sceneData,
+      id: sceneData.sceneId || sceneData.id,
+      chapter: sceneData.chapterId || sceneData.chapter,
+    };
     return apiFetch('/scenes', {
       method: 'POST',
-      body: JSON.stringify(sceneData),
+      body: JSON.stringify(payload),
     });
   },
 
@@ -162,9 +209,14 @@ export const scenesAPI = {
    * @returns {Promise<Scene>}
    */
   async update(id, sceneData) {
+    const payload = {
+      ...sceneData,
+      id: sceneData.sceneId || sceneData.id,
+      chapter: sceneData.chapterId || sceneData.chapter,
+    };
     return apiFetch(`/scenes/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(sceneData),
+      body: JSON.stringify(payload),
     });
   },
 
@@ -193,7 +245,8 @@ export const chaptersAPI = {
    * @returns {Promise<Chapter[]>}
    */
   async getAll() {
-    return apiFetch('/chapters');
+    const res = await apiFetch('/chapters');
+    return normalizeChapters(res);
   },
 
   /**
@@ -327,6 +380,7 @@ export default {
   },
   codegen: {
     async sceneCode(id) {
+      if (FORCE_OFFLINE) throw new Error('BACKEND_OFFLINE');
       return fetch(`${API_BASE_URL}/scenes/${id}/code`).then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.text();

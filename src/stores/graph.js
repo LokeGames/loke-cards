@@ -7,44 +7,9 @@ import {
   saveScene as saveSceneLocal,
   saveChapter as saveChapterLocal,
 } from '../lib/storage.js';
+import { normalizeChapter, normalizeChapters, normalizeScene as normalizeSceneShape, normalizeScenes } from '../lib/normalize.js';
 
-function normalizeChapter(ch) {
-  let src = ch;
-  if (ch && ch.data) {
-    try {
-      const parsed = typeof ch.data === 'string' ? JSON.parse(ch.data) : ch.data;
-      src = { ...parsed, id: ch.id || parsed.id };
-    } catch (_) {
-      // keep original
-    }
-  }
-  return {
-    id: src.id || src.chapterId || src.name || 'chapter',
-    title: src.name || src.title || src.id || src.chapterId || 'Chapter',
-    position: src.position || undefined,
-  };
-}
-
-function normalizeScene(sc) {
-  let src = sc;
-  if (sc && sc.data) {
-    try {
-      const parsed = typeof sc.data === 'string' ? JSON.parse(sc.data) : sc.data;
-      src = { ...parsed, id: sc.id || parsed.id };
-    } catch (_) {
-      // keep original
-    }
-  }
-  const id = src.id || src.sceneId;
-  return {
-    id,
-    chapterId: src.chapterId || src.chapter || '',
-    title: src.title || src.sceneId || id,
-    sceneText: src.sceneText || src.text || '',
-    choices: Array.isArray(src.choices) ? src.choices : [],
-    position: src.position || undefined,
-  };
-}
+// Use shared normalizers from lib/normalize.js
 
 export const useGraphStore = defineStore('graph', {
   state: () => ({
@@ -79,8 +44,19 @@ export const useGraphStore = defineStore('graph', {
           try { scenes = await getAllScenesLocal(); } catch (_) {}
         }
 
-        this.chapters = chapters.map(normalizeChapter);
-        this.scenes = scenes.map(normalizeScene);
+        this.chapters = normalizeChapters(chapters).map((c) => ({
+          id: c.id,
+          title: c.name || c.title || c.id,
+          position: c.position || undefined,
+        }));
+        this.scenes = normalizeScenes(scenes).map((s) => ({
+          id: s.sceneId,
+          chapterId: s.chapterId || '',
+          title: s.title || s.sceneId,
+          sceneText: s.sceneText || '',
+          choices: Array.isArray(s.choices) ? s.choices : [],
+          position: s.position || undefined,
+        }));
       } finally {
         this.loading = false;
       }
@@ -144,13 +120,13 @@ export const useGraphStore = defineStore('graph', {
         // update local store normalized copy
         const idx = this.scenes.findIndex((x) => x.id === sourceSceneId);
         if (idx >= 0) {
-          const normalized = normalizeScene(scene);
+          const normalized = normalizeSceneShape(scene);
           this.scenes[idx] = { ...this.scenes[idx], choices: normalized.choices };
         }
         // Best-effort API update (ignore if offline)
         try {
           await api.scenes.update(sourceSceneId, {
-            sceneId: scene.sceneId || scene.id,
+            sceneId: scene.sceneId,
             chapterId: scene.chapterId || scene.chapter,
             sceneText: scene.sceneText || '',
             choices: scene.choices || [],

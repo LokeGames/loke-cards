@@ -10,6 +10,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reorder roadmap: Phase 7 → PWA Offline‑First + Sync; Phase 8 → Deployment
 - Add SYNC design doc: `doc/SYNC-DESIGN.md` (single‑user LWW, push/pull deltas)
 
+### Phase 7 - Offline‑First Bootstrap - 2025-10-20
+
+### Added
+- Sync heartbeat that live‑checks backend health every 2s and updates UI
+  - `src/plugins/sync-heartbeat.js`, wired from `src/main.js`
+- Network toggle for manual Online/Offline simulation (persists in `localStorage`)
+  - `src/components/NetworkToggle.vue`; placed next to `StatusPill`
+- Sync store with basic states: `synced`, `syncing`, `idle`, `offline`, `error`
+  - `src/stores/syncStore.js` and `StatusPill` wiring with pending count
+- Service Worker scaffold (app‑shell/runtime caching; prod/preview only)
+  - Registration in `src/main.js`; worker in `public/sw.js`
+- Playwright scaffold for offline app‑shell navigation (skipped until finalized)
+  - `tests/offline-sync.spec.js`
+
+### Changed
+- API client normalization and canonical data shape
+  - Scenes now normalized to a single shape in the app: `sceneId` (primary id), `id` mirrors `sceneId`, `chapterId` holds chapter reference
+  - `api.scenes.getAll/getById` return normalized objects; `api.chapters.getAll` normalized as well
+  - `api.scenes.create/update` accept canonical fields and add `id`/`chapter` aliases for backend compatibility
+  - Central normalizers added: `src/lib/normalize.js`
+- App consistency updates using canonical fields
+  - Editor/List/Dashboard/Graph use `sceneId` and `chapterId` exclusively in UI and logic
+  - Removed ad‑hoc normalization in views; rely on API client/utility normalizers
+  - Graph app aligned: API client and store now normalize to canonical `sceneId`/`chapterId` (internal `id` mirrors `sceneId`)
+
+### Database/API compatibility (IDs)
+- No server DB schema changes in this phase (still: `chapters(id TEXT, data TEXT)`, `scenes(id TEXT, data TEXT)`).
+- Canonical scene shape for clients (recommended):
+  - `sceneId` — primary scene identifier (string). Also set `id = sceneId` for compatibility.
+  - `chapterId` — chapter identifier (string). Optionally set `chapter = chapterId` for compatibility.
+- Backend tolerance (unchanged):
+  - Create/Update accepts `sceneId` or (fallback) `id` as key; requires a chapter (`chapterId` preferred; `chapter` accepted).
+  - Server persists request JSON verbatim in `data` column (naive parser for a few fields).
+- Guidance for external clients (e.g., loke-graph):
+  - When POST/PUT scenes: include both `sceneId` and `id` (same value); include both `chapterId` and `chapter` (same value) to be future‑proof.
+  - When GET scenes: prefer `sceneId`/`chapterId`; if absent, fallback to `id`/`chapter`.
+  - Existing datasets with `{ id, chapter }` remain valid; no migration required.
+
+### Fixed
+- Scenes losing chapter reference in lists and editor
+- Edit scene clearing Scene ID when changing chapter
+- StatusPill now reflects backend availability automatically (and shows pending count)
+ - Data backfill (dev only): Updated `server/dev.db` scenes to include `sceneId=id`, `chapterId=chapter01` and a default `sceneText` to ensure consistent editing and graph rendering.
+
 ### Phase 6 - Polish & Hardening - 2025-10-20
 
 ### Added

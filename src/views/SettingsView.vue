@@ -115,14 +115,16 @@ async function runSync() {
     }
     // Push scenes
     for (const sc of localScenes) {
+      const sceneId = sc.sceneId || sc.id;
+      const chapterId = sc.chapterId || sc.chapter;
       const payload = {
-        sceneId: sc.sceneId || sc.id,
-        chapterId: sc.chapter || sc.chapterId,
+        sceneId,
+        chapterId,
         sceneText: sc.sceneText || '',
         choices: sc.choices || [],
         stateChanges: sc.stateChanges || [],
       };
-      if (payload.sceneId && payload.chapterId) {
+      if (sceneId && chapterId) {
         try {
           await api.scenes.create(payload);
           pushedScenes++;

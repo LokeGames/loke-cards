@@ -93,7 +93,7 @@
       {{ choices.length }}/{{ maxChoices }} choices. If none, a default "Continue" will be generated.
     </p>
     <datalist id="scenes-datalist">
-      <option v-for="s in scenesList" :key="s.id" :value="s.id">{{ s.id }} ({{ s.chapterId || s.chapter || '—' }})</option>
+      <option v-for="s in scenesList" :key="s.id" :value="s.id">{{ s.id }} ({{ s.chapterId || '—' }})</option>
     </datalist>
   </div>
 </template>
@@ -167,7 +167,7 @@ function removeChoice(index) {
     const inChapter = [];
     const others = [];
     for (const s of all) {
-      const chap = s.chapterId || s.chapter || '';
+      const chap = s.chapterId || '';
       if (chap === props.currentChapterId) inChapter.push(s);
       else others.push(s);
     }

@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Background } from '@vue-flow/background';
@@ -41,15 +41,13 @@ const nodes = ref([]);
 const edges = ref([]);
 const { fitView, getNodes, getEdges, updateNode } = useVueFlow();
 
-const chapterScenes = computed(() => store.scenes.filter((s) => s.chapterId === route.params.id));
+const chapterScenes = computed(() => store.scenes.filter((s) => s.chapterId == route.params.id));
 
 async function refresh() {
   await store.loadChapter(route.params.id);
   const sceneNodes = buildSceneNodes(chapterScenes.value, false);
   nodes.value = sceneNodes;
-  const allEdges = buildEdgesFromChoices(store.scenes);
-  const sceneIds = new Set(chapterScenes.value.map((s) => `scene-${s.id}`));
-  edges.value = allEdges.filter((e) => sceneIds.has(e.source) && sceneIds.has(e.target));
+  edges.value = buildEdgesFromChoices(chapterScenes.value);
 }
 
 function onNodeDragStop(evt) {
@@ -58,6 +56,12 @@ function onNodeDragStop(evt) {
 }
 
 onMounted(async () => { await refresh(); });
+
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    await refresh();
+  }
+});
 
 function fit() { try { fitView(); } catch (error) { console.error(error); } }
 async function autoLayout() { const laidOut = await (await import('@graph/layout.js')).layoutScenes(getNodes(), getEdges()); for (const n of laidOut) updateNode(n.id, { position: n.position }); }

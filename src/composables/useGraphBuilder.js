@@ -34,15 +34,18 @@ export function buildChapterNodes(chapters) {
  * @param {string} parentChapterId - Optional parent chapter ID for grouping
  * @returns {Array} Vue Flow nodes
  */
+import { normalizeScene } from '../lib/normalize.js'
+
 export function buildSceneNodes(scenes, parentChapterId = null) {
-  return scenes.map((scene) => {
+  return scenes.map((raw) => {
+    const scene = normalizeScene(raw)
     const node = {
-      id: `scene-${scene.sceneId || scene.id}`,
+      id: `scene-${scene.sceneId}`,
       type: 'scene',
       data: {
-        title: scene.sceneId || scene.id,
+        title: scene.sceneId,
         sceneText: scene.sceneText || '',
-        chapterId: scene.chapter || scene.chapterId,
+        chapterId: scene.chapterId,
         choicesCount: scene.choices?.length || 0,
       },
       position: scene.position || { x: 0, y: 0 },
@@ -69,15 +72,16 @@ export function buildSceneNodes(scenes, parentChapterId = null) {
 export function buildEdgesFromScenes(scenes) {
   const edges = []
 
-  scenes.forEach((scene) => {
-    const sourceId = `scene-${scene.sceneId || scene.id}`
+  scenes.forEach((raw) => {
+    const scene = normalizeScene(raw)
+    const sourceId = `scene-${scene.sceneId}`
 
     // Build edges from choices
     if (scene.choices && Array.isArray(scene.choices)) {
       scene.choices.forEach((choice, index) => {
         if (choice.nextScene) {
           edges.push({
-            id: `edge-${scene.sceneId || scene.id}-${choice.nextScene}-${index}`,
+            id: `edge-${scene.sceneId}-${choice.nextScene}-${index}`,
             source: sourceId,
             target: `scene-${choice.nextScene}`,
             data: {
@@ -137,7 +141,7 @@ export async function layoutGraph(nodes, edges) {
  */
 export function filterScenesByChapter(scenes, chapterId) {
   return scenes.filter(scene => {
-    const sceneChapter = scene.chapter || scene.chapterId
+    const sceneChapter = (scene.chapterId || scene.chapter)
     return sceneChapter === chapterId
   })
 }

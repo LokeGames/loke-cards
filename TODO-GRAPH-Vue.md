@@ -6,6 +6,48 @@ Goal: Twine‑style visual graph for chapters and scenes using Vue Flow. Chapter
 
 References: see `doc/cards-vue-flow.md` for architecture, builders, and layout helpers.
 
+### Funktionsbeskrivelse: Global Graph
+
+**Hovedformål: Det store overblik**
+
+Global Graph-visningen fungerer som et "fugleperspektiv" over hele din historie. I stedet for at se på én scene eller ét kapitel ad gangen, giver den dig et komplet kort over alle dine kapitler og scener, og hvordan de er forbundet.
+
+**Funktionalitet:**
+
+*   **Kapitler som "containere":** Hvert kapitel vises som en stor, separat boks. Dette giver en klar visuel adskillelse af historiens hoveddele.
+*   **Scener som "knudepunkter":** Inde i hver kapitel-container ligger de enkelte scener som mindre knudepunkter (nodes), hvilket giver et hurtigt overblik over flowet i hvert kapitel.
+*   **Komplet overblik over forbindelser:** Viser alle links mellem scener, både *inden for* samme kapitel og, vigtigst af alt, links der går *mellem* kapitler. Dette gør det let at spore komplekse narrative tråde.
+
+**Interaktioner:**
+
+*   **Navigation:** Dobbeltklik på en kapitel-container for at "zoome ind" til den detaljerede `ChapterGraph`-visning.
+*   **Layout-kontrol:** Træk og flyt kapitler og scener for at organisere lærredet. Layoutet kan gemmes. En "Auto Layout"-knap er også tilgængelig for automatisk arrangering.
+*   **Standard-værktøjer:** Inkluderer et minimap for hurtig navigation samt pan- og zoom-funktioner.
+*   **Oprette links:** Træk en linje mellem scener for at oprette nye valg eller forbindelser.
+
+Kort sagt er Global Graph det primære værktøj til at planlægge, visualisere og administrere den overordnede struktur i en interaktiv fortælling.
+
+### Funktionsbeskrivelse: Chapter Graph (Kapitel-visning)
+
+**Hovedformål: Detaljeret og fokuseret redigering**
+
+Hvor Global Graph giver dig det store overblik, er kapitel-visningen dit "værksted" for et enkelt kapitel. Formålet er at fjerne unødvendig støj, så du kan koncentrere dig om at skrive, organisere og forbinde scenerne i det kapitel, du arbejder på.
+
+**Funktionalitet:**
+
+*   **Fokuseret visning:** Viser *kun* scenerne, der hører til det valgte kapitel. Alle andre kapitler og scener er skjult for at skabe fokus.
+*   **Kun interne links:** Viser kun forbindelser mellem scener *inden for* det aktuelle kapitel.
+*   **Primært arbejdsområde:** Designet til at være det primære sted for at arrangere scener, skabe nye valg og justere flowet i en afgrænset del af historien.
+
+**Interaktioner:**
+
+*   **Navigation:** Tilgås ved at dobbeltklikke på et kapitel i Global Graph eller ved at vælge det fra sidepanelet.
+*   **Arrangering af scener:** Scener kan frit trækkes og flyttes rundt. Deres positioner kan gemmes for at bevare en konsistent struktur.
+*   **Oprettelse:** Understøtter oprettelse af nye scener og links imellem dem inden for kapitlets rammer.
+*   **Standard-værktøjer:** Inkluderer pan, zoom og et minimap for at gøre det nemt at navigere, selv i store kapitler.
+
+Sammenfattende er kapitel-visningen din "dybdegående" editor, der komplementerer Global Graphs "strategiske" overblikskort.
+
 ### 5.E.0 Dependencies (status)
 - [x] `@vue-flow/core`, `@vue-flow/minimap`, `@vue-flow/background`, `elkjs` are listed in `package.json` (no extra install needed)
 

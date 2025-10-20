@@ -36,14 +36,14 @@
       <div v-if="loading"><BaseSkeletonList :rows="6" /></div>
 
       <ul v-else class="divide-y divide-gray-200 dark:divide-gray-800 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <li v-for="sc in filteredScenes" :key="sc.sceneId || sc.id" class="p-3 flex items-center justify-between">
+        <li v-for="sc in filteredScenes" :key="sc.sceneId" class="p-3 flex items-center justify-between">
           <div>
-            <div class="font-medium text-gray-800 dark:text-gray-100">{{ sc.sceneId || sc.id }}</div>
-            <div class="text-xs text-gray-500 dark:text-gray-500">Chapter: {{ sc.chapter || sc.chapterId || '—' }}</div>
+            <div class="font-medium text-gray-800 dark:text-gray-100">{{ sc.sceneId }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">Chapter: {{ sc.chapterId || '—' }}</div>
           </div>
           <div class="flex items-center gap-2">
-            <RouterLink :to="toEditScene(sc.sceneId || sc.id)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
-            <button @click="deleteScene(sc.sceneId || sc.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
+            <RouterLink :to="toEditScene(sc.sceneId)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <button @click="deleteScene(sc.sceneId)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
         <li v-if="scenes.length === 0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No scenes yet. Create one to get started.</li>
@@ -62,6 +62,7 @@ import { getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
 import { toEditScene } from '../router/guards.js';
+import { normalizeScenes } from '../lib/normalize.js';
 
 const scenes = ref([]);
 const search = ref('');
@@ -75,31 +76,12 @@ const toast = useToastStore();
 onMounted(async () => {
   try {
     const data = await api.scenes.getAll();
-    // Normalize API rows that wrap JSON in `data` column or return JSON strings
-    const normalize = (row) => {
-      let src = row;
-      if (row == null) return null;
-      if (typeof row === 'string') {
-        try { src = JSON.parse(row); } catch { return null; }
-      }
-      if (row && row.data) {
-        try {
-          const parsed = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
-          src = { ...parsed };
-          if (!src.id && row.id) src.id = row.id;
-        } catch { /* ignore */ }
-      }
-      // Ensure id fallback from sceneId
-      if (!src.id && src.sceneId) src.id = src.sceneId;
-      return src;
-    };
-    const arr = (Array.isArray(data) ? data : []).map(normalize).filter(Boolean);
-    scenes.value = arr;
+    scenes.value = Array.isArray(data) ? data : [];
   } catch (e) {
     // Fallback to local storage when offline or backend unavailable
     try {
       const local = await getAllScenesLocal();
-      scenes.value = (Array.isArray(local) ? local : []).filter((s) => s && (s.sceneId || s.id));
+      scenes.value = normalizeScenes(local);
     } catch (e2) {
       error.value = `Failed to load scenes: ${e.message}`;
     }
@@ -110,19 +92,19 @@ onMounted(async () => {
 
 const filteredScenes = computed(() => {
   const q = search.value.trim().toLowerCase();
-  const arr = (Array.isArray(scenes.value) ? scenes.value.slice() : []).filter((s) => s && (s.sceneId || s.id));
+  const arr = (Array.isArray(scenes.value) ? scenes.value.slice() : []).filter((s) => s && s.sceneId);
   let out = arr;
   if (q) {
     out = out.filter((s) => {
-      const name = String(s.sceneId || s.id || '').toLowerCase();
-      const ch = String(s.chapter || s.chapterId || '').toLowerCase();
+      const name = String(s.sceneId || '').toLowerCase();
+      const ch = String(s.chapterId || '').toLowerCase();
       return name.includes(q) || ch.includes(q);
     });
   }
   const key = sortKey.value;
   out.sort((a, b) => {
     if (key === 'name') {
-      return String(a.sceneId || a.id || '').localeCompare(String(b.sceneId || b.id || ''));
+      return String(a.sceneId || '').localeCompare(String(b.sceneId || ''));
     }
     const av = Number(a[key] ?? 0);
     const bv = Number(b[key] ?? 0);
