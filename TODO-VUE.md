@@ -685,6 +685,9 @@ Mål: Frontend kan køre helt offline (mobil), og sync’er ændringer til serve
 - [ ] Playwright: simulér offline (context.setOffline(true)), opret/ret/scenelister, gå online og assert server modtager ændringer (kan stubbes i dev)
 - [ ] Race‑test: hurtige edit→sync→nav for stabilitet
 
+### 7.7 Projects (moved)
+This cross‑cutting project layer is tracked centrally in `TODO.md` under “Fase 4: Projekt‑lag (Projects → Chapters → Scenes)”.
+
 ---
 
 ## Phase 8: Deployment

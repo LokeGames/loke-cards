@@ -145,10 +145,13 @@ import ChoicesList from '../components/ChoicesList.vue';
 import StateChangesList from '../components/StateChangesList.vue';
 import CodePreview from '../components/CodePreview.vue';
 import { useToastStore } from '../stores/toast.js';
+import { useProjectStore } from '../stores/project.js';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToastStore();
+const project = useProjectStore();
+if (!project.currentProject) project.init();
 
 // Scene data
 const sceneData = reactive({
@@ -223,16 +226,16 @@ function validateField(fieldName) {
 async function handleCreateChapter(chapterId) {
   try {
     // Persist chapter via API, then add to local list
-    await api.chapters.create({ id: chapterId, name: chapterId });
-    availableChapters.value.push({ id: chapterId, name: chapterId });
+    await api.chapters.create({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
+    availableChapters.value.push({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
     saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" created.` };
     toast.success(`Chapter "${chapterId}" created`);
     setTimeout(() => (saveStatus.value = null), 1200);
   } catch (err) {
     // Fallback: save locally when offline
     try {
-      await saveChapterLocal({ id: chapterId, name: chapterId, scenes: [], order: Date.now() });
-      availableChapters.value.push({ id: chapterId, name: chapterId });
+      await saveChapterLocal({ id: chapterId, name: chapterId, scenes: [], order: Date.now(), projectId: project.currentProject?.id || 'default' });
+      availableChapters.value.push({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
       saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" saved locally (offline).` };
       toast.info(`Chapter "${chapterId}" saved locally (offline)`);
       setTimeout(() => (saveStatus.value = null), 1600);
@@ -273,9 +276,9 @@ async function handleSave() {
   try {
     // Save to API
     if (isEditMode.value) {
-      await api.scenes.update(route.params.id, sceneData);
+      await api.scenes.update(route.params.id, { ...sceneData, projectId: project.currentProject?.id || 'default' });
     } else {
-      await api.scenes.create(sceneData);
+      await api.scenes.create({ ...sceneData, projectId: project.currentProject?.id || 'default' });
     }
 
     saveStatus.value = {
@@ -301,6 +304,7 @@ async function handleSave() {
         choices: sceneData.choices,
         stateChanges: sceneData.stateChanges,
         generatedCode: generatedCode.value,
+        projectId: project.currentProject?.id || 'default',
         synced: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -361,44 +365,31 @@ function handleReset() {
 
 // Load scene data if editing and chapters from API
 onMounted(async () => {
+  // Offline-first: load chapters from local, then try server to merge
+  try { availableChapters.value = await getAllChaptersLocal(); } catch {}
   try {
-    // Load chapters from API and merge with local (ensure locally-created items appear)
     const chaptersData = await api.chapters.getAll();
-    const localChapters = await getAllChaptersLocal().catch(() => []);
-    const byId = new Map();
-    (Array.isArray(chaptersData) ? chaptersData : []).forEach(c => byId.set(c.id, c));
-    (Array.isArray(localChapters) ? localChapters : []).forEach(c => {
-      if (!byId.has(c.id)) byId.set(c.id, c);
-    });
+    const byId = new Map((availableChapters.value || []).map((c) => [c.id, c]));
+    (Array.isArray(chaptersData) ? chaptersData : []).forEach(c => { if (!byId.has(c.id)) byId.set(c.id, c); });
     availableChapters.value = Array.from(byId.values());
   } catch (error) {
-    // Fallback to local storage when offline or backend unavailable
-    try {
-      availableChapters.value = await getAllChaptersLocal();
-    } catch (e2) {
-      console.error('Failed to load chapters:', error);
-    }
+    // keep local
   }
 
   // Load scenes for choices suggestions
+  // Suggestions: local first
   try {
-    // Merge server and local scenes for suggestions
-    const scenesData = await api.scenes.getAll(); // already normalized
-    const localScenes = await getAllScenesLocal().catch(() => []);
-    const byId = new Map();
-    (Array.isArray(scenesData) ? scenesData : []).forEach(s => byId.set(s.sceneId, { id: s.sceneId, chapterId: s.chapterId }));
-    (Array.isArray(localScenes) ? localScenes : []).forEach(s => {
-      const id = s.sceneId || s.id;
-      const chapterId = s.chapterId || s.chapter;
-      if (id && !byId.has(id)) byId.set(id, { id, chapterId });
+    const localScenes = await getAllScenesLocal();
+    allScenes.value = (Array.isArray(localScenes) ? localScenes : []).map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
+  } catch {}
+  try {
+    const scenesData = await api.scenes.getAll();
+    const byId = new Map((allScenes.value || []).map((s) => [s.id, s]));
+    (Array.isArray(scenesData) ? scenesData : []).forEach(s => {
+      if (!byId.has(s.sceneId)) byId.set(s.sceneId, { id: s.sceneId, chapterId: s.chapterId });
     });
     allScenes.value = Array.from(byId.values());
-  } catch (e) {
-    try {
-      const localScenes = await getAllScenesLocal();
-      allScenes.value = (Array.isArray(localScenes) ? localScenes : []).map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
-    } catch {}
-  }
+  } catch {}
 
   // Preselect chapter from query string if provided
   if (route.query.chapter) {

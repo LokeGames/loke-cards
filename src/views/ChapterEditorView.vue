@@ -70,10 +70,13 @@ import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
 import { saveChapter as saveChapterLocal } from '../lib/storage.js';
 import { useToastStore } from '../stores/toast.js';
+import { useProjectStore } from '../stores/project.js';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToastStore();
+const project = useProjectStore();
+if (!project.currentProject) project.init();
 
 // Form state
 const chapter = reactive({
@@ -106,10 +109,11 @@ async function handleSave() {
   saveStatus.value = null;
 
   try {
+    const pid = project.currentProject?.id || 'default';
     if (isEditMode.value) {
-      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
+      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name, meta: chapter.meta, projectId: pid });
     } else {
-      await api.chapters.create({ id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
+      await api.chapters.create({ id: chapter.chapterId, name: chapter.name, meta: chapter.meta, projectId: pid });
     }
     saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" created.` };
     toast.success(`Chapter "${chapter.chapterId}" created`);
@@ -119,7 +123,7 @@ async function handleSave() {
     }, 1200);
   } catch (err) {
     try {
-      await saveChapterLocal({ id: chapter.chapterId, name: chapter.name, scenes: [], order: Date.now() });
+      await saveChapterLocal({ id: chapter.chapterId, name: chapter.name, scenes: [], order: Date.now(), projectId: project.currentProject?.id || 'default' });
       saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" saved locally (offline).` };
       toast.info(`Chapter "${chapter.chapterId}" saved locally (offline)`);
       setTimeout(() => {

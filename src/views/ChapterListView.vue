@@ -59,6 +59,7 @@
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal } from '../lib/storage.js';
+import { useProjectStore } from '../stores/project.js';
 import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
 import { toEditChapter, toNewSceneWithChapter } from '../router/guards.js';
@@ -70,18 +71,23 @@ const confirmOpen = ref(false);
 const pendingDeleteId = ref('');
 let dragIndex = -1;
 const toast = useToastStore();
+const project = useProjectStore();
+if (!project.currentProject) project.init();
+
+function scopeChapters(arr) {
+  const pid = project.currentProject?.id || 'default';
+  return (arr || []).filter(c => (c.projectId || 'default') === pid);
+}
 
 onMounted(async () => {
+  // Offline-first: load local first
+  try { chapters.value = scopeChapters(await getAllChaptersLocal()); } catch {}
+  // Then try server
   try {
     const data = await api.chapters.getAll();
-    chapters.value = Array.isArray(data) ? data : [];
+    if (Array.isArray(data) && data.length > 0) chapters.value = scopeChapters(data);
   } catch (e) {
-    // Fallback to local storage when offline or backend unavailable
-    try {
-      chapters.value = await getAllChaptersLocal();
-    } catch (e2) {
-      error.value = `Failed to load chapters: ${e.message}`;
-    }
+    // keep local only
   } finally {
     loading.value = false;
   }
@@ -93,7 +99,7 @@ function normalizeOrder() {
 
 async function persistOrder() {
   for (const c of chapters.value) {
-    const payload = { id: c.id, name: c.name, order: c.order };
+    const payload = { id: c.id, name: c.name, order: c.order, projectId: project.currentProject?.id || 'default' };
     try { await api.chapters.update(c.id, payload); }
     catch { try { await saveChapterLocal(payload); } catch {} }
   }

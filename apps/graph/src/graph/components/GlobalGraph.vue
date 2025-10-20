@@ -1,9 +1,9 @@
 <template>
   <div class="h-full w-full relative bg-gray-50 dark:bg-gray-900" tabindex="0" @keydown.delete.prevent="onDelete">
     <div class="absolute right-3 top-3 z-10 flex gap-2">
-      <button @click="fit" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Fit View</button>
-      <button @click="autoLayout" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Auto Layout</button>
-      <button @click="saveLayout" class="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700">Save Layout</button>
+      <button @click="fit" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Fit graph to view">Fit View</button>
+      <button @click="autoLayout" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Apply automatic layout">Auto Layout</button>
+      <button @click="saveLayout" class="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700" aria-label="Save current layout">Save Layout</button>
     </div>
     <VueFlow
       v-model:nodes="nodes"
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Background } from '@vue-flow/background';
@@ -70,6 +70,10 @@ async function refresh() {
 
   nodes.value = [...chNodes, ...perChapterSceneNodes];
   edges.value = buildEdgesFromChoices(store.scenes);
+
+  // Wait for the next DOM update cycle for nodes to be rendered, then fit the view
+  await nextTick();
+  fitView({ padding: 0.1 });
 
   console.log('[GlobalGraph] Nodes:', nodes.value.length, 'Chapters:', chNodes.length, 'Scenes:', perChapterSceneNodes.length);
   console.log('[GlobalGraph] All nodes:', nodes.value);

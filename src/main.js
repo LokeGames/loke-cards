@@ -5,6 +5,8 @@ import router from './router'
 import './styles/main.css'
 import { setupErrorMonitoring } from './plugins/error-monitor'
 import { startSyncHeartbeat } from './plugins/sync-heartbeat'
+import { autoBootstrapLocalFromServerIfEmpty } from './lib/importer'
+import { useProjectStore } from './stores/project'
 
 // Create Vue app
 const app = createApp(App)
@@ -42,3 +44,13 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
 
 // Start live backend heartbeat (updates sync status)
 startSyncHeartbeat(pinia)
+
+// Offline-first bootstrap: if local DB is empty and backend is available, import once
+autoBootstrapLocalFromServerIfEmpty().then((res) => {
+  if (res && typeof res === 'object') {
+    console.log(`[bootstrap] Imported ${res.scenes} scenes / ${res.chapters} chapters from server to local`)
+  }
+}).catch(() => {})
+
+// Initialize project store early so selection is ready for filters
+try { const ps = useProjectStore(pinia); ps.init(); } catch {}

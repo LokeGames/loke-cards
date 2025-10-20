@@ -31,7 +31,7 @@ export function buildEdgesFromChoices(scenes = []) {
     for (const [i, ch] of s.choices.entries()) {
       const target = ch?.nextScene;
       if (!target || !sceneIdSet.has(target)) continue;
-      edges.push({ id: `edge-${s.id}-${i}-${target}`, source: `scene-${s.id}`, target: `scene-${target}`, data: { type: 'jump' }, animated: true, markerEnd: 'arrowclosed' });
+      edges.push({ id: `edge-${s.id}-${i}-${target}`, source: `scene-${s.id}`, target: `scene-${target}`, data: { type: 'jump' }, animated: true, markerEnd: 'arrowclosed', type: 'smoothstep' });
     }
   }
   return edges;

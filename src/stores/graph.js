@@ -21,28 +21,15 @@ export const useGraphStore = defineStore('graph', {
     async loadGlobal() {
       this.loading = true;
       try {
-        // Try API, fallback to LocalForage
+        // Offline-first: load local first
         let chapters = [];
         let scenes = [];
-        try {
-          chapters = await api.chapters.getAll();
-        } catch (_) {
-          // API failed – use local
-          chapters = await getAllChaptersLocal();
-        }
-        try {
-          scenes = await api.scenes.getAll();
-        } catch (_) {
-          // API failed – use local
-          scenes = await getAllScenesLocal();
-        }
-        // If API returned empty arrays, fallback to local to ensure NodeView shows content offline
-        if (!Array.isArray(chapters) || chapters.length === 0) {
-          try { chapters = await getAllChaptersLocal(); } catch (_) {}
-        }
-        if (!Array.isArray(scenes) || scenes.length === 0) {
-          try { scenes = await getAllScenesLocal(); } catch (_) {}
-        }
+        try { chapters = await getAllChaptersLocal(); } catch (_) {}
+        try { scenes = await getAllScenesLocal(); } catch (_) {}
+
+        // Then try API (best effort)
+        try { const c = await api.chapters.getAll(); if (Array.isArray(c) && c.length) chapters = c; } catch (_) {}
+        try { const s = await api.scenes.getAll(); if (Array.isArray(s) && s.length) scenes = s; } catch (_) {}
 
         this.chapters = normalizeChapters(chapters).map((c) => ({
           id: c.id,

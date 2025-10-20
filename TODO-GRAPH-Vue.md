@@ -69,10 +69,11 @@ Sammenfattende er kapitel-visningen din "dybdegående" editor, der komplementere
 - [x] Double‑click chapter container in `GlobalGraph` opens per‑chapter route
 
 ### 5.E.3 Data Sources & Offline (WAIT UNTIL LOKE-CARDS IS PWA READY AND OFFLINE SECURED)
+- [ ] **Synkroniser Projekt-kontekst:** Graph-visningen skal altid afspejle det aktive projekt fra `loke-cards`. Dette kræver en delt state-mekanisme for det nuværende projekt. (Afventer at "projekt"-konceptet er implementeret i `loke-cards`).
 - [ ] Use `src/api/client.js` for network; fallback to `src/lib/storage.js` when API fails
 - [ ] Graph store composes from existing data shape: `chapters`, `scenes`, optional `links`
 - [ ] If `links` are not persisted yet, derive edges from `choices` (scene.choice.next → edge)
-- [ ] Persist node positions in store/DB on drag‑stop to keep layout stable
+- [x] Persist node positions in store/DB on drag‑stop to keep layout stable
 
 ### 5.E.4 Interactions
 - [x] Drag nodes (scenes/chapters); on drag‑stop persist `position`
@@ -83,20 +84,20 @@ Sammenfattende er kapitel-visningen din "dybdegående" editor, der komplementere
 
 ### 5.E.5 Layout (NEXT PHASE)
 - [x] When positions are missing, run ELK auto‑layout (see `layoutScenes()` in doc) - implemented but needs tuning
-- [ ] Auto-fit: ensure nodes are visible on load (fit-view-on-init not working as expected)
+- [x] Auto-fit: ensure nodes are visible on load (fit-view-on-init not working as expected)
 - [ ] Auto-order: better initial placement, avoid overlaps
 - [ ] Toggle: Auto‑layout now vs. preserve saved positions
 - [ ] Save positions back to repo after auto‑layout
 
 ### 5.E.6 Styling & Theming
-- [ ] Use Tailwind classes with dark mode variants for nodes and containers
+- [x] Use Tailwind classes with dark mode variants for nodes and containers
+- [x] Hver `choice` visualiseres som en blød streg fra kilde- til modtager-node.
 - [ ] Edge styles by type: `jump` (animated), `condition` (dashed), `return` (reversed marker), `fork` (bold)
 - [ ] Responsive canvas; ensure good performance with many nodes (avoid excessive reactivity)
 
 ### 5.E.7 Keyboard & A11y
-- [x] Keyboard delete on selection removes nodes/edges
-- [ ] Tab focus order within NodeView toolbar
-- [ ] ARIA labels for toolbar controls; sufficient contrast in dark mode
+- [x] Tab focus order within NodeView toolbar
+- [x] ARIA labels for toolbar controls; sufficient contrast in dark mode
 
 ### 5.E.8 Testing (Playwright)
 - [ ] Global graph renders chapters as containers and scenes within
@@ -111,6 +112,40 @@ Sammenfattende er kapitel-visningen din "dybdegående" editor, der komplementere
 - [x] Static render of GlobalGraph and ChapterGraph with derived edges
 - [x] Navigation between Global ↔ Chapter views
 - [x] Fit‑view + Minimap + Background
+
+---
+
+## Phase 6 — Arkitektur: Fuld Offline-tilstand med WASM SQLite
+
+Mål: At flytte al databaselogik fra serveren til klienten (browseren) for at opnå fuld offline-funktionalitet. Dette gøres ved at integrere en SQLite-database, der kører via WebAssembly (WASM). Både `loke-cards` og `graph`-appen skal kunne tilgå den samme, delte database.
+
+### Strategi for implementering
+
+#### Trin 1: Introducer et "Repository Pattern" for dataadgang
+- **Mål:** At afkoble applikationslogikken fra den specifikke datakilde (API vs. lokal database).
+- **Handling:** Definer et klart "interface" (en kontrakt) i koden, der beskriver de nødvendige data-operationer (`getChapters`, `updateScene` etc.). Dette gør det muligt at udskifte datakilden uden at skulle omskrive hele applikationen.
+
+#### Trin 2: Vælg og integrer et WASM SQLite-bibliotek
+- **Mål:** At få SQLite til at køre i browseren.
+- **Handling:** Vælg og installer et bibliotek som `sql.js`. Opret et modul, der kan initialisere databasen i browserens hukommelse ud fra en `.sqlite`-fil.
+
+#### Trin 3: Implementer et `SQLiteRepository`
+- **Mål:** At skabe en ny datakilde, der taler med WASM-databasen.
+- **Handling:** Implementer det "interface", der blev defineret i trin 1. Hver funktion vil køre SQL-forespørgsler direkte på WASM-databasen i stedet for at lave netværkskald.
+  - `getChapters()` bliver til `SELECT * FROM chapters;`.
+  - `updateScenePosition(...)` bliver til `UPDATE scenes SET ...;`.
+
+#### Trin 4: Håndter indlæsning og lagring af databasefilen
+- **Mål:** At give brugeren kontrol over sin datafil.
+- **Handling:**
+    - **Indlæsning:** Implementer en "Åbn databasefil"-funktion.
+    - **Lagring:** Brug "File System Access API" til at lade browseren gemme ændringer direkte tilbage til brugerens originale fil (kræver brugerens tilladelse). Dette giver en gnidningsfri oplevelse.
+
+#### Trin 5: Skift datakilden i applikationen
+- **Mål:** At aktivere den nye offline-funktionalitet.
+- **Handling:** Opdater appens "stores" (Pinia) til at bruge det nye `SQLiteRepository`. Opret et centralt, delt modul for databaseadgang, så både `loke-cards` og `graph`-appen arbejder på de samme, synkroniserede data.
+
+---
 
 Status: External app `apps/graph` up with routes `/` and `/chapter/:id`. Uses loke-cards CSS and independent store/API.
 

@@ -63,6 +63,7 @@ import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
 import { toEditScene } from '../router/guards.js';
 import { normalizeScenes } from '../lib/normalize.js';
+import { useProjectStore } from '../stores/project.js';
 
 const scenes = ref([]);
 const search = ref('');
@@ -74,17 +75,19 @@ const pendingDeleteId = ref('');
 const toast = useToastStore();
 
 onMounted(async () => {
+  // Offline-first: load local immediately
+  try {
+    const local = await getAllScenesLocal();
+    scenes.value = scopeByProject(normalizeScenes(local));
+  } catch (_) {}
+  // Then try server in the background
   try {
     const data = await api.scenes.getAll();
-    scenes.value = Array.isArray(data) ? data : [];
-  } catch (e) {
-    // Fallback to local storage when offline or backend unavailable
-    try {
-      const local = await getAllScenesLocal();
-      scenes.value = normalizeScenes(local);
-    } catch (e2) {
-      error.value = `Failed to load scenes: ${e.message}`;
+    if (Array.isArray(data) && data.length > 0) {
+      scenes.value = scopeByProject(data);
     }
+  } catch (e) {
+    // Keep local; optionally display a subtle error
   } finally {
     loading.value = false;
   }
@@ -151,3 +154,10 @@ async function confirmDelete() {
 
 <style scoped>
 </style>
+const project = useProjectStore();
+if (!project.currentProject) project.init();
+
+function scopeByProject(arr) {
+  const pid = project.currentProject?.id || 'default';
+  return (arr || []).filter(s => (s.projectId || 'default') === pid);
+}

@@ -21,6 +21,7 @@
       </ol>
     </nav>
     <div class="ml-auto flex items-center gap-2">
+      <ProjectPicker/>
       <NetworkToggle/>
       <StatusPill/>
       <ThemeToggle/>
@@ -31,6 +32,7 @@
 <script setup lang="ts">
 import StatusPill from './StatusPill.vue';
 import NetworkToggle from './NetworkToggle.vue';
+import ProjectPicker from './ProjectPicker.vue';
 import ThemeToggle from './ThemeToggle.vue';
 import { useUiStore } from '../stores/ui';
 import { useRoute, useRouter } from 'vue-router';

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planning
 - Reorder roadmap: Phase 7 → PWA Offline‑First + Sync; Phase 8 → Deployment
 - Add SYNC design doc: `doc/SYNC-DESIGN.md` (single‑user LWW, push/pull deltas)
+ - Projects layer: introduce `projectStore` + `ProjectPicker` (single active project)
 
 ### Phase 7 - Offline‑First Bootstrap - 2025-10-20
 
@@ -34,6 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Editor/List/Dashboard/Graph use `sceneId` and `chapterId` exclusively in UI and logic
   - Removed ad‑hoc normalization in views; rely on API client/utility normalizers
   - Graph app aligned: API client and store now normalize to canonical `sceneId`/`chapterId` (internal `id` mirrors `sceneId`)
+
+### Upcoming — Projects (Single Active Project)
+### Added
+- `projectStore` (planned): holds `currentProject`, list, CRUD; persists selection in `localStorage`.
+- `ProjectPicker` (planned): header/sidebar dropdown for selecting the active project; Settings for project management.
+
+### Changed
+- Scope all Cards views (lists, editors) and operations by `projectId` (planned migration of existing data to `projectId: 'default'`).
+- API: include optional `projectId` filter and payload fields; keep backward compatible.
+- Graph app uses the same project context as Cards (viewer role):
+  - Reads active `projectId` (shared key or API param) and only displays that project’s chapters/scenes.
+  - No independent project selection in Graph when embedded; follows Cards.
 
 ### Database/API compatibility (IDs)
 - No server DB schema changes in this phase (still: `chapters(id TEXT, data TEXT)`, `scenes(id TEXT, data TEXT)`).

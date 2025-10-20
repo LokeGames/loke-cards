@@ -25,6 +25,7 @@ import { ref, computed, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 import { normalizeScenes } from '../lib/normalize.js';
+import { useProjectStore } from '../stores/project.js';
 import DashboardQuickActions from '../components/dashboard/DashboardQuickActions.vue'
 import DashboardStats from '../components/dashboard/DashboardStats.vue'
 import DashboardRecentChapters from '../components/dashboard/DashboardRecentChapters.vue'
@@ -38,6 +39,17 @@ const scenes = ref([]);
 const scenesLoading = ref(true);
 const scenesError = ref('');
 const stats = ref({ chapters: 0, scenes: 0 });
+const project = useProjectStore();
+if (!project.currentProject) project.init();
+
+function scopeChapters(arr) {
+  const pid = project.currentProject?.id || 'default';
+  return (arr || []).filter(c => (c.projectId || 'default') === pid);
+}
+function scopeScenes(arr) {
+  const pid = project.currentProject?.id || 'default';
+  return (arr || []).filter(s => (s.projectId || 'default') === pid);
+}
 
 const recentChapters = computed(() => chapters.value.slice(0, 5));
 const recentScenes = computed(() => {
@@ -48,28 +60,18 @@ const recentScenes = computed(() => {
 // validation moved inside DashboardRecentScenes
 
 onMounted(async () => {
-  try {
-    const data = await api.chapters.getAll();
-    chapters.value = Array.isArray(data) ? data : [];
-  } catch (e) {
-    try {
-      chapters.value = await getAllChaptersLocal();
-    } catch (e2) {
-      chaptersError.value = `Failed to load chapters: ${e.message}`;
-    }
-  } finally {
-    chaptersLoading.value = false;
-  }
-  // scenes for stats
-  try {
-    const s = await api.scenes.getAll();
-    scenes.value = Array.isArray(s) ? s : [];
-  } catch (e) {
-    try { scenes.value = normalizeScenes(await getAllScenesLocal()); }
-    catch { scenesError.value = `Failed to load scenes: ${e.message}`; }
-  } finally {
-    scenesLoading.value = false;
-  }
+  // Offline-first: load local first
+  try { chapters.value = scopeChapters(await getAllChaptersLocal()); } catch {}
+  try { scenes.value = scopeScenes(normalizeScenes(await getAllScenesLocal())); } catch {}
+  // Then try server in background
+  try { const data = await api.chapters.getAll(); if (Array.isArray(data) && data.length > 0) chapters.value = scopeChapters(data); }
+  catch (e) { /* keep local */ }
+  finally { chaptersLoading.value = false; }
+
+  try { const s = await api.scenes.getAll(); if (Array.isArray(s) && s.length > 0) scenes.value = scopeScenes(s); }
+  catch (e) { /* keep local */ }
+  finally { scenesLoading.value = false; }
+
   stats.value = { chapters: chapters.value.length, scenes: scenes.value.length };
 });
 </script>
