@@ -2,12 +2,13 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
   base: '/',
   plugins: [
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: { enabled: false },
       includeAssets: ['icons/*.svg', 'icons/*.png'],
       manifest: {
         name: 'Loke Cards',
@@ -74,4 +75,4 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true
   }
-});
+}));

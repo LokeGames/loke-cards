@@ -1,29 +1,47 @@
 import { defineStore } from 'pinia';
-import api from '@/api/client.js';
+import api from '../api/client.js';
 import {
   getAllChapters as getAllChaptersLocal,
   getAllScenes as getAllScenesLocal,
   saveScene as saveSceneLocal,
   saveChapter as saveChapterLocal,
-} from '@/lib/storage.js';
+} from '../lib/storage.js';
 
 function normalizeChapter(ch) {
+  let src = ch;
+  if (ch && ch.data) {
+    try {
+      const parsed = typeof ch.data === 'string' ? JSON.parse(ch.data) : ch.data;
+      src = { ...parsed, id: ch.id || parsed.id };
+    } catch (_) {
+      // keep original
+    }
+  }
   return {
-    id: ch.id || ch.chapterId || ch.name || 'chapter',
-    title: ch.name || ch.title || ch.id || ch.chapterId || 'Chapter',
-    position: ch.position || undefined,
+    id: src.id || src.chapterId || src.name || 'chapter',
+    title: src.name || src.title || src.id || src.chapterId || 'Chapter',
+    position: src.position || undefined,
   };
 }
 
 function normalizeScene(sc) {
-  const id = sc.id || sc.sceneId;
+  let src = sc;
+  if (sc && sc.data) {
+    try {
+      const parsed = typeof sc.data === 'string' ? JSON.parse(sc.data) : sc.data;
+      src = { ...parsed, id: sc.id || parsed.id };
+    } catch (_) {
+      // keep original
+    }
+  }
+  const id = src.id || src.sceneId;
   return {
     id,
-    chapterId: sc.chapterId || sc.chapter || '',
-    title: sc.sceneId || sc.title || id,
-    sceneText: sc.sceneText || sc.text || '',
-    choices: Array.isArray(sc.choices) ? sc.choices : [],
-    position: sc.position || undefined,
+    chapterId: src.chapterId || src.chapter || '',
+    title: src.title || src.sceneId || id,
+    sceneText: src.sceneText || src.text || '',
+    choices: Array.isArray(src.choices) ? src.choices : [],
+    position: src.position || undefined,
   };
 }
 
@@ -43,12 +61,21 @@ export const useGraphStore = defineStore('graph', {
         try {
           chapters = await api.chapters.getAll();
         } catch (_) {
+          // API failed – use local
           chapters = await getAllChaptersLocal();
         }
         try {
           scenes = await api.scenes.getAll();
         } catch (_) {
+          // API failed – use local
           scenes = await getAllScenesLocal();
+        }
+        // If API returned empty arrays, fallback to local to ensure NodeView shows content offline
+        if (!Array.isArray(chapters) || chapters.length === 0) {
+          try { chapters = await getAllChaptersLocal(); } catch (_) {}
+        }
+        if (!Array.isArray(scenes) || scenes.length === 0) {
+          try { scenes = await getAllScenesLocal(); } catch (_) {}
         }
 
         this.chapters = chapters.map(normalizeChapter);
@@ -92,4 +119,3 @@ export const useGraphStore = defineStore('graph', {
     },
   },
 });
-

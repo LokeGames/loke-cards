@@ -68,6 +68,13 @@ const routes = [
     meta: { title: 'Node View' }
   },
   {
+    path: '/chapter/:id/nodes',
+    name: 'ChapterNodeView',
+    component: () => import('../components/ChapterGraph.vue'),
+    props: true,
+    meta: { title: 'Chapter Node View' }
+  },
+  {
     path: '/test/base-button',
     name: 'BaseButtonTest',
     component: () => import('../views/BaseButtonTestView.vue'),

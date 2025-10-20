@@ -1,5 +1,5 @@
 <template>
-  <header class="h-14 md:h-16 sticky top-0 z-30 flex items-center gap-2 px-3 md:px-4
+  <header class="h-14 md:h-16 sticky top-0 z-50 flex items-center gap-2 px-3 md:px-4
     border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur
     text-gray-900 dark:text-gray-100">
     <button @click="ui.toggleSidebar()" class="md:hidden text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white" :aria-label="ui.isSidebarOpen ? 'Close navigation' : 'Open navigation'">
