@@ -60,6 +60,7 @@ import { ref, onMounted, computed } from 'vue';
 import api from '../api/client.js';
 import { getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
+import { useToastStore } from '../stores/toast.js';
 
 const scenes = ref([]);
 const search = ref('');
@@ -68,6 +69,7 @@ const loading = ref(true);
 const error = ref('');
 const confirmOpen = ref(false);
 const pendingDeleteId = ref('');
+const toast = useToastStore();
 
 onMounted(async () => {
   try {
@@ -119,6 +121,7 @@ async function deleteScene(id) {
         await api.scenes.delete(id);
         const data = await api.scenes.getAll();
         scenes.value = Array.isArray(data) ? data : [];
+        toast.success(`Deleted scene ${id}`);
         return;
       }
     }
@@ -136,6 +139,7 @@ async function confirmDelete() {
     scenes.value = Array.isArray(data) ? data : [];
   } catch (e) {
     error.value = `Failed to delete scene: ${e.message}`;
+    toast.error(`Failed to delete scene: ${e.message}`);
   } finally {
     confirmOpen.value = false;
     pendingDeleteId.value = '';

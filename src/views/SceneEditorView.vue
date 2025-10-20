@@ -152,9 +152,11 @@ import SceneTextEditor from '../components/SceneTextEditor.vue';
 import ChoicesList from '../components/ChoicesList.vue';
 import StateChangesList from '../components/StateChangesList.vue';
 import CodePreview from '../components/CodePreview.vue';
+import { useToastStore } from '../stores/toast.js';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToastStore();
 
 // Scene data
 const sceneData = reactive({
@@ -232,6 +234,7 @@ async function handleCreateChapter(chapterId) {
     await api.chapters.create({ id: chapterId, name: chapterId });
     availableChapters.value.push({ id: chapterId, name: chapterId });
     saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" created.` };
+    toast.success(`Chapter "${chapterId}" created`);
     setTimeout(() => (saveStatus.value = null), 1200);
   } catch (err) {
     // Fallback: save locally when offline
@@ -239,10 +242,12 @@ async function handleCreateChapter(chapterId) {
       await saveChapterLocal({ id: chapterId, name: chapterId, scenes: [], order: Date.now() });
       availableChapters.value.push({ id: chapterId, name: chapterId });
       saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" saved locally (offline).` };
+      toast.info(`Chapter "${chapterId}" saved locally (offline)`);
       setTimeout(() => (saveStatus.value = null), 1600);
     } catch (e2) {
       console.error('Failed to create chapter:', err);
       saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+      toast.error(`Failed to create chapter: ${err.message}`);
     }
   }
 }
@@ -285,6 +290,7 @@ async function handleSave() {
       type: 'success',
       message: `Scene "${sceneData.sceneId}" saved successfully!`
     };
+    toast.success(`Scene "${sceneData.sceneId}" saved`);
 
     // Clear status after 3 seconds, then redirect
     setTimeout(() => {
@@ -312,6 +318,7 @@ async function handleSave() {
         type: 'success',
         message: `Scene "${sceneData.sceneId}" saved locally (offline).`
       };
+      toast.info(`Saved locally (offline): ${sceneData.sceneId}`);
       setTimeout(() => {
         saveStatus.value = null;
         router.push('/scenes');
@@ -449,9 +456,11 @@ async function fetchServerCode() {
       serverCode.value = code;
       codeViewMode.value = 'server';
       serverCodeStatus.value = { type: 'success', message: 'Server code generated' };
+      toast.success('Server code generated');
     }
   } catch (e) {
     serverCodeStatus.value = { type: 'error', message: `Server codegen failed: ${e.message}` };
+    toast.error(`Server codegen failed: ${e.message}`);
   }
 }
 </script>

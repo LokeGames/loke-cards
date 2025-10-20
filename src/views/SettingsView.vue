@@ -45,6 +45,7 @@
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal } from '../lib/storage.js';
+import { useToastStore } from '../stores/toast.js';
 
 const building = ref(false);
 const buildStatus = ref(null);
@@ -52,6 +53,7 @@ const artifacts = ref([]);
 const artifactsLoading = ref(true);
 const syncing = ref(false);
 const syncStatus = ref(null);
+const toast = useToastStore();
 
 async function loadArtifacts() {
   artifactsLoading.value = true;
@@ -66,6 +68,7 @@ async function loadArtifacts() {
   } catch (e) {
     // Avoid noisy errors when backend is offline; show empty state instead
     artifacts.value = [];
+    toast.error(`Failed to load artifacts: ${e.message}`);
   } finally {
     artifactsLoading.value = false;
   }
@@ -79,8 +82,10 @@ async function runBuild() {
     const written = res && typeof res.written === 'number' ? res.written : 0;
     buildStatus.value = { type: 'success', message: `Build complete. Files written: ${written}` };
     await loadArtifacts();
+    toast.success(`Build complete — wrote ${written} files`);
   } catch (e) {
     buildStatus.value = { type: 'error', message: `Build failed: ${e.message}` };
+    toast.error(`Build failed: ${e.message}`);
   } finally {
     building.value = false;
   }
@@ -129,8 +134,10 @@ async function runSync() {
       }
     }
     syncStatus.value = { type: 'success', message: `Synced ${pushedChapters} chapters, ${pushedScenes} scenes.` };
+    toast.success(`Synced ${pushedChapters} chapters, ${pushedScenes} scenes`);
   } catch (e) {
     syncStatus.value = { type: 'error', message: `Sync failed: ${e.message}` };
+    toast.error(`Sync failed: ${e.message}`);
   } finally {
     syncing.value = false;
   }

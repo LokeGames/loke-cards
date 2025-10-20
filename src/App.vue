@@ -20,6 +20,7 @@
             <div class="p-6 text-sm text-gray-600 dark:text-gray-400">Loading…</div>
           </template>
         </Suspense>
+        <ToastContainer />
         <DevErrorOverlay v-if="isDev" />
       </main>
     </div>
@@ -30,6 +31,7 @@
 import AppHeader from './components/AppHeader.vue'
 import AppSidebar from './components/AppSidebar.vue'
 import DevErrorOverlay from './components/DevErrorOverlay.vue'
+import ToastContainer from './components/ToastContainer.vue'
 const isDev = import.meta.env.DEV
 </script>
 

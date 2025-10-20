@@ -76,9 +76,11 @@ import BaseButton from '../components/BaseButton.vue';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
 import { saveChapter as saveChapterLocal } from '../lib/storage.js';
+import { useToastStore } from '../stores/toast.js';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToastStore();
 
 // Form state
 const chapter = reactive({
@@ -117,6 +119,7 @@ async function handleSave() {
       await api.chapters.create({ id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
     }
     saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" created.` };
+    toast.success(`Chapter "${chapter.chapterId}" created`);
     setTimeout(() => {
       saveStatus.value = null;
       router.push('/chapters');
@@ -125,12 +128,14 @@ async function handleSave() {
     try {
       await saveChapterLocal({ id: chapter.chapterId, name: chapter.name, scenes: [], order: Date.now() });
       saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" saved locally (offline).` };
+      toast.info(`Chapter "${chapter.chapterId}" saved locally (offline)`);
       setTimeout(() => {
         saveStatus.value = null;
         router.push('/chapters');
       }, 1400);
     } catch (e2) {
       saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+      toast.error(`Failed to create chapter: ${err.message}`);
     }
   } finally {
 

@@ -60,6 +60,7 @@ import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
+import { useToastStore } from '../stores/toast.js';
 
 const chapters = ref([]);
 const loading = ref(true);
@@ -67,6 +68,7 @@ const error = ref('');
 const confirmOpen = ref(false);
 const pendingDeleteId = ref('');
 let dragIndex = -1;
+const toast = useToastStore();
 
 onMounted(async () => {
   try {
@@ -130,6 +132,7 @@ async function deleteChapter(id) {
         await api.chapters.delete(id);
         const data = await api.chapters.getAll();
         chapters.value = Array.isArray(data) ? data : [];
+        toast.success(`Deleted chapter ${id}`);
         return;
       }
     }
@@ -146,6 +149,7 @@ async function confirmDelete() {
     chapters.value = Array.isArray(data) ? data : [];
   } catch (e) {
     error.value = `Failed to delete chapter: ${e.message}`;
+    toast.error(`Failed to delete chapter: ${e.message}`);
   } finally {
     confirmOpen.value = false;
     pendingDeleteId.value = '';
