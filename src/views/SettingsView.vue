@@ -9,12 +9,11 @@
     <section class="p-4 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
       <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Build C Files</h2>
       <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Generate C source files for all scenes and write them to the backend's <code>server/output/</code> folder.</p>
-      <div class="flex items-center gap-3 mb-3">
-        <button @click="runBuild" :disabled="building" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-sm font-medium">
-          {{ building ? 'Building…' : 'Build All Scenes' }}
-        </button>
-        <span v-if="buildStatus" :class="buildStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'" class="text-sm">{{ buildStatus.message }}</span>
-      </div>
+        <div class="flex items-center gap-3 mb-3">
+          <button @click="runBuild" :disabled="building" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-sm font-medium">
+            {{ building ? 'Building…' : 'Build All Scenes' }}
+          </button>
+        </div>
 
       <div class="mt-2">
         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Artifacts</h3>
@@ -34,7 +33,6 @@
         <button @click="runSync" :disabled="syncing" class="px-4 py-2 rounded bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-sm font-medium">
           {{ syncing ? 'Syncing…' : 'Sync to Server' }}
         </button>
-        <span v-if="syncStatus" :class="syncStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'" class="text-sm">{{ syncStatus.message }}</span>
       </div>
       <p class="text-xs text-gray-500 dark:text-gray-500">Tip: Use this if you created data while the backend was offline.</p>
     </section>

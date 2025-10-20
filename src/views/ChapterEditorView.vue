@@ -47,14 +47,7 @@
         <BaseButton variant="secondary" @click="handleCancel">Cancel</BaseButton>
       </div>
 
-      <!-- Save Status -->
-      <div v-if="saveStatus" class="p-4 rounded-lg flex items-start justify-between gap-3" :class="{
-        'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400': saveStatus.type === 'success',
-        'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400': saveStatus.type === 'error'
-      }">
-        <span>{{ saveStatus.message }}</span>
-        <button @click="saveStatus = null" class="text-sm opacity-70 hover:opacity-100">✕</button>
-      </div>
+      <!-- Inline save status removed — using toasts globally -->
 
       <!-- Tips -->
       <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">

@@ -33,7 +33,7 @@
         Total: {{ filteredScenes.length }}
       </div>
 
-      <div v-if="loading" class="text-gray-600 dark:text-gray-400">Loading scenes…</div>
+      <div v-if="loading"><BaseSkeletonList :rows="6" /></div>
 
       <ul v-else class="divide-y divide-gray-200 dark:divide-gray-800 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <li v-for="sc in filteredScenes" :key="sc.sceneId || sc.id" class="p-3 flex items-center justify-between">
@@ -74,12 +74,14 @@ const toast = useToastStore();
 onMounted(async () => {
   try {
     const data = await api.scenes.getAll();
-    // API returns array of scene objects
-    scenes.value = Array.isArray(data) ? data : [];
+    // API returns array of scene objects; filter invalid entries
+    const arr = Array.isArray(data) ? data : [];
+    scenes.value = arr.filter((s) => s && (s.sceneId || s.id));
   } catch (e) {
     // Fallback to local storage when offline or backend unavailable
     try {
-      scenes.value = await getAllScenesLocal();
+      const local = await getAllScenesLocal();
+      scenes.value = (Array.isArray(local) ? local : []).filter((s) => s && (s.sceneId || s.id));
     } catch (e2) {
       error.value = `Failed to load scenes: ${e.message}`;
     }
@@ -90,7 +92,7 @@ onMounted(async () => {
 
 const filteredScenes = computed(() => {
   const q = search.value.trim().toLowerCase();
-  const arr = Array.isArray(scenes.value) ? scenes.value.slice() : [];
+  const arr = (Array.isArray(scenes.value) ? scenes.value.slice() : []).filter((s) => s && (s.sceneId || s.id));
   let out = arr;
   if (q) {
     out = out.filter((s) => {

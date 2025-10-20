@@ -82,14 +82,7 @@
           </button>
         </div>
 
-        <!-- Save Status -->
-        <div v-if="saveStatus" class="p-4 rounded-lg flex items-start justify-between gap-3" :class="{
-          'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400': saveStatus.type === 'success',
-          'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400': saveStatus.type === 'error'
-        }">
-          <span>{{ saveStatus.message }}</span>
-          <button @click="saveStatus = null" class="text-sm opacity-70 hover:opacity-100">✕</button>
-        </div>
+        <!-- Inline save status removed — using toasts globally -->
       </div>
 
       <!-- Right Column: Code Preview (desktop) / Collapsible (mobile) -->
@@ -122,7 +115,6 @@
           </h3>
           <div class="flex items-center gap-2 mb-3">
             <button @click="fetchServerCode" class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300">Generate on Server</button>
-            <span v-if="serverCodeStatus" class="text-xs" :class="serverCodeStatus.type==='error' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">{{ serverCodeStatus.message }}</span>
           </div>
           <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
             <li>• Scene ID must start with "scene_" (e.g., scene_forest_entrance)</li>

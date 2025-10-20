@@ -1,5 +1,5 @@
 ## Phase 5 — Extended: NodeView (Graph)
--[] Inherit templeting from loke-cards
+- [x] Inherit templeting from loke-cards
 
 
 Goal: Twine‑style visual graph for chapters and scenes using Vue Flow. Chapters act as containers; scenes are nodes; edges represent links between scenes (intra‑ and inter‑chapter).
@@ -33,8 +33,8 @@ References: see `doc/cards-vue-flow.md` for architecture, builders, and layout h
 - [ ] Persist node positions in store/DB on drag‑stop to keep layout stable
 
 ### 5.E.4 Interactions
-- [ ] Drag nodes (scenes/chapters); on drag‑stop persist `position`
-- [ ] Connect scenes by drawing an edge; on connect, create `link` (or choice) in data layer
+- [x] Drag nodes (scenes/chapters); on drag‑stop persist `position`
+- [x] Connect scenes by drawing an edge; on connect, create `link` (or choice) in data layer
 - [x] Delete nodes/edges → reflect in data and update graph
 - [ ] Fit‑view/zoom controls; Minimap; Background grid
 - [ ] Click node → open Scene editor; context menu → quick actions (rename, delete, add link)

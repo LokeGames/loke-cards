@@ -21,7 +21,7 @@
         Total: {{ chapters.length }}
       </div>
 
-      <div v-if="loading" class="text-gray-600 dark:text-gray-400">Loading chapters…</div>
+      <div v-if="loading"><BaseSkeletonList :rows="6" /></div>
 
       <ul v-else class="divide-y divide-gray-200 dark:divide-gray-800 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <li
