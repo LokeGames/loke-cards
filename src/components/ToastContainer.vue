@@ -1,18 +1,19 @@
 <template>
-  <div class="fixed top-3 right-3 z-[999] flex flex-col gap-2 w-80">
-    <div
-      v-for="t in toasts.items"
-      :key="t.id"
-      class="px-3 py-2 rounded shadow border text-sm flex items-start justify-between gap-3"
-      :class="toastClass(t.type)"
-      role="status"
-      aria-live="polite"
-    >
-      <div class="break-words flex-1">{{ t.message }}</div>
-      <button @click="toasts.remove(t.id)" class="opacity-70 hover:opacity-100">✕</button>
-    </div>
+  <div class="fixed top-3 right-3 z-[999] w-80">
+    <TransitionGroup name="toast" tag="div" class="flex flex-col gap-2">
+      <div
+        v-for="t in toasts.items"
+        :key="t.id"
+        class="px-3 py-2 rounded shadow border text-sm flex items-start justify-between gap-3"
+        :class="toastClass(t.type)"
+        :role="t.type==='error' ? 'alert' : 'status'"
+        :aria-live="t.type==='error' ? 'assertive' : 'polite'"
+      >
+        <div class="break-words flex-1">{{ t.message }}</div>
+        <button @click="toasts.remove(t.id)" class="opacity-70 hover:opacity-100">✕</button>
+      </div>
+    </TransitionGroup>
   </div>
-  
 </template>
 
 <script setup>
@@ -32,5 +33,11 @@ function toastClass(type) {
 </script>
 
 <style scoped>
+/* Animations */
+.toast-enter-from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+.toast-enter-to { opacity: 1; transform: translateY(0) scale(1); }
+.toast-enter-active { transition: all 160ms ease-out; }
+.toast-leave-from { opacity: 1; transform: translateY(0) scale(1); }
+.toast-leave-to { opacity: 0; transform: translateY(-6px) scale(0.98); }
+.toast-leave-active { transition: all 140ms ease-in; }
 </style>
-

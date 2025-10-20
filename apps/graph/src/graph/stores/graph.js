@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import api from '@graph/api/client.js';
-import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, getScene as getSceneLocal, saveScene as saveSceneLocal, saveChapter as saveChapterLocal } from '@graph/lib/storage.js';
+import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, getScene as getSceneLocal, saveScene as saveSceneLocal, saveChapter as saveChapterLocal, deleteScene as deleteSceneLocal, deleteChapter as deleteChapterLocal } from '@graph/lib/storage.js';
 
 function normalizeChapter(ch) {
   let src = ch;
@@ -65,6 +65,55 @@ export const useGraphStore = defineStore('graph', {
         return true;
       } catch { return false; }
     },
+    async deleteNode({ id, type }) {
+      if (type === 'scene') {
+        await this.deleteScene(id.replace('scene-', ''));
+      } else if (type === 'chapter') {
+        await this.deleteChapter(id.replace('chap-', ''));
+      }
+    },
+    async deleteScene(sceneId) {
+      const index = this.scenes.findIndex((s) => s.id === sceneId);
+      if (index > -1) {
+        this.scenes.splice(index, 1);
+        try {
+          await api.scenes.delete(sceneId);
+          await deleteSceneLocal(sceneId);
+        } catch (error) {
+          console.error(`Failed to delete scene ${sceneId}`, error);
+        }
+      }
+    },
+    async deleteChapter(chapterId) {
+      const index = this.chapters.findIndex((c) => c.id === chapterId);
+      if (index > -1) {
+        this.chapters.splice(index, 1);
+        try {
+          await api.chapters.delete(chapterId);
+          await deleteChapterLocal(chapterId);
+        } catch (error) {
+          console.error(`Failed to delete chapter ${chapterId}`, error);
+        }
+      }
+    },
+    async deleteEdge({ source, target }) {
+      const sourceId = source.replace('scene-', '');
+      const targetId = target.replace('scene-', '');
+
+      const sceneIndex = this.scenes.findIndex((s) => s.id === sourceId);
+      if (sceneIndex > -1) {
+        const scene = this.scenes[sceneIndex];
+        const choiceIndex = scene.choices.findIndex((c) => c.nextScene === targetId);
+        if (choiceIndex > -1) {
+          scene.choices.splice(choiceIndex, 1);
+          try {
+            await saveSceneLocal(scene);
+            await api.scenes.update(sourceId, scene);
+          } catch (error) {
+            console.error(`Failed to delete edge from ${sourceId} to ${targetId}`, error);
+          }
+        }
+      }
+    },
   },
 });
-

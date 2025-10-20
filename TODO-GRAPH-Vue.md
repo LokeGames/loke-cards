@@ -24,7 +24,7 @@ References: see `doc/cards-vue-flow.md` for architecture, builders, and layout h
 ### 5.E.2 Routes & Navigation (External App)
 - [x] Global graph route: `/` → `GlobalGraph.vue`
 - [x] Per‑chapter graph route: `/chapter/:id` → `ChapterGraph.vue` (props: `id`)
-- [ ] Double‑click chapter container in `GlobalGraph` opens per‑chapter route
+- [x] Double‑click chapter container in `GlobalGraph` opens per‑chapter route
 
 ### 5.E.3 Data Sources & Offline
 - [ ] Use `src/api/client.js` for network; fallback to `src/lib/storage.js` when API fails
@@ -35,7 +35,7 @@ References: see `doc/cards-vue-flow.md` for architecture, builders, and layout h
 ### 5.E.4 Interactions
 - [ ] Drag nodes (scenes/chapters); on drag‑stop persist `position`
 - [ ] Connect scenes by drawing an edge; on connect, create `link` (or choice) in data layer
-- [ ] Delete nodes/edges → reflect in data and update graph
+- [x] Delete nodes/edges → reflect in data and update graph
 - [ ] Fit‑view/zoom controls; Minimap; Background grid
 - [ ] Click node → open Scene editor; context menu → quick actions (rename, delete, add link)
 
@@ -50,7 +50,7 @@ References: see `doc/cards-vue-flow.md` for architecture, builders, and layout h
 - [ ] Responsive canvas; ensure good performance with many nodes (avoid excessive reactivity)
 
 ### 5.E.7 Keyboard & A11y
-- [ ] Keyboard delete on selection removes nodes/edges
+- [x] Keyboard delete on selection removes nodes/edges
 - [ ] Tab focus order within NodeView toolbar
 - [ ] ARIA labels for toolbar controls; sufficient contrast in dark mode
 

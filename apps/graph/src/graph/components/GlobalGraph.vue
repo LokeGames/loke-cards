@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100vh-3rem)] relative">
+  <div class="h-[calc(100vh-3rem)] relative" tabindex="0" @keydown.delete.prevent="onDelete">
     <div class="absolute right-3 top-3 z-10 flex gap-2">
       <button @click="fit" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Fit View</button>
       <button @click="autoLayout" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Auto Layout</button>
@@ -22,13 +22,12 @@
   </div>
 </template>
 
-<script setup>
 import { ref, onMounted } from 'vue';
 import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Background } from '@vue-flow/background';
-import '@vue-flow/core/dist/style.css';
-import '@vue-flow/minimap/dist/style.css';
+import 'vue-flow/core/dist/style.css';
+import 'vue-flow/minimap/dist/style.css';
 import { useRouter } from 'vue-router';
 import { useGraphStore } from '@graph/stores/graph.js';
 import { nodeTypes } from '@graph/nodeTypes.js';
@@ -39,7 +38,7 @@ const store = useGraphStore();
 const router = useRouter();
 const nodes = ref([]);
 const edges = ref([]);
-const { fitView, getNodes, getEdges, updateNode } = useVueFlow();
+const { fitView, getNodes, getEdges, updateNode, removeNodes, removeEdges, getSelectedNodes, getSelectedEdges } = useVueFlow();
 
 async function refresh() {
   await store.loadGlobal();
@@ -69,6 +68,25 @@ async function onConnect(params) {
   await store.addChoiceLink(sourceId, targetId);
 }
 
+async function onDelete() {
+  const selectedNodes = getSelectedNodes.value;
+  const selectedEdges = getSelectedEdges.value;
+
+  if (selectedNodes.length > 0) {
+    for (const node of selectedNodes) {
+      await store.deleteNode(node);
+    }
+    removeNodes(selectedNodes.map(n => n.id));
+  }
+
+  if (selectedEdges.length > 0) {
+    for (const edge of selectedEdges) {
+      await store.deleteEdge(edge);
+    }
+    removeEdges(selectedEdges.map(e => e.id));
+  }
+}
+
 onMounted(async () => { await refresh(); });
 
 function onNodeDoubleClick(evt) {
@@ -82,7 +100,6 @@ function onNodeDoubleClick(evt) {
 function fit() { try { fitView(); } catch {} }
 async function autoLayout() { const laidOut = await layoutScenes(getNodes(), getEdges()); for (const n of laidOut) updateNode(n.id, { position: n.position }); }
 async function saveLayout() { const current = getNodes(); for (const n of current) { if (n.type === 'scene') await store.persistScenePosition(n.id.replace('scene-', ''), n.position); else if (n.type === 'chapter') await store.persistChapterPosition(n.id.replace('chap-', ''), n.position); } }
-</script>
 
 <style scoped>
 </style>

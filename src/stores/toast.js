@@ -1,16 +1,21 @@
 import { defineStore } from 'pinia';
 
 let nextId = 1;
+const MAX_TOASTS = 5;
 
 export const useToastStore = defineStore('toast', {
   state: () => ({ items: [] }),
   actions: {
-    push({ type = 'info', message, timeout = 3000 } = {}) {
+    push(input = {}) {
+      const { type = 'info', message = '', timeout } = input;
       const id = nextId++;
-      const item = { id, type, message, timeout };
+      const defaultTimeout = type === 'error' ? 4000 : type === 'success' ? 2500 : 3000;
+      const item = { id, type, message, timeout: typeof timeout === 'number' ? timeout : defaultTimeout };
+      // limit stack size
+      if (this.items.length >= MAX_TOASTS) this.items.shift();
       this.items.push(item);
-      if (timeout > 0) {
-        setTimeout(() => this.remove(id), timeout);
+      if (item.timeout > 0) {
+        setTimeout(() => this.remove(id), item.timeout);
       }
       return id;
     },
@@ -20,15 +25,14 @@ export const useToastStore = defineStore('toast', {
     clear() {
       this.items = [];
     },
-    success(message, timeout = 2500) {
+    success(message, timeout) {
       return this.push({ type: 'success', message, timeout });
     },
-    error(message, timeout = 4000) {
+    error(message, timeout) {
       return this.push({ type: 'error', message, timeout });
     },
-    info(message, timeout = 3000) {
+    info(message, timeout) {
       return this.push({ type: 'info', message, timeout });
     },
   },
 });
-
