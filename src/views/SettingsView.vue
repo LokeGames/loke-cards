@@ -87,6 +87,7 @@
         <button @click="switchToSqlJs" class="px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Use SQL.js (WASM)</button>
         <button @click="switchToLocal" class="px-3 py-2 rounded bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium">Use LocalForage</button>
         <button v-if="dbBackend==='sqljs'" @click="flushSqlJs" class="px-3 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium">Save WASM DB now</button>
+        <button @click="migrateLocalToSqlJs" class="px-3 py-2 rounded bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium" title="Copy LocalForage data into SQL.js and switch backend">Migrate LocalForage → SQL.js</button>
       </div>
       <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
         Note: SQL.js is in-memory unless OPFS persistence is configured. Place <code>sql-wasm.js</code>/<code>sql-wasm.wasm</code> under <code>/public/sqljs/</code>.
@@ -346,6 +347,20 @@ function toggleSqlJsAutosave(e) {
   try { localStorage.setItem('LC_SQLJS_AUTOSAVE', v ? '1' : '0') } catch {}
   toast.info(`SQL.js autosave: ${v ? 'enabled' : 'disabled'}. Reloading…`)
   setTimeout(() => location.reload(), 300)
+}
+
+async function migrateLocalToSqlJs() {
+  try {
+    if (!sqljsAvailable.value) { toast.error('SQL.js assets not available under /public/sqljs/'); return }
+    const [chs, scs] = await Promise.all([getAllChaptersLocal(), getAllScenesLocal()])
+    setDbBackend('sqljs')
+    const db = await getDb()
+    let c=0,s=0
+    for (const ch of chs) { await db.chaptersPut(ch); c++ }
+    for (const sc of scs) { const id = sc.sceneId || sc.id; if (id) { await db.scenesPut({ ...sc, id, sceneId: id }); s++ } }
+    toast.success(`Migrated ${c} chapters, ${s} scenes to SQL.js. Reloading…`)
+    setTimeout(() => location.reload(), 400)
+  } catch (e) { toast.error(`Migration failed: ${e.message}`) }
 }
 
 async function createProject() {

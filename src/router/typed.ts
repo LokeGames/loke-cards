@@ -8,6 +8,7 @@ export type RouteName =
   | 'EditChapter'
   | 'Code'
   | 'Settings'
+  | 'StoryMap'
   | 'NotFound';
 
 export function hasRequiredParams<N extends RouteName>(name: N, params: Record<string, unknown>): boolean {

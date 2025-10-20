@@ -2,8 +2,6 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 // Project scoping guard
 // @ts-ignore JS modules
 import { getScene as getLocalScene, getChapter as getLocalChapter } from '../lib/storage.js';
-// @ts-ignore
-import { useProjectStore } from '../stores/project.js';
 import type { RouteName } from './typed';
 // Eager-load primary views to avoid async import race conditions
 import DashboardView from '../views/DashboardView.vue';
@@ -13,6 +11,7 @@ import ChapterListView from '../views/ChapterListView.vue';
 import ChapterEditorView from '../views/ChapterEditorView.vue';
 import CodeView from '../views/CodeView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import BookTocView from '../views/BookTocView.vue';
 import BaseButtonTestView from '../views/BaseButtonTestView.vue';
 import NotFoundView from '../views/NotFoundView.vue';
 
@@ -22,6 +21,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Dashboard' as RouteName,
     component: DashboardView,
     meta: { title: 'Dashboard' }
+  },
+  {
+    path: '/toc',
+    name: 'StoryMap' as RouteName,
+    component: BookTocView,
+    meta: { title: 'Story Map' }
   },
   {
     path: '/dashboard',
@@ -114,9 +119,8 @@ router.beforeEach(async (to, from, next) => {
   document.title = to.meta.title ? `${to.meta.title} - Loke Cards` : 'Loke Cards';
   // Guard: prevent editing items from a different project
   try {
-    const ps = useProjectStore();
-    if (!ps.currentProject) await ps.init();
-    const pid = ps.currentProject?.id || 'default';
+    let pid = 'default';
+    try { const v = localStorage.getItem('LC_PROJECT_ID'); if (v) pid = v } catch {}
     if (to.name === 'EditScene' && to.params?.id) {
       const id = String(to.params.id);
       const sc = await getLocalScene(id);

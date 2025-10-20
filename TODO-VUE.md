@@ -694,6 +694,19 @@ This cross‑cutting project layer is tracked centrally in `TODO.md` under “Fa
 - [x] Editor flows call store `upsert` and lists use store state
 - [x] Live updates via store state + event bus for cross‑tab
 
+### 7.9 DB Adapter + WASM (Completed)
+- [x] DB adapter boundary with LocalForage (default) and SQL.js (WASM) backends
+- [x] Web Worker option for DB to keep UI thread snappy
+- [x] SQL.js OPFS persistence (manual flush + autosave toggle)
+- [x] Settings controls: switch backend, Worker toggle, migrate LocalForage → SQL.js
+
+### 7.10 TOC (Book) View — Git‑style tree (Planned)
+- [ ] Route `/toc` with `BookTocView.vue`
+- [ ] `src/components/toc/TocRow.vue` renders lane SVG + labels (sceneId, chapter badge)
+- [ ] `src/lib/toc.js` helpers: build edges from choices, topo-ish order, lane assignment (git‑style)
+- [ ] Controls: search, chapter filter, toggles (show cross‑chapter links later)
+- [ ] Click row → open Scene editor; hover → quick info
+
 ---
 
 ## Phase 8: Deployment

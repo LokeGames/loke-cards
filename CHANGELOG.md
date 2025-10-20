@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Registration in `src/main.js`; worker in `public/sw.js`
 - Playwright scaffold for offline app‑shell navigation (skipped until finalized)
   - `tests/offline-sync.spec.js`
+- Reactive data stores (live UI updates)
+  - `src/stores/scenes.js` and `src/stores/chapters.js` as single source of truth (Pinia)
+  - Lists and editors bind to store state; background refresh replaces content only if non-empty
+  - Event bus for cross-tab updates: `src/lib/events.js`, wired in `src/lib/storage.js`
+- DB adapter + WASM path
+  - `src/lib/db/` with `getDb()` switchable between LocalForage and SQL.js (WASM); Worker-capable
+  - SQL.js OPFS persistence (autosave + manual flush), Settings UI to switch and migrate
 
 ### Changed
 - API client normalization and canonical data shape
@@ -31,10 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `api.scenes.getAll/getById` return normalized objects; `api.chapters.getAll` normalized as well
   - `api.scenes.create/update` accept canonical fields and add `id`/`chapter` aliases for backend compatibility
   - Central normalizers added: `src/lib/normalize.js`
-- App consistency updates using canonical fields
+  - App consistency updates using canonical fields
   - Editor/List/Dashboard/Graph use `sceneId` and `chapterId` exclusively in UI and logic
   - Removed ad‑hoc normalization in views; rely on API client/utility normalizers
   - Graph app aligned: API client and store now normalize to canonical `sceneId`/`chapterId` (internal `id` mirrors `sceneId`)
+  - Scene/Chapter lists and Dashboard now use stores and update live without reload
+  - Settings exposes Database Backend controls and migration utility
   - Scene/Chapter lists and Dashboard now use stores and update live without reload
 
 ### Upcoming — Projects (Single Active Project)

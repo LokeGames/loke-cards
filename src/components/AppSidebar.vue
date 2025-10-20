@@ -1,5 +1,5 @@
 <template>
-  <div class="relative z-40 md:hidden" role="dialog" aria-modal="true" v-show="ui.isSidebarOpen">
+  <div class="relative z-40 md:hidden" role="dialog" aria-modal="true" v-if="ui.isSidebarOpen">
     <div class="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity" @click="ui.closeSidebar()"></div>
 
     <div class="fixed inset-0 flex z-40">
@@ -15,12 +15,12 @@
 
         <aside class="h-full overflow-auto p-3">
           <ul class="space-y-1 text-sm">
-            <li><RouterLink to="/" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Dashboard</RouterLink></li>
-            <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Scenes</RouterLink></li>
-            <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Chapters</RouterLink></li>
-            <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">C code</RouterLink></li>
-            <!-- Node View moved to external app -->
-            <li><RouterLink to="/settings" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Settings</RouterLink></li>
+            <li><NavLink to="/">Dashboard</NavLink></li>
+            <li><NavLink to="/scenes">Scenes</NavLink></li>
+            <li><NavLink to="/chapters">Chapters</NavLink></li>
+            <li><NavLink to="/toc">Story Map</NavLink></li>
+            <li><NavLink to="/code">C code</NavLink></li>
+            <li><NavLink to="/settings">Settings</NavLink></li>
           </ul>
 
           <div class="mt-6 px-3">
@@ -61,12 +61,12 @@
   <!-- Desktop Sidebar -->
   <aside class="h-full overflow-auto p-3 bg-gray-50 dark:bg-gray-950 hidden md:block w-64 shrink-0 border-r border-gray-200 dark:border-gray-800 relative z-20">
     <ul class="space-y-1 text-sm">
-      <li><RouterLink to="/" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Dashboard</RouterLink></li>
-      <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Scenes</RouterLink></li>
-      <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Chapters</RouterLink></li>
-      <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">C code</RouterLink></li>
-      <!-- Node View moved to external app -->
-      <li><RouterLink to="/settings" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Settings</RouterLink></li>
+      <li><NavLink to="/">Dashboard</NavLink></li>
+      <li><NavLink to="/scenes">Scenes</NavLink></li>
+      <li><NavLink to="/chapters">Chapters</NavLink></li>
+      <li><NavLink to="/toc">Story Map</NavLink></li>
+      <li><NavLink to="/code">C code</NavLink></li>
+      <li><NavLink to="/settings">Settings</NavLink></li>
     </ul>
 
     <div class="mt-6 px-3">
@@ -95,6 +95,7 @@
 
 <script setup>
 import { useUiStore } from '../stores/ui';
+import NavLink from './NavLink.vue'
 
 const ui = useUiStore();
 </script>

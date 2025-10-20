@@ -60,6 +60,7 @@ import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal } from '../lib/storage.js';
 import { useProjectStore } from '../stores/project.js';
 import { useChapterStore } from '../stores/chapters.js';
+import { storeToRefs } from 'pinia';
 import { onDataChange, onProjectChange } from '../lib/events.js';
 import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
@@ -89,11 +90,12 @@ onMounted(async () => {
   // Offline-first: load local first
   const store = useChapterStore();
   await store.init();
-  chapters.value = store.chapters;
+  const { chapters: storeChapters } = storeToRefs(store);
+  chapters.value = storeChapters.value;
   // Then try server
   try {
     const data = await api.chapters.getAll();
-    if (Array.isArray(data) && data.length > 0) { await store.loadServer(); chapters.value = store.chapters; }
+    if (Array.isArray(data) && data.length > 0) { await store.loadServer(); chapters.value = storeChapters.value; }
   } catch (e) {
     // keep local only
   } finally {
@@ -104,7 +106,7 @@ onMounted(async () => {
     const pid = project.currentProject?.id || 'default';
     if (!detail || !detail.projectId || detail.projectId === pid) {
       await store.refresh();
-      chapters.value = store.chapters;
+      chapters.value = storeChapters.value;
     }
   });
   const offProject = onProjectChange(async () => {
