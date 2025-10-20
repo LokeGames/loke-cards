@@ -41,7 +41,7 @@
         <li v-for="sc in filteredScenes" :key="sc.sceneId" class="p-3 flex items-center justify-between">
           <div>
             <div class="font-medium text-gray-800 dark:text-gray-100">{{ sc.sceneId }}</div>
-            <div class="text-xs text-gray-500 dark:text-gray-500">Chapter: {{ sc.chapterId || '—' }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-500">Chapter: {{ chapterLabel(sc) }}</div>
           </div>
           <div class="flex items-center gap-2">
             <RouterLink :to="toEditScene(sc.sceneId)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
@@ -66,8 +66,9 @@ import { useToastStore } from '../stores/toast.js';
 import { toEditScene } from '../router/guards.js';
 import { normalizeScenes } from '../lib/normalize.js';
 import { useProjectStore } from '../stores/project.js';
-import { useSceneStore } from '../stores/scenes.js';
+import { useChapterStore } from '../stores/chapters.js';
 import { storeToRefs } from 'pinia';
+import { useSceneStore } from '../stores/scenes.js';
 import { onDataChange, onProjectChange } from '../lib/events.js';
 
 const scenes = ref([]);
@@ -78,6 +79,9 @@ const error = ref('');
 const confirmOpen = ref(false);
 const pendingDeleteId = ref('');
 const toast = useToastStore();
+const chapterStore = useChapterStore();
+await chapterStore.init?.();
+const { chapters: chapterList } = storeToRefs(chapterStore);
 
 async function refreshFromLocal() {
   try {
@@ -163,6 +167,12 @@ async function deleteScene(id) {
   confirmOpen.value = true;
 }
 
+function chapterLabel(sc) {
+  const id = sc.chapterId || ''
+  if (!id) return '—'
+  const found = (chapterList.value || []).some((c) => c && c.id === id)
+  return found ? id : '—'
+}
 async function confirmDelete() {
   if (!pendingDeleteId.value) return;
   try {

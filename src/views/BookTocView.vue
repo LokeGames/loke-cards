@@ -10,10 +10,21 @@
         </select>
       </div>
     </div>
-
-    <div class="rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-      <TocRow v-for="row in filteredRows" :key="row.sceneId + '-' + row.lane" :scene-id="row.sceneId" :chapter-id="row.chapterId" :lane="row.lane" :lanes="maxLanes" :color="row.color" @open="openScene" />
-      <div v-if="filteredRows.length===0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No scenes.</div>
+    <!-- Grouped by chapter like a TOC: chapter heading + indented scenes (with lanes) -->
+    <div class="rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+      <div v-for="grp in grouped" :key="grp.id" class="border-b border-gray-200 dark:border-gray-800">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm font-semibold">
+          {{ grp.name }}
+          <span class="text-xs text-gray-500 dark:text-gray-500 ml-2">({{ grp.rows.length }})</span>
+        </div>
+        <div class="px-2 py-1">
+          <TocRow v-for="row in grp.rows" :key="row.sceneId + '-' + row.lane" class="pl-4"
+                  :scene-id="row.sceneId" :chapter-id="chapterLabelById(row.chapterId)" :lane="row.lane" :lanes="maxLanes"
+                  :color="row.color" @open="openScene" />
+          <div v-if="grp.rows.length===0" class="p-3 text-xs text-gray-500 dark:text-gray-500">No scenes in this chapter.</div>
+        </div>
+      </div>
+      <div v-if="grouped.length===0" class="p-4 text-sm text-gray-600 dark:text-gray-400">No scenes.</div>
     </div>
   </div>
 </template>
@@ -60,7 +71,55 @@ const filteredRows = computed(() => {
   return rows.value.filter(r => String(r.sceneId).toLowerCase().includes(query))
 })
 
+// Chapters sorted by order or name
+type ChapterLite = { id: string; name?: string; order?: number }
+const chaptersSorted = computed<ChapterLite[]>(() => {
+  const list = (Array.isArray(chapters.value) ? chapters.value : []) as any[]
+  return list.slice().sort((a, b) => {
+    const ao = Number(a?.order ?? Number.MAX_SAFE_INTEGER)
+    const bo = Number(b?.order ?? Number.MAX_SAFE_INTEGER)
+    if (ao !== bo) return ao - bo
+    return String(a?.name || a?.id || '').localeCompare(String(b?.name || b?.id || ''))
+  })
+})
+
+// Group rows by chapter for TOC
+const grouped = computed(() => {
+  // Known chapters set
+  const known = new Set<string>((chaptersSorted.value || []).map(c => c.id))
+  // Build chapter -> rows map from filtered rows, unknown chapterIds treated as unassigned
+  const map = new Map<string, TocRowType[]>()
+  for (const r of filteredRows.value) {
+    const chId = r.chapterId && known.has(r.chapterId) ? r.chapterId : '__none__'
+    if (!map.has(chId)) map.set(chId, [])
+    map.get(chId)!.push(r)
+  }
+  const out: Array<{ id: string; name: string; rows: TocRowType[] }> = []
+  // Known chapters first (ordered)
+  for (const ch of chaptersSorted.value) {
+    const rows = map.get(ch.id) || []
+    out.push({ id: ch.id, name: ch.name || ch.id, rows })
+    map.delete(ch.id)
+  }
+  // Unassigned (no chapter)
+  if (map.has('__none__')) {
+    out.push({ id: '__none__', name: '(Unassigned)', rows: map.get('__none__') || [] })
+    map.delete('__none__')
+  }
+  // Any remaining unknown chapter ids
+  map.forEach((rows, id) => {
+    out.push({ id, name: id, rows })
+  })
+  return out
+})
+
 function openScene(id: string) { router.push(toEditScene(id)) }
+
+const knownChapterIds = computed(() => new Set((chaptersSorted.value || []).map(c => c.id)))
+function chapterLabelById(id?: string) {
+  if (!id) return ''
+  return knownChapterIds.value.has(id) ? id : ''
+}
 </script>
 
 <style scoped>

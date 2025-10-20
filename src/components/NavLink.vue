@@ -6,19 +6,19 @@
   </RouterLink>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { nextTick } from 'vue'
 import { useUiStore } from '../stores/ui'
 
-const props = defineProps({
-  to: { type: [String, Object], required: true },
-  baseClass: { type: String, default: 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block' },
-  activeClass: { type: String, default: 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' },
+type ToType = string | Record<string, any>
+const props = withDefaults(defineProps<{ to: ToType; baseClass?: string; activeClass?: string }>(), {
+  baseClass: 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block',
+  activeClass: 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white',
 })
 
 const ui = useUiStore()
 
-async function onClick(navigate) {
+async function onClick(navigate: () => void) {
   try { ui.closeSidebar() } catch {}
   await nextTick()
   requestAnimationFrame(() => navigate())
@@ -27,4 +27,3 @@ async function onClick(navigate) {
 
 <style scoped>
 </style>
-

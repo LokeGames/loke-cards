@@ -159,9 +159,9 @@ async function deleteChapter(id) {
     if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
       const ok = window.confirm(`Delete chapter ${id}?`);
       if (ok) {
-        await api.chapters.delete(id);
-        const data = await api.chapters.getAll();
-        chapters.value = Array.isArray(data) ? data : [];
+        const store = useChapterStore();
+        await store.remove(id);
+        chapters.value = store.chapters;
         toast.success(`Deleted chapter ${id}`);
         return;
       }
@@ -174,9 +174,9 @@ async function deleteChapter(id) {
 async function confirmDelete() {
   if (!pendingDeleteId.value) return;
   try {
-    await api.chapters.delete(pendingDeleteId.value);
-    const data = await api.chapters.getAll();
-    chapters.value = Array.isArray(data) ? data : [];
+    const store = useChapterStore();
+    await store.remove(pendingDeleteId.value);
+    chapters.value = store.chapters;
   } catch (e) {
     error.value = `Failed to delete chapter: ${e.message}`;
     toast.error(`Failed to delete chapter: ${e.message}`);

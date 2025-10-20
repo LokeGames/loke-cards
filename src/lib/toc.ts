@@ -5,9 +5,9 @@ function hashColor(i) {
   return colors[i % colors.length]
 }
 
-export function buildEdges(scenes) {
-  const edges = []
-  const seen = new Set()
+export function buildEdges(scenes: Array<any>) {
+  const edges: Array<{ source: string; target: string }> = []
+  const seen = new Set<string>()
   for (const s of scenes) {
     const src = s.sceneId || s.id
     if (!src) continue
@@ -25,24 +25,24 @@ export function buildEdges(scenes) {
   return edges
 }
 
-export function buildTocRows(scenes, { chapterIdFilter = null } = {}) {
+export function buildTocRows(scenes: Array<any>, { chapterIdFilter = null }: { chapterIdFilter?: string | null } = {}) {
   // Normalize
   const list = (Array.isArray(scenes) ? scenes : [])
     .filter(Boolean)
     .map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter, choices: Array.isArray(s.choices) ? s.choices : [] }))
     .filter(s => s.id)
 
-  const byId = new Map(list.map(s => [s.id, s]))
+  const byId = new Map<string, any>(list.map(s => [s.id, s]))
   const edges = buildEdges(list)
 
   // Incoming counts
-  const incoming = new Map()
+  const incoming = new Map<string, number>()
   for (const e of edges) incoming.set(e.target, (incoming.get(e.target) || 0) + 1)
 
   // Entries: no incoming
   const entries = list.filter(s => !incoming.has(s.id))
-  const order = []
-  const visited = new Set()
+  const order: string[] = []
+  const visited = new Set<string>()
   const q = [...entries]
   while (q.length) {
     const cur = q.shift()
@@ -59,9 +59,9 @@ export function buildTocRows(scenes, { chapterIdFilter = null } = {}) {
   for (const s of list) if (!visited.has(s.id)) order.push(s.id)
 
   // Lane assignment (git-style)
-  const rows = []
-  const pendingLane = new Map() // sceneId -> lane idx reserved by predecessor
-  let activeLanes = [] // array of sceneIds occupying lanes (visual continuity)
+  const rows: Array<{ sceneId: string; chapterId?: string; lane: number; lanes: number; color: string }> = []
+  const pendingLane = new Map<string, number>() // sceneId -> lane idx reserved by predecessor
+  let activeLanes: string[] = [] // array of sceneIds occupying lanes (visual continuity)
   let maxLanes = 1
   for (const id of order) {
     const node = byId.get(id)
@@ -105,4 +105,3 @@ export function buildTocRows(scenes, { chapterIdFilter = null } = {}) {
   }
   return rows.map(r => ({ ...r, color: hashColor(r.lane) }))
 }
-
