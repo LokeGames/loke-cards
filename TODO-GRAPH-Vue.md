@@ -75,6 +75,44 @@ Sammenfattende er kapitel-visningen din "dybdegående" editor, der komplementere
 - [ ] If `links` are not persisted yet, derive edges from `choices` (scene.choice.next → edge)
 - [x] Persist node positions in store/DB on drag‑stop to keep layout stable
 
+### Binding Graph to Cards (Project + Data API)
+
+For at sikre, at Graph-visningen altid afspejler det aktive projekt fra `loke-cards`, skal følgende mekanismer implementeres:
+
+*   **Projekt-identifikation:** Graph-appen skal respektere og bruge `LC_PROJECT_ID`. Dette kan være en miljøvariabel, en URL-parameter, eller en værdi der deles via `localStorage`.
+*   **Projekt-skift:** Graph-appen skal lytte efter `lc:project-change`-events (f.eks. via `BroadcastChannel` eller en delt event-bus). Når et projekt-skift detekteres, skal Graph-visningen genindlæse data for det nye projekt.
+*   **Dataadgang:** For at hente og manipulere data (scener, kapitler) skal Graph-appen bruge den fælles database-klient fra `loke-cards`. Specifikt skal funktioner fra `@cards/lib/db/index.js#getDb()` anvendes til `list`, `get`, `put` og `delete` operationer.
+
+**Minimalt Store-eksempel:**
+
+```javascript
+// Eksempel i Graph's Pinia store
+import { defineStore } from 'pinia';
+import { getDb } from '@cards/lib/db/index.js'; // Antaget sti
+
+export const useGraphStore = defineStore('graph', {
+  state: () => ({
+    chapters: [],
+    scenes: [],
+    currentProjectId: null,
+  }),
+  actions: {
+    async loadProjectData(projectId) {
+      this.currentProjectId = projectId;
+      const db = getDb(projectId); // Hent database-instans for projektet
+      this.chapters = await db.chapters.getAll();
+      this.scenes = await db.scenes.getAll();
+      // ... lyt efter lc:project-change og kald denne funktion
+    },
+    // ... andre actions, der bruger 'db'
+  },
+});
+```
+
+**Referencer:**
+
+*   Detaljer om API-kald og datastruktur findes i `/doc/api.md`.
+
 ### 5.E.4 Interactions
 - [x] Drag nodes (scenes/chapters); on drag‑stop persist `position`
 - [x] Connect scenes by drawing an edge; on connect, create `link` (or choice) in data layer
@@ -161,3 +199,54 @@ Moved from nodeview to @src/graph:
 - components: GlobalGraph.vue, ChapterGraph.vue, nodes/ChapterNode.vue, nodes/SceneNode.vue
 - builders.js, layout.js, nodeTypes.js
 - stores/graph.js, api/client.js, lib/storage.js
+
+---
+
+Binding Graph to Cards (Project + Data API)
+
+Overview
+- Graph must follow the active project from Cards and read/write data through Cards’ in‑browser DB API (offline‑first). Backend is optional.
+
+How to bind current project
+- Read the active project id from `localStorage` → key `LC_PROJECT_ID`.
+- Listen for project changes via CustomEvent `lc:project-change` (or import `onProjectChange` from `@cards/lib/events.js`).
+- Filter chapters/scenes by `projectId` to ensure Graph shows only the active project.
+
+How to consume Cards data API in browser
+- Import DB adapter from Cards via Vite alias `@cards` (already configured):
+  - `import { getDb } from '@cards/lib/db/index.js'`
+  - Call `const db = await getDb()` and use:
+    - Scenes: `scenesList()`, `scenesGet(id)`, `scenesPut(scene)`, `scenesDelete(id)`
+    - Chapters: `chaptersList()`, `chaptersGet(id)`, `chaptersPut(ch)`, `chaptersDelete(id)`
+- Optional live updates: import `onDataChange` from `@cards/lib/events.js` and reload on relevant changes.
+
+Shortcut: Graph Client Helper
+- Import `createGraphClient` from `@cards/lib/api/graphClient.js`
+- Use `client.listAll()` and `client.subscribe()` to stay in sync with Cards’ active project.
+
+Minimal store example
+```js
+import { defineStore } from 'pinia'
+import { getDb } from '@cards/lib/db/index.js'
+
+function activeProjectId() { try { return localStorage.getItem('LC_PROJECT_ID') || 'default' } catch { return 'default' } }
+
+export const useGraphStore = defineStore('graph', {
+  state: () => ({ chapters: [], scenes: [], loading: false }),
+  actions: {
+    async load() {
+      this.loading = true
+      try {
+        const pid = activeProjectId()
+        const db = await getDb()
+        const [chs, scs] = await Promise.all([db.chaptersList(), db.scenesList()])
+        this.chapters = (chs || []).filter(c => (c.projectId || 'default') === pid)
+        this.scenes = (scs || []).filter(s => (s.projectId || 'default') === pid)
+      } finally { this.loading = false }
+    }
+  }
+})
+```
+
+Canonical API reference
+- See `/doc/api.md` for the authoritative Cards ↔ Graph API.

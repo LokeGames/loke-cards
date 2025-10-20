@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Editor/List/Dashboard/Graph use `sceneId` and `chapterId` exclusively in UI and logic
   - Removed ad‑hoc normalization in views; rely on API client/utility normalizers
   - Graph app aligned: API client and store now normalize to canonical `sceneId`/`chapterId` (internal `id` mirrors `sceneId`)
+  - Scene/Chapter lists and Dashboard now use stores and update live without reload
 
 ### Upcoming — Projects (Single Active Project)
 ### Added
@@ -531,4 +532,8 @@ After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental i
 
 ## Release History
 
+- Reactive data stores (live UI updates)
+  - `src/stores/scenes.js` and `src/stores/chapters.js` as single source of truth (Pinia)
+  - Lists and editors bind to store state; background refresh replaces content only if non-empty
+  - Event bus for cross-tab updates: `src/lib/events.js`, wired in `src/lib/storage.js`
 <!-- Releases will be documented here -->

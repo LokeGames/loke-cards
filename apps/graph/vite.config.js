@@ -24,10 +24,10 @@ export default defineConfig(() => ({
   resolve: {
     alias: {
       '@graph': path.resolve(__dirname, 'src/graph'),
+      '@cards': path.resolve(__dirname, '../../src'),
     },
   },
   css: {
     postcss: path.resolve(process.cwd(), 'postcss.config.js'),
   },
 }))
-

@@ -4,6 +4,7 @@
  */
 
 import localforage from 'localforage';
+import { emitDataChange } from './events.js';
 
 // Initialize storage instances
 export const sceneStore = localforage.createInstance({
@@ -88,6 +89,7 @@ export async function saveScene(scene) {
     scene.createdAt = scene.updatedAt;
   }
   await sceneStore.setItem(scene.id, scene);
+  try { emitDataChange({ entity: 'scene', action: 'upsert', id: scene.id, projectId: scene.projectId }); } catch {}
   return scene;
 }
 
@@ -115,6 +117,7 @@ export async function getScenesByChapter(chapterId) {
 
 export async function deleteScene(sceneId) {
   await sceneStore.removeItem(sceneId);
+  try { emitDataChange({ entity: 'scene', action: 'delete', id: sceneId }); } catch {}
 }
 
 // Chapter Operations
@@ -125,6 +128,7 @@ export async function saveChapter(chapter) {
     chapter.createdAt = chapter.updatedAt;
   }
   await chapterStore.setItem(chapter.id, chapter);
+  try { emitDataChange({ entity: 'chapter', action: 'upsert', id: chapter.id, projectId: chapter.projectId }); } catch {}
   return chapter;
 }
 
@@ -156,6 +160,7 @@ export async function getAllChapters() {
 
 export async function deleteChapter(chapterId) {
   await chapterStore.removeItem(chapterId);
+  try { emitDataChange({ entity: 'chapter', action: 'delete', id: chapterId }); } catch {}
 }
 
 // Draft Operations (auto-save)

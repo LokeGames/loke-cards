@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 max-w-5xl mx-auto">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-1">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Chapters</h1>
       <RouterLink
         to="/chapter/new"
@@ -9,8 +9,7 @@
         New Chapter
       </RouterLink>
     </div>
-
-    <p class="text-gray-600 dark:text-gray-400 mb-4">Manage chapters and their organization.</p>
+    <p class="text-gray-600 dark:text-gray-400 mb-4">Manage chapters in project <span class="font-semibold">{{ projectName }}</span>.</p>
 
     <div v-if="error" class="p-3 rounded border border-red-200 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
       {{ error }}
@@ -56,10 +55,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal } from '../lib/storage.js';
 import { useProjectStore } from '../stores/project.js';
+import { useChapterStore } from '../stores/chapters.js';
+import { onDataChange, onProjectChange } from '../lib/events.js';
 import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
 import { toEditChapter, toNewSceneWithChapter } from '../router/guards.js';
@@ -73,24 +74,44 @@ let dragIndex = -1;
 const toast = useToastStore();
 const project = useProjectStore();
 if (!project.currentProject) project.init();
+const projectName = computed(() => project.currentProject?.name || project.currentProject?.id || 'default');
 
 function scopeChapters(arr) {
   const pid = project.currentProject?.id || 'default';
   return (arr || []).filter(c => (c.projectId || 'default') === pid);
 }
 
+async function refreshFromLocal() {
+  try { chapters.value = scopeChapters(await getAllChaptersLocal()); } catch {}
+}
+
 onMounted(async () => {
   // Offline-first: load local first
-  try { chapters.value = scopeChapters(await getAllChaptersLocal()); } catch {}
+  const store = useChapterStore();
+  await store.init();
+  chapters.value = store.chapters;
   // Then try server
   try {
     const data = await api.chapters.getAll();
-    if (Array.isArray(data) && data.length > 0) chapters.value = scopeChapters(data);
+    if (Array.isArray(data) && data.length > 0) { await store.loadServer(); chapters.value = store.chapters; }
   } catch (e) {
     // keep local only
   } finally {
     loading.value = false;
   }
+  // Live updates
+  const off = onDataChange(async (detail) => {
+    const pid = project.currentProject?.id || 'default';
+    if (!detail || !detail.projectId || detail.projectId === pid) {
+      await store.refresh();
+      chapters.value = store.chapters;
+    }
+  });
+  const offProject = onProjectChange(async () => {
+    await store.init();
+    chapters.value = store.chapters;
+  });
+  onBeforeUnmount(() => { try { off && off(); offProject && offProject(); } catch {} });
 });
 
 function normalizeOrder() {

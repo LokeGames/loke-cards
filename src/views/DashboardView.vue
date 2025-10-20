@@ -21,11 +21,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 import { normalizeScenes } from '../lib/normalize.js';
 import { useProjectStore } from '../stores/project.js';
+import { onDataChange, onProjectChange } from '../lib/events.js';
 import DashboardQuickActions from '../components/dashboard/DashboardQuickActions.vue'
 import DashboardStats from '../components/dashboard/DashboardStats.vue'
 import DashboardRecentChapters from '../components/dashboard/DashboardRecentChapters.vue'
@@ -59,10 +60,15 @@ const recentScenes = computed(() => {
 });
 // validation moved inside DashboardRecentScenes
 
-onMounted(async () => {
-  // Offline-first: load local first
+async function refreshFromLocal() {
   try { chapters.value = scopeChapters(await getAllChaptersLocal()); } catch {}
   try { scenes.value = scopeScenes(normalizeScenes(await getAllScenesLocal())); } catch {}
+  stats.value = { chapters: chapters.value.length, scenes: scenes.value.length };
+}
+
+onMounted(async () => {
+  // Offline-first: load local first
+  await refreshFromLocal();
   // Then try server in background
   try { const data = await api.chapters.getAll(); if (Array.isArray(data) && data.length > 0) chapters.value = scopeChapters(data); }
   catch (e) { /* keep local */ }
@@ -73,6 +79,19 @@ onMounted(async () => {
   finally { scenesLoading.value = false; }
 
   stats.value = { chapters: chapters.value.length, scenes: scenes.value.length };
+
+  // Live updates: subscribe to local data change events and refresh
+  const off = onDataChange(async (detail) => {
+    // Only refresh when current project matches or when projectId unknown
+    const pid = project.currentProject?.id || 'default';
+    if (!detail || !detail.projectId || detail.projectId === pid) {
+      await refreshFromLocal();
+    }
+  });
+  const offProject = onProjectChange(async () => {
+    await refreshFromLocal();
+  });
+  onBeforeUnmount(() => { try { off && off(); offProject && offProject(); } catch {} });
 });
 </script>
 

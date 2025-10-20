@@ -1,13 +1,12 @@
 <template>
   <div class="p-6 max-w-6xl mx-auto">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-1">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Scenes</h1>
       <RouterLink to="/scene/new" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium">
         New Scene
       </RouterLink>
     </div>
-
-    <p class="text-gray-600 dark:text-gray-400 mb-4">Browse and manage all scenes in your project.</p>
+    <p class="text-gray-600 dark:text-gray-400 mb-4">Browse and manage all scenes in project <span class="font-semibold">{{ projectName }}</span>.</p>
 
     <!-- Tools: Search + Sort -->
     <div class="mb-3 flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -56,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import api from '../api/client.js';
 import { getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
@@ -64,6 +63,8 @@ import { useToastStore } from '../stores/toast.js';
 import { toEditScene } from '../router/guards.js';
 import { normalizeScenes } from '../lib/normalize.js';
 import { useProjectStore } from '../stores/project.js';
+import { useSceneStore } from '../stores/scenes.js';
+import { onDataChange, onProjectChange } from '../lib/events.js';
 
 const scenes = ref([]);
 const search = ref('');
@@ -74,23 +75,44 @@ const confirmOpen = ref(false);
 const pendingDeleteId = ref('');
 const toast = useToastStore();
 
-onMounted(async () => {
-  // Offline-first: load local immediately
+async function refreshFromLocal() {
   try {
     const local = await getAllScenesLocal();
     scenes.value = scopeByProject(normalizeScenes(local));
-  } catch (_) {}
+  } catch {}
+}
+
+onMounted(async () => {
+  // Offline-first: load local immediately
+  // Prefer store as single source of truth
+  const store = useSceneStore();
+  await store.init();
+  scenes.value = store.scenes;
   // Then try server in the background
   try {
     const data = await api.scenes.getAll();
     if (Array.isArray(data) && data.length > 0) {
-      scenes.value = scopeByProject(data);
+      await store.loadServer();
+      scenes.value = store.scenes;
     }
   } catch (e) {
     // Keep local; optionally display a subtle error
   } finally {
     loading.value = false;
   }
+  // Live updates from local changes
+  const off = onDataChange(async (detail) => {
+    const pid = project.currentProject?.id || 'default';
+    if (!detail || !detail.projectId || detail.projectId === pid) {
+      await store.refresh();
+      scenes.value = store.scenes;
+    }
+  });
+  const offProject = onProjectChange(async (detail) => {
+    await store.init();
+    scenes.value = store.scenes;
+  });
+  onBeforeUnmount(() => { try { off && off(); offProject && offProject(); } catch {} });
 });
 
 const filteredScenes = computed(() => {
@@ -150,14 +172,17 @@ async function confirmDelete() {
     pendingDeleteId.value = '';
   }
 }
-</script>
-
-<style scoped>
-</style>
+// Project scoping helpers
 const project = useProjectStore();
 if (!project.currentProject) project.init();
+const projectName = computed(() => project.currentProject?.name || project.currentProject?.id || 'default');
 
 function scopeByProject(arr) {
   const pid = project.currentProject?.id || 'default';
   return (arr || []).filter(s => (s.projectId || 'default') === pid);
 }
+
+</script>
+
+<style scoped>
+</style>

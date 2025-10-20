@@ -145,6 +145,8 @@ import ChoicesList from '../components/ChoicesList.vue';
 import StateChangesList from '../components/StateChangesList.vue';
 import CodePreview from '../components/CodePreview.vue';
 import { useToastStore } from '../stores/toast.js';
+import { useSceneStore } from '../stores/scenes.js';
+import { useChapterStore } from '../stores/chapters.js';
 import { useProjectStore } from '../stores/project.js';
 
 const router = useRouter();
@@ -152,6 +154,8 @@ const route = useRoute();
 const toast = useToastStore();
 const project = useProjectStore();
 if (!project.currentProject) project.init();
+const sceneStore = useSceneStore();
+const chapterStore = useChapterStore();
 
 // Scene data
 const sceneData = reactive({
@@ -226,7 +230,7 @@ function validateField(fieldName) {
 async function handleCreateChapter(chapterId) {
   try {
     // Persist chapter via API, then add to local list
-    await api.chapters.create({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
+    await chapterStore.upsert({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
     availableChapters.value.push({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
     saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" created.` };
     toast.success(`Chapter "${chapterId}" created`);
@@ -234,7 +238,7 @@ async function handleCreateChapter(chapterId) {
   } catch (err) {
     // Fallback: save locally when offline
     try {
-      await saveChapterLocal({ id: chapterId, name: chapterId, scenes: [], order: Date.now(), projectId: project.currentProject?.id || 'default' });
+      await chapterStore.upsert({ id: chapterId, name: chapterId, order: Date.now(), projectId: project.currentProject?.id || 'default' });
       availableChapters.value.push({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
       saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" saved locally (offline).` };
       toast.info(`Chapter "${chapterId}" saved locally (offline)`);
@@ -275,11 +279,7 @@ async function handleSave() {
 
   try {
     // Save to API
-    if (isEditMode.value) {
-      await api.scenes.update(route.params.id, { ...sceneData, projectId: project.currentProject?.id || 'default' });
-    } else {
-      await api.scenes.create({ ...sceneData, projectId: project.currentProject?.id || 'default' });
-    }
+    await sceneStore.upsert({ ...sceneData, projectId: project.currentProject?.id || 'default' });
 
     saveStatus.value = {
       type: 'success',

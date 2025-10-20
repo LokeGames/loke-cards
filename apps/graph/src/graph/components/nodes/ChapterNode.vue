@@ -3,7 +3,7 @@
     class="chapter-node rounded-xl border-2 shadow-lg"
     :class="{
       'border-purple-500 bg-purple-50 dark:bg-purple-900/20': selected,
-      'border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-900/10': !selected
+      'border-purple-400 dark:border-purple-600 bg-purple-50/50 dark:bg-purple-900/10': !selected
     }"
     style="width: 100%; height: 100%;"
   >

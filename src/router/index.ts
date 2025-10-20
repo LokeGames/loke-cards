@@ -1,4 +1,9 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+// Project scoping guard
+// @ts-ignore JS modules
+import { getScene as getLocalScene, getChapter as getLocalChapter } from '../lib/storage.js';
+// @ts-ignore
+import { useProjectStore } from '../stores/project.js';
 import type { RouteName } from './typed';
 // Eager-load primary views to avoid async import race conditions
 import DashboardView from '../views/DashboardView.vue';
@@ -105,8 +110,28 @@ const router = createRouter({
 });
 
 // Update document title on route change
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   document.title = to.meta.title ? `${to.meta.title} - Loke Cards` : 'Loke Cards';
+  // Guard: prevent editing items from a different project
+  try {
+    const ps = useProjectStore();
+    if (!ps.currentProject) await ps.init();
+    const pid = ps.currentProject?.id || 'default';
+    if (to.name === 'EditScene' && to.params?.id) {
+      const id = String(to.params.id);
+      const sc = await getLocalScene(id);
+      if (sc && (sc.projectId || 'default') !== pid) {
+        return next({ name: 'SceneList' as any });
+      }
+    }
+    if (to.name === 'EditChapter' && to.params?.id) {
+      const id = String(to.params.id);
+      const ch = await getLocalChapter(id);
+      if (ch && (ch.projectId || 'default') !== pid) {
+        return next({ name: 'ChapterList' as any });
+      }
+    }
+  } catch {}
   next();
 });
 

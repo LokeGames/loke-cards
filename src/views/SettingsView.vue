@@ -36,6 +36,12 @@
         <button @click="importFromServer" :disabled="importing" class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 disabled:bg-gray-500 text-white text-sm font-medium">
           {{ importing ? 'Importing…' : 'Import from Server → Local' }}
         </button>
+        <button @click="replaceLocalWithServer" :disabled="importing" class="px-4 py-2 rounded bg-orange-600 hover:bg-orange-700 disabled:bg-gray-500 text-white text-sm font-medium" title="Clear local for active project, then import from server">
+          {{ importing ? 'Replacing…' : 'Replace Local (Project) with Server' }}
+        </button>
+        <button @click="pushLocalProject" :disabled="syncing" class="px-4 py-2 rounded bg-emerald-700 hover:bg-emerald-800 disabled:bg-gray-400 text-white text-sm font-medium" title="Push only current project to server">
+          {{ syncing ? 'Pushing…' : 'Push Local → Server (Project)' }}
+        </button>
       </div>
       <p class="text-xs text-gray-500 dark:text-gray-500">Tip: Use this if you created data while the backend was offline.</p>
     </section>
@@ -67,15 +73,45 @@
       </ul>
       <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">Default project cannot be deleted.</p>
     </section>
+
+    <!-- Database Backend -->
+    <section class="p-4 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Database Backend</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+        Current: <span class="font-semibold">{{ dbBackendLabel }}</span>
+        <span class="ml-2 text-xs" :class="sqljsAvailable ? 'text-emerald-600' : 'text-gray-500'">
+          SQL.js available: {{ sqljsAvailable ? 'yes' : 'no' }}
+        </span>
+      </p>
+      <div class="flex items-center gap-2">
+        <button @click="switchToSqlJs" class="px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Use SQL.js (WASM)</button>
+        <button @click="switchToLocal" class="px-3 py-2 rounded bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium">Use LocalForage</button>
+        <button v-if="dbBackend==='sqljs'" @click="flushSqlJs" class="px-3 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium">Save WASM DB now</button>
+      </div>
+      <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
+        Note: SQL.js is in-memory unless OPFS persistence is configured. Place <code>sql-wasm.js</code>/<code>sql-wasm.wasm</code> under <code>/public/sqljs/</code>.
+      </p>
+      <div class="mt-3">
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input type="checkbox" :checked="dbInWorker" @change="toggleDbInWorker($event)" />
+          Run DB in Web Worker (recommended)
+        </label>
+        <label v-if="dbBackend==='sqljs'" class="inline-flex items-center gap-2 text-sm ml-4">
+          <input type="checkbox" :checked="sqljsAutosave" @change="toggleSqlJsAutosave($event)" />
+          SQL.js Auto‑save to OPFS
+        </label>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
 import { importFromServerToLocal } from '../lib/importer.js';
 import { useProjectStore } from '../stores/project.js';
+import { getDbBackend, setDbBackend, getDbInWorker, setDbInWorker, getDb } from '../lib/db/index.js';
 import { useToastStore } from '../stores/toast.js';
 
 const building = ref(false);
@@ -90,6 +126,11 @@ const proj = useProjectStore();
 if (!proj.currentProject) proj.init();
 const newProjectName = ref('');
 const renameMap = ref({});
+const dbBackend = ref(getDbBackend());
+const dbBackendLabel = computed(() => dbBackend.value === 'sqljs' ? 'SQL.js (WASM)' : 'LocalForage (IndexedDB)');
+const sqljsAvailable = computed(() => typeof window !== 'undefined' && !!(window.initSqlJs));
+const dbInWorker = computed(() => getDbInWorker());
+const sqljsAutosave = computed(() => (typeof localStorage !== 'undefined' && localStorage.getItem('LC_SQLJS_AUTOSAVE') === '1'));
 
 async function loadArtifacts() {
   artifactsLoading.value = true;
@@ -196,6 +237,115 @@ async function importFromServer() {
   } finally {
     importing.value = false;
   }
+}
+
+async function replaceLocalWithServer() {
+  if (!confirm('This will clear local chapters/scenes for the active project and import from server. Continue?')) return;
+  importing.value = true;
+  try {
+    const pid = proj.currentProject?.id || 'default';
+    const [chs, scs] = await Promise.all([getAllChaptersLocal(), getAllScenesLocal()]);
+    // Clear local entries for this project
+    for (const ch of chs) {
+      if ((ch?.projectId || 'default') === pid) {
+        try { await (await import('../lib/storage.js')).deleteChapter(ch.id); } catch {}
+      }
+    }
+    for (const sc of scs) {
+      if ((sc?.projectId || 'default') === pid) {
+        try { await (await import('../lib/storage.js')).deleteScene(sc.id); } catch {}
+      }
+    }
+    // Import fresh from server and stamp
+    const res = await importFromServerToLocal();
+    const [chs2, scs2] = await Promise.all([getAllChaptersLocal(), getAllScenesLocal()]);
+    for (const ch of chs2) { if (ch && !ch.projectId) await saveChapterLocal({ ...ch, projectId: pid }); }
+    for (const sc of scs2) { if (sc && !sc.projectId) await saveSceneLocal({ ...sc, projectId: pid }); }
+    toast.success(`Replaced local data with server: ${res.scenes} scenes, ${res.chapters} chapters`);
+  } catch (e) {
+    toast.error(`Replace failed: ${e.message}`);
+  } finally {
+    importing.value = false;
+  }
+}
+
+async function pushLocalProject() {
+  syncing.value = true;
+  try {
+    const pid = proj.currentProject?.id || 'default';
+    const [localChapters, localScenes] = await Promise.all([
+      getAllChaptersLocal(),
+      getAllScenesLocal(),
+    ]);
+    let pushedChapters = 0;
+    let pushedScenes = 0;
+    for (const ch of localChapters) {
+      if (ch && (ch.projectId || 'default') === pid) {
+        try { await api.chapters.create({ id: ch.id, name: ch.name || ch.id, projectId: pid }); pushedChapters++; } catch {}
+      }
+    }
+    for (const sc of localScenes) {
+      if (sc && (sc.projectId || 'default') === pid) {
+        const sceneId = sc.sceneId || sc.id;
+        const chapterId = sc.chapterId || sc.chapter;
+        if (sceneId) {
+          try {
+            await api.scenes.create({ sceneId, chapterId, sceneText: sc.sceneText || '', choices: sc.choices || [], stateChanges: sc.stateChanges || [], projectId: pid });
+            pushedScenes++;
+          } catch {}
+        }
+      }
+    }
+    toast.success(`Pushed project '${pid}' → server: ${pushedChapters} chapters, ${pushedScenes} scenes`);
+  } catch (e) {
+    toast.error(`Push failed: ${e.message}`);
+  } finally {
+    syncing.value = false;
+  }
+}
+
+async function switchToSqlJs() {
+  try {
+    setDbBackend('sqljs');
+    toast.info('Switched backend to SQL.js. Reloading…');
+    setTimeout(() => location.reload(), 300);
+  } catch (e) {
+    toast.error(`Switch failed: ${e.message}`);
+  }
+}
+
+async function switchToLocal() {
+  try {
+    setDbBackend('local');
+    toast.info('Switched backend to LocalForage. Reloading…');
+    setTimeout(() => location.reload(), 300);
+  } catch (e) {
+    toast.error(`Switch failed: ${e.message}`);
+  }
+}
+
+function toggleDbInWorker(e) {
+  const v = !!e.target.checked
+  setDbInWorker(v)
+  toast.info(`DB in Worker: ${v ? 'enabled' : 'disabled'}. Reloading…`)
+  setTimeout(() => location.reload(), 300)
+}
+
+async function flushSqlJs() {
+  try {
+    const db = await getDb()
+    if (typeof db.flush === 'function') await db.flush()
+    toast.success('WASM DB saved to OPFS (if available)')
+  } catch (e) {
+    toast.error(`Flush failed: ${e.message}`)
+  }
+}
+
+function toggleSqlJsAutosave(e) {
+  const v = !!e.target.checked
+  try { localStorage.setItem('LC_SQLJS_AUTOSAVE', v ? '1' : '0') } catch {}
+  toast.info(`SQL.js autosave: ${v ? 'enabled' : 'disabled'}. Reloading…`)
+  setTimeout(() => location.reload(), 300)
 }
 
 async function createProject() {

@@ -688,6 +688,12 @@ Mål: Frontend kan køre helt offline (mobil), og sync’er ændringer til serve
 ### 7.7 Projects (moved)
 This cross‑cutting project layer is tracked centrally in `TODO.md` under “Fase 4: Projekt‑lag (Projects → Chapters → Scenes)”.
 
+### 7.8 Reactive Stores (Completed)
+- [x] Add `useSceneStore` and `useChapterStore` (Pinia) as single source of truth
+- [x] Offline‑first loaders inside stores (local first, server background refresh)
+- [x] Editor flows call store `upsert` and lists use store state
+- [x] Live updates via store state + event bus for cross‑tab
+
 ---
 
 ## Phase 8: Deployment
@@ -698,17 +704,17 @@ Branch: `phase8-deploy`
 - [ ] Optimize assets
 - [ ] Test production bundle
 
-### 8.2 Tailscale Setup
-- [ ] Frontend: `tailscale serve --https=8443 ./dist`
-- [ ] Backend: C++ server on port 3000
-- [ ] Configure CORS properly
-- [ ] Test på Tailscale network
+### 8.2 Tailscale Setup (in TODO.md)
+- [x] Frontend: `tailscale serve --https=8443 ./dist`
+- [x] Backend: C++ server on port 3000
+- [x] Configure CORS properly
+- [x] Test på Tailscale network
 
-### 8.3 Systemd Services
-- [ ] `loke-cards-frontend.service`
-- [ ] `loke-cards-backend.service`
-- [ ] Auto-restart on failure
-- [ ] Logging setup
+### 8.3 Systemd Services(in TODO.md)
+- [x] `loke-cards-frontend.service`
+- [x] `loke-cards-backend.service`
+- [x] Auto-restart on failure
+- [x] Logging setup
 
 ---
 merge to main

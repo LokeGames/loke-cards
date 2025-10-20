@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { projectStore as lfProjects, saveProject, getProject, getCurrentProject } from '../lib/storage.js';
+import { emitProjectChange } from '../lib/events.js';
 
 const KEY = 'LC_PROJECT_ID';
 
@@ -73,6 +74,7 @@ export const useProjectStore = defineStore('project', {
       if (!p) return false;
       this.currentProject = p;
       try { localStorage.setItem(KEY, p.id); } catch {}
+      try { emitProjectChange({ projectId: p.id }); } catch {}
       return true;
     },
     async createProject(nameOrId) {
@@ -104,4 +106,3 @@ export const useProjectStore = defineStore('project', {
     },
   },
 });
-
