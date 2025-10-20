@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100vh-3rem)] relative" tabindex="0" @keydown.delete.prevent="onDelete">
+  <div class="h-full w-full relative bg-gray-50 dark:bg-gray-900" tabindex="0" @keydown.delete.prevent="onDelete">
     <div class="absolute right-3 top-3 z-10 flex gap-2">
       <button @click="fit" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Fit View</button>
       <button @click="autoLayout" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Auto Layout</button>
@@ -8,7 +8,8 @@
     <VueFlow
       v-model:nodes="nodes"
       v-model:edges="edges"
-      :fit-view="true"
+      class="vue-flow-container"
+      :fit-view-on-init="true"
       :min-zoom="0.05"
       :max-zoom="1.5"
       :node-types="nodeTypes"
@@ -22,12 +23,14 @@
   </div>
 </template>
 
+<script setup>
 import { ref, onMounted } from 'vue';
 import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Background } from '@vue-flow/background';
-import 'vue-flow/core/dist/style.css';
-import 'vue-flow/minimap/dist/style.css';
+import '@vue-flow/core/dist/style.css';
+import '@vue-flow/core/dist/theme-default.css';
+import '@vue-flow/minimap/dist/style.css';
 import { useRouter } from 'vue-router';
 import { useGraphStore } from '@graph/stores/graph.js';
 import { nodeTypes } from '@graph/nodeTypes.js';
@@ -42,8 +45,21 @@ const { fitView, getNodes, getEdges, updateNode, removeNodes, removeEdges, getSe
 
 async function refresh() {
   await store.loadGlobal();
+
   const chNodes = buildChapterNodes(store.chapters);
-  const sceneNodes = buildSceneNodes(store.scenes, true);
+  // Build scene nodes WITH parent relationship for GlobalGraph
+  // Only set parentNode if the chapter actually exists
+  const chapterIds = new Set(store.chapters.map(c => c.id));
+  const sceneNodes = store.scenes.map(s => ({
+    id: `scene-${s.id}`,
+    type: 'scene',
+    data: { title: s.title, sceneText: s.sceneText, chapterId: s.chapterId, choicesCount: Array.isArray(s.choices) ? s.choices.length : 0 },
+    position: s.position ?? { x: Math.random() * 400, y: Math.random() * 400 }, // Random position if not set
+    parentNode: chapterIds.has(s.chapterId) ? `chap-${s.chapterId}` : undefined, // Only set parent if chapter exists
+    class: 'scene-node',
+    draggable: true,
+  }));
+
   nodes.value = [...chNodes, ...sceneNodes];
   edges.value = buildEdgesFromChoices(store.scenes);
 }
@@ -100,7 +116,12 @@ function onNodeDoubleClick(evt) {
 function fit() { try { fitView(); } catch {} }
 async function autoLayout() { const laidOut = await layoutScenes(getNodes(), getEdges()); for (const n of laidOut) updateNode(n.id, { position: n.position }); }
 async function saveLayout() { const current = getNodes(); for (const n of current) { if (n.type === 'scene') await store.persistScenePosition(n.id.replace('scene-', ''), n.position); else if (n.type === 'chapter') await store.persistChapterPosition(n.id.replace('chap-', ''), n.position); } }
+</script>
 
 <style scoped>
+.vue-flow-container {
+  width: 100%;
+  height: 100%;
+}
 </style>
 

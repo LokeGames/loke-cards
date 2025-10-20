@@ -3,6 +3,9 @@
  *
  * Communicates with the C++ backend server (port 3000)
  * Handles all HTTP requests for scenes, chapters, and projects
+ *
+ * @typedef {import('../types/domain').Scene} Scene
+ * @typedef {import('../types/domain').Chapter} Chapter
  */
 
 // Base URLs
@@ -81,12 +84,19 @@ export const scenesAPI = {
   /**
    * Get all scenes
    */
+  /**
+   * @returns {Promise<Scene[]>}
+   */
   async getAll() {
     return apiFetch('/scenes');
   },
 
   /**
    * Get a single scene by ID
+   */
+  /**
+   * @param {string} id
+   * @returns {Promise<Scene>}
    */
   async getById(id) {
     return apiFetch(`/scenes/${id}`);
@@ -101,6 +111,10 @@ export const scenesAPI = {
    * @param {Array} sceneData.choices - Array of choice objects
    * @param {Array} sceneData.stateChanges - Array of state change objects
    */
+  /**
+   * @param {Partial<Scene>} sceneData
+   * @returns {Promise<Scene>}
+   */
   async create(sceneData) {
     return apiFetch('/scenes', {
       method: 'POST',
@@ -111,6 +125,11 @@ export const scenesAPI = {
   /**
    * Update an existing scene
    */
+  /**
+   * @param {string} id
+   * @param {Partial<Scene>} sceneData
+   * @returns {Promise<Scene>}
+   */
   async update(id, sceneData) {
     return apiFetch(`/scenes/${id}`, {
       method: 'PUT',
@@ -120,6 +139,10 @@ export const scenesAPI = {
 
   /**
    * Delete a scene
+   */
+  /**
+   * @param {string} id
+   * @returns {Promise<{ ok: boolean }|any>}
    */
   async delete(id) {
     return apiFetch(`/scenes/${id}`, {
@@ -135,6 +158,9 @@ export const chaptersAPI = {
   /**
    * Get all chapters
    */
+  /**
+   * @returns {Promise<Chapter[]>}
+   */
   async getAll() {
     return apiFetch('/chapters');
   },
@@ -142,12 +168,19 @@ export const chaptersAPI = {
   /**
    * Get a single chapter by ID
    */
+  /**
+   * @param {string} id
+   * @returns {Promise<Chapter>}
+   */
   async getById(id) {
     return apiFetch(`/chapters/${id}`);
   },
 
   /**
    * Create a new chapter
+   */
+  /**
+   * @param {Partial<Chapter>} chapterData
    */
   async create(chapterData) {
     return apiFetch('/chapters', {
@@ -159,6 +192,10 @@ export const chaptersAPI = {
   /**
    * Update a chapter
    */
+  /**
+   * @param {string} id
+   * @param {Partial<Chapter>} chapterData
+   */
   async update(id, chapterData) {
     return apiFetch(`/chapters/${id}`, {
       method: 'PUT',
@@ -168,6 +205,9 @@ export const chaptersAPI = {
 
   /**
    * Delete a chapter
+   */
+  /**
+   * @param {string} id
    */
   async delete(id) {
     return apiFetch(`/chapters/${id}`, {

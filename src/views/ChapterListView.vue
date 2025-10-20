@@ -40,8 +40,8 @@
           <div class="flex items-center gap-2">
             <button @click="moveUp(idx)" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" title="Move up">↑</button>
             <button @click="moveDown(idx)" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" title="Move down">↓</button>
-            <RouterLink :to="{ name: 'NewScene', query: { chapter: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
-            <RouterLink :to="{ name: 'EditChapter', params: { id: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <RouterLink :to="toNewSceneWithChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
+            <RouterLink :to="toEditChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
             <button @click="deleteChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
@@ -61,6 +61,7 @@ import api from '../api/client.js';
 import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
+import { toEditChapter, toNewSceneWithChapter } from '../router/guards.js';
 
 const chapters = ref([]);
 const loading = ref(true);

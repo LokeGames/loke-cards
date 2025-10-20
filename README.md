@@ -108,6 +108,28 @@ This project follows **TDD (Test-Driven Development)**:
   - Before release: merge to main with full documentation
 
 ### Testing locally
+
+#### Run only the navigation stability test
+
+Option A — with dev server already running (recommended):
+
+```
+# Terminal 1: run app + backend (fixed 8081)
+npm run dev:full:watch
+
+# Terminal 2: run the single test
+npm test tests/navigation-stability.spec.js
+```
+
+Option B — let Playwright manage the server:
+
+```
+PW_WEB_SERVER=1 PW_BASE_URL=http://127.0.0.1:8081   npm test tests/navigation-stability.spec.js
+```
+
+Notes:
+- The test repeats Scenes ⇄ Dashboard transitions to catch intermittent issues.
+- Proxy noise (when backend is offline) is ignored by this test.
 - Ensure the dev server is running on the same port as Playwright’s baseURL.
 - Override the test base URL with: `PW_BASE_URL=http://127.0.0.1:8081 npm test`.
 - Or let Playwright start the server: `PW_WEB_SERVER=1 PW_BASE_URL=http://127.0.0.1:8081 npm test`.

@@ -27,5 +27,12 @@ kill_port "$BACKEND_PORT_ENV"
 # Start backend watcher
 BACKEND_PORT="$BACKEND_PORT_ENV" bash scripts/dev-backend-watch.sh &
 
+# Start TypeScript typecheck watch (non-blocking)
+if npm run -s check:types:watch >/dev/null 2>&1 & then
+  echo "Starting TypeScript typecheck (watch) in background..."
+else
+  echo "TypeScript watcher not started (script missing)." >&2
+fi
+
 # Start main Vite on fixed port (foreground)
 VITE_DEV_PORT="$FRONT_PORT" vite

@@ -199,6 +199,25 @@ docker run -d \
 
 ### MVP Features (Phase 1)
 
+## Recent Changes (2025-10-20)
+
+- Two‑app design: Node View moved out of the main app into `apps/graph` (Vue Flow). Main app focuses on forms/CRUD/codegen.
+- Navigation hardening in main app:
+  - Router typed with TypeScript (`src/router/index.ts`, `src/router/typed.ts`).
+  - Breadcrumbs validate route params before linking (`src/components/AppHeader.vue`).
+  - Runtime route guards for lists (`src/router/guards.js`).
+  - Removed legacy vanilla DOM nav/layout code to avoid conflicts.
+- UX polish:
+  - Global toasts (`src/stores/toast.js`, `src/components/ToastContainer.vue`).
+  - Skeleton loaders (`src/components/BaseSkeletonList.vue`).
+  - Page transition around `RouterView`.
+- Dev quality:
+  - Error monitor ESM fix (`src/plugins/error-monitor.ts`) and in‑app overlay.
+  - Type check scripts (`npm run check:types`, `check:types:watch`).
+  - `dev:full:watch` runs frontend + backend only; Graph app runs via `npm run dev:graph`.
+
+When touching navigation, update `RouteName`/`hasRequiredParams` to keep compile‑time checks reliable.
+
 1. **Scene Card Editor**
    - Form with all scene fields
    - Real-time C code preview

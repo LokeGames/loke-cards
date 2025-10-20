@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100vh-3rem)] relative">
+  <div class="h-full w-full relative bg-gray-50 dark:bg-gray-900">
     <div class="absolute right-3 top-3 z-10 flex gap-2">
       <button @click="fit" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Fit View</button>
       <button @click="autoLayout" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">Auto Layout</button>
@@ -8,7 +8,8 @@
     <VueFlow
       v-model:nodes="nodes"
       v-model:edges="edges"
-      :fit-view="true"
+      class="vue-flow-container"
+      :fit-view-on-init="true"
       :min-zoom="0.1"
       :max-zoom="1.5"
       :node-types="nodeTypes"
@@ -27,6 +28,7 @@ import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Background } from '@vue-flow/background';
 import '@vue-flow/core/dist/style.css';
+import '@vue-flow/core/dist/theme-default.css';
 import '@vue-flow/minimap/dist/style.css';
 import { useRoute } from 'vue-router';
 import { useGraphStore } from '@graph/stores/graph.js';
@@ -57,7 +59,7 @@ function onNodeDragStop(evt) {
 
 onMounted(async () => { await refresh(); });
 
-function fit() { try { fitView(); } catch {} }
+function fit() { try { fitView(); } catch (error) { console.error(error); } }
 async function autoLayout() { const laidOut = await (await import('@graph/layout.js')).layoutScenes(getNodes(), getEdges()); for (const n of laidOut) updateNode(n.id, { position: n.position }); }
 async function saveLayout() { const current = getNodes(); for (const n of current) { if (n.type === 'scene') await store.persistScenePosition(n.id.replace('scene-', ''), n.position); } }
 
@@ -71,5 +73,9 @@ async function onConnect(params) {
 </script>
 
 <style scoped>
+.vue-flow-container {
+  width: 100%;
+  height: 100%;
+}
 </style>
 

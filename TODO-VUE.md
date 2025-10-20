@@ -592,14 +592,14 @@ npm run test:mobile
 ---
 
 ## Phase 6: Polish & Optimization
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
+Branch: `phase6-polish`
+Scope: Navigation hardening, toasts, skeletons, error monitor, cleanup
 ### 6.1 UI/UX
-- [ ] Toast notifications (Vue component)
-- [ ] Loading states
-- [ ] Error boundaries
-- [ ] Skeleton loaders
-- [ ] Smooth transitions
+- [x] Toast notifications (Pinia + component)
+- [x] Skeleton loaders for lists (BaseSkeletonList)
+- [x] Page transition tuned (now disabled to maximize stability)
+- [x] Dev error overlay + hardened error monitor (ESM)
+- [ ] Optional: wrap views in ErrorBoundary where needed
 
 ### 6.2 Performance
 - [ ] Lazy load routes
@@ -614,6 +614,21 @@ New git branch for dev.
 - [ ] Screen reader testing
 - [ ] Color contrast check
 - [ ] Focus management
+
+### 6.4 Navigation Hardening
+- [x] Remove legacy DOM navigation/layout (Navigation.js, Layout.js, Sidebar.js, lib/state.js)
+- [x] Typed router (TypeScript) with RouteName and param guards
+- [x] Breadcrumbs validate required params before linking
+- [x] Runtime route guards for list links (toEditScene/toEditChapter)
+- [x] Remove Suspense wrapper; transition removed for robustness
+- [x] Dashboard fixes: path-based breadcrumbs; filter invalid recent scenes; guards used
+- [x] Scenes → Dashboard stability verified manually; added Playwright spec
+- [ ] Optional: add CI typecheck for router/header
+
+### 6.5 Testing
+- [x] Add navigation stability test: `tests/navigation-stability.spec.js`
+- [x] README: how to run the single navigation test
+- [ ] Optional: add CI typecheck for router/header
 
 ---
 

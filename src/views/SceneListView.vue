@@ -42,7 +42,7 @@
             <div class="text-xs text-gray-500 dark:text-gray-500">Chapter: {{ sc.chapter || sc.chapterId || '—' }}</div>
           </div>
           <div class="flex items-center gap-2">
-            <RouterLink :to="{ name: 'EditScene', params: { id: sc.sceneId || sc.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <RouterLink :to="toEditScene(sc.sceneId || sc.id)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
             <button @click="deleteScene(sc.sceneId || sc.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
@@ -61,6 +61,7 @@ import api from '../api/client.js';
 import { getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
 import { useToastStore } from '../stores/toast.js';
+import { toEditScene } from '../router/guards.js';
 
 const scenes = ref([]);
 const search = ref('');

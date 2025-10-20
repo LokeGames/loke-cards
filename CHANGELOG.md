@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 6 - Polish & Hardening - 2025-10-20
+
+### Added
+- Global toast notifications with accessible, animated container
+  - `src/stores/toast.js`, `src/components/ToastContainer.vue`
+- Skeleton loaders for lists
+  - `src/components/BaseSkeletonList.vue` used in Scene/Chapter lists
+- Dev error overlay + error monitor hardened
+  - `src/components/DevErrorOverlay.vue`, `src/plugins/error-monitor.ts` (ESM + TS)
+- TypeScript in sensitive areas (navigation)
+  - Router typed: `src/router/index.ts`, `src/router/typed.ts`
+  - Header typed breadcrumbs: `src/components/AppHeader.vue`
+  - Runtime route guards for lists: `src/router/guards.js`
+  - TS config: `tsconfig.json`; tooling scripts: `check:types`, `check:types:watch`
+  - Navigation stability spec: `tests/navigation-stability.spec.js`
+
+### Fixed - Graph App (`apps/graph`)
+- Fixed critical startup crash: `GlobalGraph.vue` missing `<script setup>` tag
+- Fixed CSS imports: Changed `vue-flow` to `@vue-flow` prefix for correct module resolution
+- Removed invalid `@vue-flow/background/dist/style.css` import (file doesn't exist in package)
+- Fixed `ThemeToggle.vue` import path in `GraphAppHeader.vue` (adjusted for Vite root)
+- Fixed orphan SQLite records breaking Vue Flow rendering
+  - Store now filters out position-only records without valid `sceneId`
+  - Added null check: `if (!id || id === 'undefined') return null`
+  - Filter results: `.filter(Boolean)` to remove nulls from arrays
+- Fixed Vue Flow not rendering visually
+  - Added missing `@vue-flow/core/dist/theme-default.css` import
+  - Changed `fit-view` prop to `fit-view-on-init` (correct Vue Flow prop)
+  - Fixed layout: changed `App.vue` main from `overflow-auto` to `overflow-hidden`
+  - Changed graph containers from fixed height to `h-full` for proper flexbox sizing
+  - Added explicit `.vue-flow-container { width: 100%; height: 100%; }` CSS
+- Fixed orphan scenes issue: created missing `chapter01` in database (all 4 scenes reference it)
+- Graph nodes now check if parent chapter exists before setting `parentNode` relationship
+- **VERIFIED WORKING**: Playwright tests confirm 7 nodes render on Global Graph, 4 on Chapter Graph
+- Graph app fully functional at http://localhost:8092
+
+### Changed
+- Page transitions: unified route transition around `RouterView` (no Suspense)
+- Scenes ⇄ Dashboard stability: removed page transition to eliminate out-in race; breadcrumbs now path-based; Dashboard recent scenes filtered; guards applied
+- Scene/Chapter lists: robust links via guards; filter invalid scene entries
+- Settings/Editors: inline status banners removed in favor of toasts
+- Dev orchestration: `dev:full:watch` runs only frontend + backend (Graph runs with `dev:graph`)
+  - Starts TypeScript typecheck watcher in background
+
+### Fixed
+- Error monitor no longer throws in browser (removed CommonJS require)
+- Missing route params are guarded at compile‑time and runtime (typed router + guards)
+
+### Removed
+- Legacy vanilla JS no longer used (to avoid DOM/nav conflicts)
+  - `src/components/{Navigation,Layout,Sidebar,SceneEditor,CodePreview}.js`, `src/lib/state.js`
+
 ### Phase 5 - Graph App (Two‑App Design) - 2025-10-20
 
 ### Added
@@ -59,6 +111,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `npm run dev:full:watch` to launch both apps + backend (ports: 8081, 8092, 3000)
 - Open Graph app at http://127.0.0.1:8092 (or set `VITE_GRAPH_PORT`)
 - Any previous links to `/nodes` in the main app have been removed; use the external app directly
+
+### Cleanup
+- Removed legacy vanilla JS files no longer used by the Vue app:
+  - `src/components/Navigation.js`, `Layout.js`, `Sidebar.js`, `SceneEditor.js`, `CodePreview.js`
+  - `src/lib/state.js`
+- This eliminates potential DOM-manipulating code paths that could conflict with Vue Router navigation.
 - Connecting two scene nodes in NodeView persists a new choice on source scene (LocalForage + best-effort API)
 
 ### Phase 4 - E2E Test Suite Optimization - 2025-10-20

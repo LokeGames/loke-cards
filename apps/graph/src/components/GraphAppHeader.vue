@@ -27,7 +27,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { computed } from 'vue';
-import ThemeToggle from '../../src/components/ThemeToggle.vue';
+import ThemeToggle from '../../../../src/components/ThemeToggle.vue';
 
 const route = useRoute();
 const router = useRouter();
