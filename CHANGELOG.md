@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build artifacts endpoint: `GET /api/build/artifacts` lists generated `.c` and `.h` files
 - Server-side codegen now parses basic choices/stateChanges from JSON (naive parser)
 - Scene Editor: Local/Server code preview toggle; server code generated on demand
+- Meta blocks: Scenes and Chapters support a `meta` field included as `/* META: ... */` comment blocks in generated `.c`/`.h` files
 - UI polish: Breadcrumbs in header, active nav highlight, dismissible banners, first-invalid focus, Reset/Cancel UX
 - Frontend Settings build UI (`src/views/SettingsView.vue`)
   - "Build All Scenes" button (triggers `/api/build`)

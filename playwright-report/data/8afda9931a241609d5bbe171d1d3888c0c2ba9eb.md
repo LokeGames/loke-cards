@@ -1,0 +1,90 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]: Loke Cards
+    - navigation "Breadcrumb" [ref=e6]:
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - link "Settings" [ref=e9] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=e10]:
+      - generic [ref=e11]: Synced
+      - button "☀️" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - complementary [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e18]:
+          - link "Scenes" [ref=e19] [cursor=pointer]:
+            - /url: /scenes
+        - listitem [ref=e20]:
+          - link "Chapters" [ref=e21] [cursor=pointer]:
+            - /url: /chapters
+        - listitem [ref=e22]:
+          - link "C code" [ref=e23] [cursor=pointer]:
+            - /url: /code
+        - listitem [ref=e24]:
+          - link "Settings" [ref=e25] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=e26]:
+        - heading "Quick Actions" [level=3] [ref=e27]
+        - list [ref=e28]:
+          - listitem [ref=e29]:
+            - link "New Scene" [ref=e30] [cursor=pointer]:
+              - /url: /scene/new
+              - img [ref=e31]
+              - text: New Scene
+          - listitem [ref=e33]:
+            - link "New Chapter" [ref=e34] [cursor=pointer]:
+              - /url: /chapter/new
+              - img [ref=e35]
+              - text: New Chapter
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Settings" [level=1] [ref=e40]
+          - paragraph [ref=e41]: Configure your Loke Cards application.
+        - generic [ref=e42]:
+          - heading "Build C Files" [level=2] [ref=e43]
+          - paragraph [ref=e44]:
+            - text: Generate C source files for all scenes and write them to the backend's
+            - code [ref=e45]: server/output/
+            - text: folder.
+          - generic [ref=e46]:
+            - button "Build All Scenes" [ref=e47] [cursor=pointer]
+            - generic [ref=e48]: "Build complete. Files written: 0"
+          - generic [ref=e49]:
+            - heading "Artifacts" [level=3] [ref=e50]
+            - list [ref=e51]:
+              - listitem [ref=e52]:
+                - code [ref=e53]: scene_playwright_test.c
+              - listitem [ref=e54]:
+                - code [ref=e55]: scene_hills.c
+              - listitem [ref=e56]:
+                - code [ref=e57]: scene_house.c
+              - listitem [ref=e58]:
+                - code [ref=e59]: scene_township.c
+              - listitem [ref=e60]:
+                - code [ref=e61]: scene_forrest.c
+              - listitem [ref=e62]:
+                - code [ref=e63]: scene_path.c
+              - listitem [ref=e64]:
+                - code [ref=e65]: chapter_e2e_test.h
+              - listitem [ref=e66]:
+                - code [ref=e67]: scene_e2e_test.c
+              - listitem [ref=e68]:
+                - code [ref=e69]: chapter02.h
+              - listitem [ref=e70]:
+                - code [ref=e71]: chapter01.h
+              - listitem [ref=e72]:
+                - code [ref=e73]: chapter_e2e_scene.h
+        - generic [ref=e74]:
+          - heading "Sync Local Data" [level=2] [ref=e75]
+          - paragraph [ref=e76]: Push locally saved chapters and scenes (LocalForage) to the backend API.
+          - button "Sync to Server" [ref=e78] [cursor=pointer]
+          - paragraph [ref=e79]: "Tip: Use this if you created data while the backend was offline."
+```

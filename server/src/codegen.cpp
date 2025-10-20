@@ -37,12 +37,14 @@ std::string generate_scene_code_from_json(const std::string &sceneId,
     using namespace mini_json;
     Value root = parse(json);
     std::string sceneText;
+    std::string meta;
     std::vector<std::tuple<std::string, std::string, bool>> choices;
     struct State { std::string var, op, val; };
     std::vector<State> states;
 
     if (root.isObject()) {
         const Value &txt = root["sceneText"]; if (txt.isString()) sceneText = txt.s;
+        const Value &m = root["meta"]; if (m.isString()) meta = m.s;
         const Value &arrC = root["choices"];
         if (arrC.isArray()) {
             for (const auto &item : arrC.a) {
@@ -71,6 +73,9 @@ std::string generate_scene_code_from_json(const std::string &sceneId,
     }
 
     std::ostringstream oss;
+    if (!meta.empty()) {
+        oss << "/*\nMETA:\n" << meta << "\n*/\n";
+    }
     oss << "#include <loke/scene.h>\n";
     if (!chapterId.empty()) oss << "#include \"" << chapterId << ".h\"\n";
     oss << "\nvoid " << sceneId << "(GameState* state) {\n";
@@ -99,10 +104,15 @@ std::string generate_scene_code_from_json(const std::string &sceneId,
 }
 
 std::string generate_chapter_header_basic(const std::string &chapterId,
-                                          const std::vector<std::string> &sceneIds) {
+                                          const std::vector<std::string> &sceneIds,
+                                          const std::string &meta) {
     std::ostringstream oss;
     std::string guard = chapterId; for (auto &c : guard) c = std::toupper(c); guard += "_H";
-    oss << "#ifndef " << guard << "\n#define " << guard << "\n\n#include <loke/scene.h>\n";
+    oss << "#ifndef " << guard << "\n#define " << guard << "\n\n";
+    if (!meta.empty()) {
+        oss << "/*\nMETA:\n" << meta << "\n*/\n";
+    }
+    oss << "#include <loke/scene.h>\n";
     if (!sceneIds.empty()) {
         oss << "\n// Forward declarations for all scenes in this chapter\n";
         for (const auto &sid : sceneIds) oss << "void " << sid << "(GameState* state);\n";
@@ -112,4 +122,3 @@ std::string generate_chapter_header_basic(const std::string &chapterId,
     oss << "\n#endif // " << guard << "\n";
     return oss.str();
 }
-

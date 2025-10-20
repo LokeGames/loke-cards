@@ -1,0 +1,135 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]: Loke Cards
+    - navigation "Breadcrumb" [ref=e6]:
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - link "New Scene" [ref=e9] [cursor=pointer]:
+            - /url: /scene/new
+    - generic [ref=e10]:
+      - generic [ref=e11]: Synced
+      - button "☀️" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - complementary [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e18]:
+          - link "Scenes" [ref=e19] [cursor=pointer]:
+            - /url: /scenes
+        - listitem [ref=e20]:
+          - link "Chapters" [ref=e21] [cursor=pointer]:
+            - /url: /chapters
+        - listitem [ref=e22]:
+          - link "C code" [ref=e23] [cursor=pointer]:
+            - /url: /code
+        - listitem [ref=e24]:
+          - link "Settings" [ref=e25] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=e26]:
+        - heading "Quick Actions" [level=3] [ref=e27]
+        - list [ref=e28]:
+          - listitem [ref=e29]:
+            - link "New Scene" [ref=e30] [cursor=pointer]:
+              - /url: /scene/new
+              - img [ref=e31]
+              - text: New Scene
+          - listitem [ref=e33]:
+            - link "New Chapter" [ref=e34] [cursor=pointer]:
+              - /url: /chapter/new
+              - img [ref=e35]
+              - text: New Chapter
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Create New Scene" [level=1] [ref=e40]
+          - paragraph [ref=e41]: Create and edit interactive fiction scenes for loke-engine
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: Scene ID *
+              - textbox "scene_forest_entrance" [ref=e46]
+              - paragraph [ref=e47]: Must be a valid C identifier starting with "scene_" (e.g., scene_forest_entrance)
+            - generic [ref=e48]:
+              - generic [ref=e49]: Chapter *
+              - combobox [ref=e50]:
+                - option "-- Select Chapter --" [selected]
+                - option "Chapter 01"
+                - option "Chapter 02"
+                - option "chapter_e2e_scene"
+                - option "E2E Test Chapter"
+                - option "+ Create New Chapter"
+              - paragraph [ref=e51]: Select the chapter this scene belongs to
+            - generic [ref=e52]:
+              - generic [ref=e53]: Scene Text *
+              - textbox "You stand at the entrance to a dark forest. The path ahead is shrouded in mist..." [ref=e54]
+              - generic [ref=e55]:
+                - paragraph [ref=e56]: Scene description text (supports \n for newlines)
+                - paragraph [ref=e57]: 0/2048
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - generic [ref=e60]: Choices (optional)
+                - button "+ Add Choice" [ref=e61] [cursor=pointer]
+              - paragraph [ref=e63]: No choices yet. Click "Add Choice" to create one.
+              - paragraph [ref=e64]: 0/10 choices. If none, a default "Continue" will be generated.
+            - generic [ref=e65]:
+              - generic [ref=e66]:
+                - generic [ref=e67]: State Changes (optional)
+                - button "+ Add State Change" [active] [ref=e68] [cursor=pointer]
+              - generic [ref=e70]:
+                - generic [ref=e71]:
+                  - generic [ref=e72]: State Change 1
+                  - button "Remove state change" [ref=e73] [cursor=pointer]:
+                    - img [ref=e74]
+                - generic [ref=e76]:
+                  - generic [ref=e77]:
+                    - generic [ref=e78]: Variable
+                    - combobox "health" [ref=e79]
+                  - generic [ref=e80]:
+                    - generic [ref=e81]: Operator
+                    - combobox [ref=e82]:
+                      - option "=" [selected]
+                      - option "+="
+                      - option "-="
+                      - option "*="
+                      - option "/="
+                  - generic [ref=e83]:
+                    - generic [ref=e84]: Value
+                    - combobox "10" [ref=e85]
+                - paragraph [ref=e86]: "State change 1: Variable is required"
+              - paragraph [ref=e87]: Modify GameState variables (e.g., health, gold, has_key)
+            - generic [ref=e88]:
+              - generic [ref=e89]: Meta (optional)
+              - textbox "Meta (optional)" [ref=e90]:
+                - /placeholder: Notes, communication, or meta info...
+              - paragraph [ref=e91]: Included as a comment block in generated C code.
+            - generic [ref=e92]:
+              - button "Save Scene" [disabled] [ref=e93]
+              - button "Cancel" [ref=e94] [cursor=pointer]
+              - button "Reset" [ref=e95] [cursor=pointer]
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - button "Local Code" [ref=e98] [cursor=pointer]
+              - button "Server Code" [disabled] [ref=e99]
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - heading "Generated C Code" [level=3] [ref=e102]
+                - generic [ref=e103]:
+                  - button "Copy" [ref=e104] [cursor=pointer]
+                  - button [ref=e105] [cursor=pointer]:
+                    - img [ref=e106]
+              - code [ref=e110]: "#include <loke/scene.h> #include \".h\" void (GameState* state) { SceneContext* ctx = get_current_context(); scene_set_text(ctx, \"\"); scene_add_option(ctx, \"Continue\", NULL, true); // TODO: Set next scene }"
+            - generic [ref=e111]:
+              - heading "Quick Tips" [level=3] [ref=e112]
+              - button "Generate on Server" [ref=e114] [cursor=pointer]
+              - list [ref=e115]:
+                - listitem [ref=e116]: • Scene ID must start with "scene_" (e.g., scene_forest_entrance)
+                - listitem [ref=e117]: • Choices are optional (0–10). None adds a default "Continue"
+                - listitem [ref=e118]: • Use \n in scene text for newlines
+                - listitem [ref=e119]: • State changes are optional but executed before text displays
+                - listitem [ref=e120]: • Code is auto-generated as you type
+```

@@ -1,0 +1,81 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - button "Open navigation" [ref=e5] [cursor=pointer]:
+      - img [ref=e6]
+    - generic [ref=e8]: Loke Cards
+    - generic [ref=e9]:
+      - generic [ref=e10]: Synced
+      - button "☀️" [ref=e11] [cursor=pointer]
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Create New Scene" [level=1] [ref=e16]
+        - paragraph [ref=e17]: Create and edit interactive fiction scenes for loke-engine
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Scene ID *
+            - textbox "scene_forest_entrance" [ref=e22]
+            - paragraph [ref=e23]: Must be a valid C identifier starting with "scene_" (e.g., scene_forest_entrance)
+          - generic [ref=e24]:
+            - generic [ref=e25]: Chapter *
+            - combobox [ref=e26]:
+              - option "-- Select Chapter --" [selected]
+              - option "Chapter 01"
+              - option "Chapter 02"
+              - option "chapter_e2e_scene"
+              - option "E2E Test Chapter"
+              - option "+ Create New Chapter"
+            - paragraph [ref=e27]: Select the chapter this scene belongs to
+          - generic [ref=e28]:
+            - generic [ref=e29]: Scene Text *
+            - textbox "You stand at the entrance to a dark forest. The path ahead is shrouded in mist..." [ref=e30]
+            - generic [ref=e31]:
+              - paragraph [ref=e32]: Scene description text (supports \n for newlines)
+              - paragraph [ref=e33]: 0/2048
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]: Choices (optional)
+              - button "+ Add Choice" [ref=e37] [cursor=pointer]
+            - paragraph [ref=e39]: No choices yet. Click "Add Choice" to create one.
+            - paragraph [ref=e40]: 0/10 choices. If none, a default "Continue" will be generated.
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: State Changes (optional)
+              - button "+ Add State Change" [ref=e44] [cursor=pointer]
+            - paragraph [ref=e46]: No state changes. Click "Add State Change" to modify game state.
+            - paragraph [ref=e47]: Modify GameState variables (e.g., health, gold, has_key)
+          - generic [ref=e48]:
+            - generic [ref=e49]: Meta (optional)
+            - textbox "Meta (optional)" [ref=e50]:
+              - /placeholder: Notes, communication, or meta info...
+            - paragraph [ref=e51]: Included as a comment block in generated C code.
+          - generic [ref=e52]:
+            - button "Save Scene" [ref=e53] [cursor=pointer]
+            - button "Cancel" [ref=e54] [cursor=pointer]
+            - button "Reset" [ref=e55] [cursor=pointer]
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - button "Local Code" [ref=e58] [cursor=pointer]
+            - button "Server Code" [disabled] [ref=e59]
+          - generic [ref=e60]:
+            - generic [ref=e61]:
+              - heading "Generated C Code" [level=3] [ref=e62]
+              - generic [ref=e63]:
+                - button "Copy" [ref=e64] [cursor=pointer]
+                - button [ref=e65] [cursor=pointer]:
+                  - img [ref=e66]
+            - code [ref=e70]: "#include <loke/scene.h> #include \".h\" void (GameState* state) { SceneContext* ctx = get_current_context(); scene_set_text(ctx, \"\"); scene_add_option(ctx, \"Continue\", NULL, true); // TODO: Set next scene }"
+          - generic [ref=e71]:
+            - heading "Quick Tips" [level=3] [ref=e72]
+            - button "Generate on Server" [ref=e74] [cursor=pointer]
+            - list [ref=e75]:
+              - listitem [ref=e76]: • Scene ID must start with "scene_" (e.g., scene_forest_entrance)
+              - listitem [ref=e77]: • Choices are optional (0–10). None adds a default "Continue"
+              - listitem [ref=e78]: • Use \n in scene text for newlines
+              - listitem [ref=e79]: • State changes are optional but executed before text displays
+              - listitem [ref=e80]: • Code is auto-generated as you type
+```

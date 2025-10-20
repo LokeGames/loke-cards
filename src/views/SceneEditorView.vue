@@ -51,6 +51,14 @@
           :errors="validation.errors.value.stateChanges"
         />
 
+        <!-- Meta (optional) -->
+        <div>
+          <label for="scene-meta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta (optional)</label>
+          <textarea id="scene-meta" v-model="sceneData.meta" rows="3" placeholder="Notes, communication, or meta info..."
+            class="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">Included as a comment block in generated C code.</p>
+        </div>
+
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 pt-4">
           <button
@@ -135,7 +143,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCodeGenerator } from '../composables/useCodeGenerator.js';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
-import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
+import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
 
 // Components
 import SceneIdInput from '../components/SceneIdInput.vue';
@@ -154,7 +162,8 @@ const sceneData = reactive({
   chapterId: '',
   sceneText: '',
   choices: [],
-  stateChanges: []
+  stateChanges: [],
+  meta: ''
 });
 
 // Available chapters (loaded from API or local storage)

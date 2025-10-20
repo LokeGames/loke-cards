@@ -26,6 +26,14 @@
         placeholder="e.g., The Forest"
       />
 
+      <!-- Meta (optional) -->
+      <div>
+        <label for="chapter-meta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta (optional)</label>
+        <textarea id="chapter-meta" v-model="chapter.meta" rows="3" placeholder="Notes, communication, or meta info..."
+          class="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">Included as a comment block in generated chapter header.</p>
+      </div>
+
       <!-- Actions -->
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
         <BaseButton
@@ -67,6 +75,7 @@ import BaseInput from '../components/BaseInput.vue';
 import BaseButton from '../components/BaseButton.vue';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
+import { saveChapter as saveChapterLocal } from '../lib/storage.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -74,7 +83,8 @@ const route = useRoute();
 // Form state
 const chapter = reactive({
   chapterId: '',
-  name: ''
+  name: '',
+  meta: ''
 });
 
 const saveStatus = ref(null);
@@ -102,9 +112,9 @@ async function handleSave() {
 
   try {
     if (isEditMode.value) {
-      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name });
+      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
     } else {
-      await api.chapters.create({ id: chapter.chapterId, name: chapter.name });
+      await api.chapters.create({ id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
     }
     saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" created.` };
     setTimeout(() => {
@@ -139,6 +149,7 @@ onMounted(async () => {
       if (data && data.id) {
         chapter.chapterId = data.id;
         chapter.name = data.name || '';
+        chapter.meta = data.meta || '';
       }
     } catch (e) {
       saveStatus.value = { type: 'error', message: `Failed to load chapter: ${e.message}` };

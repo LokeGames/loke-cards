@@ -493,7 +493,7 @@ New git branch for dev.
 - [x] Makefile for C++ server (multi-file, include/)
 - [x] Auto-restart on code change (watch scripts)
 - [x] Systemd service (example unit provided)
-- [ ] Test compilation on Ubuntu (manual)
+- [x] Test compilation on Ubuntu (manual)
 
 ---
 
@@ -530,9 +530,9 @@ npm run test:mobile
 ```
 
 ### 4.4 Visual Testing
-- [ ] Screenshot comparison
-- [ ] Layout shift detection
-- [ ] Accessibility testing
+- [x] Screenshot comparison
+- [x] Layout shift detection
+- [x] Accessibility testing
 - [ ] Performance metrics
 
 ---

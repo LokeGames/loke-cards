@@ -1,0 +1,61 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]: Loke Cards
+    - navigation "Breadcrumb" [ref=e6]:
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - link "Button Test" [ref=e9] [cursor=pointer]:
+            - /url: /test/base-button
+    - generic [ref=e10]:
+      - generic [ref=e11]: Synced
+      - button "☀️" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - complementary [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e18]:
+          - link "Scenes" [ref=e19] [cursor=pointer]:
+            - /url: /scenes
+        - listitem [ref=e20]:
+          - link "Chapters" [ref=e21] [cursor=pointer]:
+            - /url: /chapters
+        - listitem [ref=e22]:
+          - link "C code" [ref=e23] [cursor=pointer]:
+            - /url: /code
+        - listitem [ref=e24]:
+          - link "Settings" [ref=e25] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=e26]:
+        - heading "Quick Actions" [level=3] [ref=e27]
+        - list [ref=e28]:
+          - listitem [ref=e29]:
+            - link "New Scene" [ref=e30] [cursor=pointer]:
+              - /url: /scene/new
+              - img [ref=e31]
+              - text: New Scene
+          - listitem [ref=e33]:
+            - link "New Chapter" [ref=e34] [cursor=pointer]:
+              - /url: /chapter/new
+              - img [ref=e35]
+              - text: New Chapter
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - heading "BaseButton Test" [level=1] [ref=e39]
+        - button "Primary Button" [ref=e40] [cursor=pointer]
+        - button "Secondary Button" [ref=e41] [cursor=pointer]
+        - button "Danger Button" [ref=e42] [cursor=pointer]
+        - button "Success Button" [ref=e43] [cursor=pointer]
+        - button "Ghost Button" [ref=e44] [cursor=pointer]
+        - button "Small Button" [ref=e45] [cursor=pointer]
+        - button "Medium Button" [ref=e46] [cursor=pointer]
+        - button "Large Button" [ref=e47] [cursor=pointer]
+        - button "Loading..." [disabled] [ref=e48]:
+          - generic [ref=e49]:
+            - img [ref=e50]
+            - text: Loading...
+```

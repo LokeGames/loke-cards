@@ -1,0 +1,92 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]: Loke Cards
+    - navigation "Breadcrumb" [ref=e6]:
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - link "Dashboard" [ref=e9] [cursor=pointer]:
+            - /url: /
+    - generic [ref=e10]:
+      - generic [ref=e11]: Synced
+      - button "☀️" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - complementary [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e18]:
+          - link "Scenes" [ref=e19] [cursor=pointer]:
+            - /url: /scenes
+        - listitem [ref=e20]:
+          - link "Chapters" [ref=e21] [cursor=pointer]:
+            - /url: /chapters
+        - listitem [ref=e22]:
+          - link "C code" [ref=e23] [cursor=pointer]:
+            - /url: /code
+        - listitem [ref=e24]:
+          - link "Settings" [ref=e25] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=e26]:
+        - heading "Quick Actions" [level=3] [ref=e27]
+        - list [ref=e28]:
+          - listitem [ref=e29]:
+            - link "New Scene" [ref=e30] [cursor=pointer]:
+              - /url: /scene/new
+              - img [ref=e31]
+              - text: New Scene
+          - listitem [ref=e33]:
+            - link "New Chapter" [ref=e34] [cursor=pointer]:
+              - /url: /chapter/new
+              - img [ref=e35]
+              - text: New Chapter
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Dashboard" [level=1] [ref=e40]
+          - paragraph [ref=e41]: Overview of your Loke Cards project.
+        - region "Quick Actions" [ref=e42]:
+          - heading "Quick Actions" [level=2] [ref=e43]
+          - generic [ref=e44]:
+            - link "New Scene" [ref=e45] [cursor=pointer]:
+              - /url: /scene/new
+              - img [ref=e46]
+              - generic [ref=e48]: New Scene
+            - link "New Chapter" [ref=e49] [cursor=pointer]:
+              - /url: /chapter/new
+              - img [ref=e50]
+              - generic [ref=e52]: New Chapter
+        - region "Recent Chapters" [ref=e53]:
+          - generic [ref=e54]:
+            - heading "Recent Chapters" [level=2] [ref=e55]
+            - link "View all" [ref=e56] [cursor=pointer]:
+              - /url: /chapters
+          - list [ref=e58]:
+            - listitem [ref=e59]:
+              - generic [ref=e60]:
+                - generic [ref=e61]: Chapter 01
+                - generic [ref=e62]: "ID: chapter01"
+              - link "New Scene" [ref=e63] [cursor=pointer]:
+                - /url: /scene/new?chapter=chapter01
+            - listitem [ref=e64]:
+              - generic [ref=e65]:
+                - generic [ref=e66]: Chapter 02
+                - generic [ref=e67]: "ID: chapter02"
+              - link "New Scene" [ref=e68] [cursor=pointer]:
+                - /url: /scene/new?chapter=chapter02
+            - listitem [ref=e69]:
+              - generic [ref=e70]:
+                - generic [ref=e71]: chapter_e2e_scene
+                - generic [ref=e72]: "ID: chapter_e2e_scene"
+              - link "New Scene" [ref=e73] [cursor=pointer]:
+                - /url: /scene/new?chapter=chapter_e2e_scene
+            - listitem [ref=e74]:
+              - generic [ref=e75]:
+                - generic [ref=e76]: E2E Test Chapter
+                - generic [ref=e77]: "ID: chapter_e2e_test"
+              - link "New Scene" [ref=e78] [cursor=pointer]:
+                - /url: /scene/new?chapter=chapter_e2e_test
+```
