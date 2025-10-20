@@ -77,6 +77,20 @@ async function apiFetch(endpoint, options = {}) {
   }
 }
 
+async function apiFetchAbs(endpoint, options = {}) {
+  const url = `${ABSOLUTE_BASE_URL}${endpoint}`;
+  const defaultOptions = { headers: { 'Content-Type': 'application/json' } };
+  const config = { ...defaultOptions, ...options };
+  const response = await fetch(url, config);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+  }
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) return await response.json();
+  return await response.text();
+}
+
 /**
  * Scene API endpoints
  */
@@ -88,7 +102,24 @@ export const scenesAPI = {
    * @returns {Promise<Scene[]>}
    */
   async getAll() {
-    return apiFetch('/scenes');
+    // Prefer proxy when healthy; if empty array returned, fallback to absolute
+    if (API_BASE_URL.startsWith('/')) {
+      const healthy = await ensureBackend();
+      if (healthy) {
+        try {
+          const res = await apiFetch('/scenes');
+          if (Array.isArray(res) && res.length > 0) return res;
+          // fallback to absolute if proxy yields empty
+          return await apiFetchAbs('/scenes');
+        } catch (_) {
+          // fallback absolute
+          return await apiFetchAbs('/scenes');
+        }
+      }
+      // unhealthy: short circuit (will be caught by callers)
+    }
+    // Absolute by default
+    return apiFetchAbs('/scenes');
   },
 
   /**

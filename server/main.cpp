@@ -258,7 +258,7 @@ int main(void) {
     svr.Get("/api/chapters", [](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM chapters ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
@@ -317,7 +317,7 @@ int main(void) {
     svr.Get("/api/scenes", [](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
@@ -443,7 +443,7 @@ int main(void) {
     svr.Post("/api/build", [](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
@@ -484,7 +484,7 @@ int main(void) {
         std::set<std::string> chapterIds;
         sqlite3_stmt* ch = nullptr;
         std::unordered_map<std::string, std::string> chapterMeta;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters ORDER BY id", -1, &ch, nullptr) == SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM chapters ORDER BY id", -1, &ch, nullptr) == SQLITE_OK) {
             while (sqlite3_step(ch) == SQLITE_ROW) {
                 const unsigned char* data = sqlite3_column_text(ch, 0);
                 if (!data) continue;

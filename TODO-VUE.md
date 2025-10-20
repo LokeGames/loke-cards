@@ -632,38 +632,65 @@ Scope: Navigation hardening, toasts, skeletons, error monitor, cleanup
 
 ---
 
-## Phase 7: Deployment
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
-### 7.1 Production Build
+## Phase 7: PWA Offline‑First + Sync (moved before Deploy)
+Branch: `phase7-offline-sync`
+
+Mål: Frontend kan køre helt offline (mobil), og sync’er ændringer til server SQLite when online igen. Single‑user → simple LWW (last‑write‑wins) er OK.
+
+### 7.1 App‑shell + Caching
+- [ ] Arbejd videre med Vite PWA plugin (manifest, SW)
+- [ ] Cache‑first for app‑shell og statiske assets
+- [ ] Network‑first for API; fallback til lokal DB
+
+### 7.2 Lokal DB i PWA
+- [ ] Adapter: fortsæt med LocalForage nu for risiko‑frihed
+- [ ] (Valgfri/flag) Tilføj WASM SQLite (wa-sqlite/sql.js) bag feature flag og en lille “DB adapter” (ens API)
+- [ ] Skema i PWA: scenes(id, data, updatedAt, deleted), chapters(id, data, updatedAt, deleted)
+
+### 7.3 Sync‑model (simpel LWW)
+- [ ] Markér lokale ændringer som dirty (updatedAt, deleted)
+- [ ] Push dirty rows først (POST /api/changes)
+- [ ] Pull delta siden `lastSync` (GET /api/changes?since=ts)
+- [ ] Merge lokalt: LWW på updatedAt; håndter deleted som tombstone
+- [ ] Sæt `lastSync` ved success; retry/backoff ved fejl
+
+### 7.4 Server API (delta)
+- [ ] Added endpoints (dev backend):
+  - GET `/api/changes?since=<ts>` → { scenes:[{id,data,updatedAt,deleted}], chapters:[...] }
+  - POST `/api/changes` → upserts; accepterer `deleted` og `updatedAt`
+- [ ] Server DB: tilføj `updatedAt` og `deleted` i JSON payload (data felt)
+- [ ] (Senere) Normaliser til rigtige kolonner i SQLite, men JSON er fint i dev
+
+### 7.5 UX og fejlhåndtering
+- [ ] Vis sync‑status pill (synced/syncing/offline/error) — brug eksisterende StatusPill
+- [ ] Toasts for sync success/failure (allerede globalt)
+- [ ] Background Sync (Workbox) når muligt; ellers sync on focus/online
+
+### 7.6 Tests
+- [ ] Playwright: simulér offline (context.setOffline(true)), opret/ret/scenelister, gå online og assert server modtager ændringer (kan stubbes i dev)
+- [ ] Race‑test: hurtige edit→sync→nav for stabilitet
+
+---
+
+## Phase 8: Deployment
+Branch: `phase8-deploy`
+### 8.1 Production Build
 - [ ] Build Vue app (`npm run build`)
 - [ ] Build C++ server (`make release`)
 - [ ] Optimize assets
 - [ ] Test production bundle
 
-### 7.2 Tailscale Setup
+### 8.2 Tailscale Setup
 - [ ] Frontend: `tailscale serve --https=8443 ./dist`
 - [ ] Backend: C++ server on port 3000
 - [ ] Configure CORS properly
 - [ ] Test på Tailscale network
 
-### 7.3 Systemd Services
+### 8.3 Systemd Services
 - [ ] `loke-cards-frontend.service`
 - [ ] `loke-cards-backend.service`
 - [ ] Auto-restart on failure
 - [ ] Logging setup
-
----
-
-## Phase 8: PWA (Optional - Sidste fase)
-Can we merge git branch to main only yes if all is tested and confirmed working?
-New git branch for dev.
-### 8.1 PWA Setup
-- [ ] Vite PWA plugin
-- [ ] Service worker
-- [ ] Offline support
-- [ ] Install prompt
-- [ ] App manifest
 
 ---
 merge to main

@@ -47,21 +47,32 @@ async function refresh() {
   await store.loadGlobal();
 
   const chNodes = buildChapterNodes(store.chapters);
-  // Build scene nodes WITH parent relationship for GlobalGraph
-  // Only set parentNode if the chapter actually exists
-  const chapterIds = new Set(store.chapters.map(c => c.id));
-  const sceneNodes = store.scenes.map(s => ({
-    id: `scene-${s.id}`,
-    type: 'scene',
-    data: { title: s.title, sceneText: s.sceneText, chapterId: s.chapterId, choicesCount: Array.isArray(s.choices) ? s.choices.length : 0 },
-    position: s.position ?? { x: Math.random() * 400, y: Math.random() * 400 }, // Random position if not set
-    parentNode: chapterIds.has(s.chapterId) ? `chap-${s.chapterId}` : undefined, // Only set parent if chapter exists
-    class: 'scene-node',
-    draggable: true,
-  }));
 
-  nodes.value = [...chNodes, ...sceneNodes];
+  // Build scene nodes per chapter (like in doc/cards-vue-flow.md line 303-306)
+  const perChapterSceneNodes = store.chapters.flatMap((ch, chIdx) => {
+    const chapterScenes = store.scenes.filter(s => s.chapterId === ch.id);
+    return chapterScenes.map((s, idx) => ({
+      id: `scene-${s.id}`,
+      type: 'scene',
+      data: { title: s.title, sceneText: s.sceneText, chapterId: s.chapterId, choicesCount: Array.isArray(s.choices) ? s.choices.length : 0 },
+      // Position relative to parent chapter container (y offset accounts for header)
+      position: s.position ?? {
+        x: 20 + (idx % 2) * 220,
+        y: 60 + Math.floor(idx / 2) * 130
+      },
+      parentNode: `chap-${ch.id}`,
+      extent: 'parent', // Keep scene inside chapter
+      expandParent: true,
+      class: 'scene-node',
+      draggable: true,
+    }));
+  });
+
+  nodes.value = [...chNodes, ...perChapterSceneNodes];
   edges.value = buildEdgesFromChoices(store.scenes);
+
+  console.log('[GlobalGraph] Nodes:', nodes.value.length, 'Chapters:', chNodes.length, 'Scenes:', perChapterSceneNodes.length);
+  console.log('[GlobalGraph] All nodes:', nodes.value);
 }
 
 function onNodeDragStop(evt) {

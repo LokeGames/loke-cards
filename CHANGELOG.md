@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Planning
+- Reorder roadmap: Phase 7 → PWA Offline‑First + Sync; Phase 8 → Deployment
+- Add SYNC design doc: `doc/SYNC-DESIGN.md` (single‑user LWW, push/pull deltas)
 
 ### Phase 6 - Polish & Hardening - 2025-10-20
 

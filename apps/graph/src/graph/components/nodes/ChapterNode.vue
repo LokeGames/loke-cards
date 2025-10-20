@@ -5,7 +5,7 @@
       'border-purple-500 bg-purple-50 dark:bg-purple-900/20': selected,
       'border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-900/10': !selected
     }"
-    style="min-width: 400px; min-height: 300px;"
+    style="width: 100%; height: 100%;"
   >
     <div class="chapter-header px-4 py-3 border-b border-purple-200 dark:border-purple-800 rounded-t-xl bg-purple-100 dark:bg-purple-900/30">
       <div class="flex items-center gap-2">

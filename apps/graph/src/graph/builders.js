@@ -1,11 +1,11 @@
 export function buildChapterNodes(chapters = []) {
-  return chapters.map((c) => ({
+  return chapters.map((c, idx) => ({
     id: `chap-${c.id}`,
     type: 'chapter',
     data: { title: c.title },
-    position: c.position ?? { x: 0, y: 0 },
+    position: c.position ?? { x: idx * 650, y: 50 }, // Space chapters horizontally
     class: 'chapter-node',
-    extent: 'parent',
+    style: { width: 500, height: 450 }, // Explicit size for container
     draggable: true,
     selectable: true,
   }));
