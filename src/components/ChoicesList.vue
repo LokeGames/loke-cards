@@ -143,10 +143,19 @@ function removeChoice(index) {
 }
 
   function updateChoice(index, field, value) {
+    let v = value;
+    if (field === 'nextScene' && typeof v === 'string') {
+      const trimmed = v.trim();
+      if (trimmed && !trimmed.startsWith('scene_')) {
+        // Auto-normalize to scene_ prefix and slugify spaces/case
+        const slug = trimmed.replace(/\s+/g, '_').replace(/[^A-Za-z0-9_]/g, '').toLowerCase();
+        v = 'scene_' + slug;
+      }
+    }
     const newChoices = [...props.choices];
     newChoices[index] = {
       ...newChoices[index],
-      [field]: value
+      [field]: v
     };
     emit('update:choices', newChoices);
   }

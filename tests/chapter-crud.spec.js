@@ -16,9 +16,13 @@ test('create and delete chapter via UI', async ({ page }) => {
   // Delete
   const row = page.locator('li', { hasText: chapterId });
   await row.getByRole('button', { name: 'Delete' }).click();
-  // Confirm dialog
-  page.once('dialog', (dialog) => dialog.accept());
-  // Re-check list after delete
+
+  // Confirm via modal (AppModal component)
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'Confirm' }).click();
+
+  // Wait for modal to close and re-check list
+  await expect(page.getByRole('dialog')).not.toBeVisible();
   await expect(page.getByText(chapterId)).toHaveCount(0);
 });
 

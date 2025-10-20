@@ -51,6 +51,14 @@
           :errors="validation.errors.value.stateChanges"
         />
 
+        <!-- Meta (optional) -->
+        <div>
+          <label for="scene-meta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta (optional)</label>
+          <textarea id="scene-meta" v-model="sceneData.meta" rows="3" placeholder="Notes, communication, or meta info..."
+            class="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">Included as a comment block in generated C code.</p>
+        </div>
+
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 pt-4">
           <button
@@ -74,14 +82,7 @@
           </button>
         </div>
 
-        <!-- Save Status -->
-        <div v-if="saveStatus" class="p-4 rounded-lg flex items-start justify-between gap-3" :class="{
-          'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400': saveStatus.type === 'success',
-          'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400': saveStatus.type === 'error'
-        }">
-          <span>{{ saveStatus.message }}</span>
-          <button @click="saveStatus = null" class="text-sm opacity-70 hover:opacity-100">✕</button>
-        </div>
+        <!-- Inline save status removed — using toasts globally -->
       </div>
 
       <!-- Right Column: Code Preview (desktop) / Collapsible (mobile) -->
@@ -114,7 +115,6 @@
           </h3>
           <div class="flex items-center gap-2 mb-3">
             <button @click="fetchServerCode" class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300">Generate on Server</button>
-            <span v-if="serverCodeStatus" class="text-xs" :class="serverCodeStatus.type==='error' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">{{ serverCodeStatus.message }}</span>
           </div>
           <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
             <li>• Scene ID must start with "scene_" (e.g., scene_forest_entrance)</li>
@@ -135,7 +135,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCodeGenerator } from '../composables/useCodeGenerator.js';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
-import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
+import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
 
 // Components
 import SceneIdInput from '../components/SceneIdInput.vue';
@@ -144,17 +144,22 @@ import SceneTextEditor from '../components/SceneTextEditor.vue';
 import ChoicesList from '../components/ChoicesList.vue';
 import StateChangesList from '../components/StateChangesList.vue';
 import CodePreview from '../components/CodePreview.vue';
+import { useToastStore } from '../stores/toast.js';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToastStore();
 
 // Scene data
 const sceneData = reactive({
   sceneId: '',
   chapterId: '',
   sceneText: '',
-  choices: [],
-  stateChanges: []
+  choices: [
+    { text: '', nextScene: '', enabled: true }
+  ],
+  stateChanges: [],
+  meta: ''
 });
 
 // Available chapters (loaded from API or local storage)
@@ -171,6 +176,14 @@ const serverCodeStatus = ref(null);
 const serverCode = ref('');
 const codeViewMode = ref(localStorage.getItem('codeViewMode') || 'local'); // 'local' | 'server'
 const allScenes = ref([]);
+const isDirty = computed(() => {
+  try {
+    if (!initialSnapshot.value) return false;
+    return JSON.stringify(sceneData) !== initialSnapshot.value;
+  } catch {
+    return false;
+  }
+});
 
 // Composables
 const codeGenerator = useCodeGenerator();
@@ -213,6 +226,7 @@ async function handleCreateChapter(chapterId) {
     await api.chapters.create({ id: chapterId, name: chapterId });
     availableChapters.value.push({ id: chapterId, name: chapterId });
     saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" created.` };
+    toast.success(`Chapter "${chapterId}" created`);
     setTimeout(() => (saveStatus.value = null), 1200);
   } catch (err) {
     // Fallback: save locally when offline
@@ -220,10 +234,12 @@ async function handleCreateChapter(chapterId) {
       await saveChapterLocal({ id: chapterId, name: chapterId, scenes: [], order: Date.now() });
       availableChapters.value.push({ id: chapterId, name: chapterId });
       saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" saved locally (offline).` };
+      toast.info(`Chapter "${chapterId}" saved locally (offline)`);
       setTimeout(() => (saveStatus.value = null), 1600);
     } catch (e2) {
       console.error('Failed to create chapter:', err);
       saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+      toast.error(`Failed to create chapter: ${err.message}`);
     }
   }
 }
@@ -266,6 +282,7 @@ async function handleSave() {
       type: 'success',
       message: `Scene "${sceneData.sceneId}" saved successfully!`
     };
+    toast.success(`Scene "${sceneData.sceneId}" saved`);
 
     // Clear status after 3 seconds, then redirect
     setTimeout(() => {
@@ -293,6 +310,7 @@ async function handleSave() {
         type: 'success',
         message: `Scene "${sceneData.sceneId}" saved locally (offline).`
       };
+      toast.info(`Saved locally (offline): ${sceneData.sceneId}`);
       setTimeout(() => {
         saveStatus.value = null;
         router.push('/scenes');
@@ -344,11 +362,15 @@ function handleReset() {
 // Load scene data if editing and chapters from API
 onMounted(async () => {
   try {
-    // Load chapters
+    // Load chapters from API and merge with local (ensure locally-created items appear)
     const chaptersData = await api.chapters.getAll();
-    if (chaptersData && Array.isArray(chaptersData)) {
-      availableChapters.value = chaptersData;
-    }
+    const localChapters = await getAllChaptersLocal().catch(() => []);
+    const byId = new Map();
+    (Array.isArray(chaptersData) ? chaptersData : []).forEach(c => byId.set(c.id, c));
+    (Array.isArray(localChapters) ? localChapters : []).forEach(c => {
+      if (!byId.has(c.id)) byId.set(c.id, c);
+    });
+    availableChapters.value = Array.from(byId.values());
   } catch (error) {
     // Fallback to local storage when offline or backend unavailable
     try {
@@ -360,10 +382,17 @@ onMounted(async () => {
 
   // Load scenes for choices suggestions
   try {
+    // Merge server and local scenes for suggestions
     const scenesData = await api.scenes.getAll();
-    if (scenesData && Array.isArray(scenesData)) {
-      allScenes.value = scenesData.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
-    }
+    const localScenes = await getAllScenesLocal().catch(() => []);
+    const normalize = (s) => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter });
+    const byId = new Map();
+    (Array.isArray(scenesData) ? scenesData : []).forEach(s => byId.set(normalize(s).id, normalize(s)));
+    (Array.isArray(localScenes) ? localScenes : []).forEach(s => {
+      const n = normalize(s);
+      if (!byId.has(n.id)) byId.set(n.id, n);
+    });
+    allScenes.value = Array.from(byId.values());
   } catch (e) {
     try {
       const localScenes = await getAllScenesLocal();
@@ -419,9 +448,11 @@ async function fetchServerCode() {
       serverCode.value = code;
       codeViewMode.value = 'server';
       serverCodeStatus.value = { type: 'success', message: 'Server code generated' };
+      toast.success('Server code generated');
     }
   } catch (e) {
     serverCodeStatus.value = { type: 'error', message: `Server codegen failed: ${e.message}` };
+    toast.error(`Server codegen failed: ${e.message}`);
   }
 }
 </script>

@@ -8,11 +8,14 @@ const config = defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 4, // Limit to 4 workers for better stability
   reporter: 'html',
+  timeout: 30000, // 30s default timeout per test
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+    actionTimeout: 10000, // 10s for actions like click, fill
+    navigationTimeout: 10000, // 10s for page navigations
   },
 
   projects: [

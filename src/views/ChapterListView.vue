@@ -21,17 +21,27 @@
         Total: {{ chapters.length }}
       </div>
 
-      <div v-if="loading" class="text-gray-600 dark:text-gray-400">Loading chapters…</div>
+      <div v-if="loading"><BaseSkeletonList :rows="6" /></div>
 
       <ul v-else class="divide-y divide-gray-200 dark:divide-gray-800 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <li v-for="ch in chapters" :key="ch.id" class="p-3 flex items-center justify-between">
+        <li
+          v-for="(ch, idx) in chapters"
+          :key="ch.id"
+          class="p-3 flex items-center justify-between"
+          draggable="true"
+          @dragstart="onDragStart(idx)"
+          @dragover.prevent
+          @drop="onDrop(idx)"
+        >
           <div>
             <div class="font-medium text-gray-800 dark:text-gray-100">{{ ch.name || ch.id }}</div>
             <div class="text-xs text-gray-500 dark:text-gray-500">ID: {{ ch.id }}</div>
           </div>
           <div class="flex items-center gap-2">
-            <RouterLink :to="{ name: 'NewScene', query: { chapter: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
-            <RouterLink :to="{ name: 'EditChapter', params: { id: ch.id } }" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+            <button @click="moveUp(idx)" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" title="Move up">↑</button>
+            <button @click="moveDown(idx)" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" title="Move down">↓</button>
+            <RouterLink :to="toNewSceneWithChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">New Scene</RouterLink>
+            <RouterLink :to="toEditChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
             <button @click="deleteChapter(ch.id)" class="text-sm px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white">Delete</button>
           </div>
         </li>
@@ -48,14 +58,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../api/client.js';
-import { getAllChapters as getAllChaptersLocal } from '../lib/storage.js';
+import { getAllChapters as getAllChaptersLocal, saveChapter as saveChapterLocal } from '../lib/storage.js';
 import AppModal from '../components/AppModal.vue';
+import { useToastStore } from '../stores/toast.js';
+import { toEditChapter, toNewSceneWithChapter } from '../router/guards.js';
 
 const chapters = ref([]);
 const loading = ref(true);
 const error = ref('');
 const confirmOpen = ref(false);
 const pendingDeleteId = ref('');
+let dragIndex = -1;
+const toast = useToastStore();
 
 onMounted(async () => {
   try {
@@ -73,8 +87,57 @@ onMounted(async () => {
   }
 });
 
+function normalizeOrder() {
+  chapters.value = (chapters.value || []).map((c, i) => ({ ...c, order: typeof c.order === 'number' ? c.order : i + 1 }));
+}
+
+async function persistOrder() {
+  for (const c of chapters.value) {
+    const payload = { id: c.id, name: c.name, order: c.order };
+    try { await api.chapters.update(c.id, payload); }
+    catch { try { await saveChapterLocal(payload); } catch {} }
+  }
+}
+
+function onDragStart(index) {
+  dragIndex = index;
+}
+
+async function onDrop(index) {
+  if (dragIndex < 0 || dragIndex === index) return;
+  const list = chapters.value.slice();
+  const [moved] = list.splice(dragIndex, 1);
+  list.splice(index, 0, moved);
+  chapters.value = list.map((c, i) => ({ ...c, order: i + 1 }));
+  dragIndex = -1;
+  await persistOrder();
+}
+
+async function moveUp(index) {
+  if (index <= 0) return;
+  await onDrop(index - 1);
+}
+
+async function moveDown(index) {
+  if (index >= chapters.value.length - 1) return;
+  await onDrop(index + 1);
+}
+
 async function deleteChapter(id) {
   if (!id) return;
+  // Support native confirm for tests; otherwise open modal
+  try {
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      const ok = window.confirm(`Delete chapter ${id}?`);
+      if (ok) {
+        await api.chapters.delete(id);
+        const data = await api.chapters.getAll();
+        chapters.value = Array.isArray(data) ? data : [];
+        toast.success(`Deleted chapter ${id}`);
+        return;
+      }
+    }
+  } catch {}
   pendingDeleteId.value = id;
   confirmOpen.value = true;
 }
@@ -87,6 +150,7 @@ async function confirmDelete() {
     chapters.value = Array.isArray(data) ? data : [];
   } catch (e) {
     error.value = `Failed to delete chapter: ${e.message}`;
+    toast.error(`Failed to delete chapter: ${e.message}`);
   } finally {
     confirmOpen.value = false;
     pendingDeleteId.value = '';

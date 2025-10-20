@@ -26,6 +26,14 @@
         placeholder="e.g., The Forest"
       />
 
+      <!-- Meta (optional) -->
+      <div>
+        <label for="chapter-meta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta (optional)</label>
+        <textarea id="chapter-meta" v-model="chapter.meta" rows="3" placeholder="Notes, communication, or meta info..."
+          class="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">Included as a comment block in generated chapter header.</p>
+      </div>
+
       <!-- Actions -->
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
         <BaseButton
@@ -39,14 +47,7 @@
         <BaseButton variant="secondary" @click="handleCancel">Cancel</BaseButton>
       </div>
 
-      <!-- Save Status -->
-      <div v-if="saveStatus" class="p-4 rounded-lg flex items-start justify-between gap-3" :class="{
-        'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400': saveStatus.type === 'success',
-        'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400': saveStatus.type === 'error'
-      }">
-        <span>{{ saveStatus.message }}</span>
-        <button @click="saveStatus = null" class="text-sm opacity-70 hover:opacity-100">✕</button>
-      </div>
+      <!-- Inline save status removed — using toasts globally -->
 
       <!-- Tips -->
       <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">
@@ -67,14 +68,18 @@ import BaseInput from '../components/BaseInput.vue';
 import BaseButton from '../components/BaseButton.vue';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
+import { saveChapter as saveChapterLocal } from '../lib/storage.js';
+import { useToastStore } from '../stores/toast.js';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToastStore();
 
 // Form state
 const chapter = reactive({
   chapterId: '',
-  name: ''
+  name: '',
+  meta: ''
 });
 
 const saveStatus = ref(null);
@@ -102,11 +107,12 @@ async function handleSave() {
 
   try {
     if (isEditMode.value) {
-      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name });
+      await api.chapters.update(route.params.id, { id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
     } else {
-      await api.chapters.create({ id: chapter.chapterId, name: chapter.name });
+      await api.chapters.create({ id: chapter.chapterId, name: chapter.name, meta: chapter.meta });
     }
     saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" created.` };
+    toast.success(`Chapter "${chapter.chapterId}" created`);
     setTimeout(() => {
       saveStatus.value = null;
       router.push('/chapters');
@@ -115,12 +121,14 @@ async function handleSave() {
     try {
       await saveChapterLocal({ id: chapter.chapterId, name: chapter.name, scenes: [], order: Date.now() });
       saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" saved locally (offline).` };
+      toast.info(`Chapter "${chapter.chapterId}" saved locally (offline)`);
       setTimeout(() => {
         saveStatus.value = null;
         router.push('/chapters');
       }, 1400);
     } catch (e2) {
       saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+      toast.error(`Failed to create chapter: ${err.message}`);
     }
   } finally {
 
@@ -139,6 +147,7 @@ onMounted(async () => {
       if (data && data.id) {
         chapter.chapterId = data.id;
         chapter.name = data.name || '';
+        chapter.meta = data.meta || '';
       }
     } catch (e) {
       saveStatus.value = { type: 'error', message: `Failed to load chapter: ${e.message}` };

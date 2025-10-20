@@ -3,10 +3,43 @@
  *
  * Communicates with the C++ backend server (port 3000)
  * Handles all HTTP requests for scenes, chapters, and projects
+ *
+ * @typedef {import('../types/domain').Scene} Scene
+ * @typedef {import('../types/domain').Chapter} Chapter
  */
 
-// Base URL for API (from environment variable or default to relative '/api' so Vite proxy works in dev)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Base URLs
+// Prefer absolute URL from env to bypass Vite proxy logs when backend is offline.
+const ENV_BASE = import.meta.env.VITE_API_BASE_URL;
+const DEFAULT_ABSOLUTE = 'http://127.0.0.1:3000/api';
+const API_BASE_URL = ENV_BASE || '/api';
+const ABSOLUTE_BASE_URL = (ENV_BASE && /^https?:/i.test(ENV_BASE)) ? ENV_BASE : DEFAULT_ABSOLUTE;
+
+let backendHealthy = null; // null = unknown, true/false known
+let lastHealthCheck = 0;
+const HEALTH_TTL_MS = 4000;
+
+function withTimeout(promise, ms = 800) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort('timeout'), ms);
+  return Promise.race([
+    promise(ctl.signal).finally(() => clearTimeout(t)),
+  ]).catch(() => { throw new Error('BACKEND_OFFLINE'); });
+}
+
+async function ensureBackend() {
+  const now = Date.now();
+  if (backendHealthy !== null && now - lastHealthCheck < HEALTH_TTL_MS) return backendHealthy;
+  try {
+    await withTimeout((signal) => fetch(`${ABSOLUTE_BASE_URL}/health`, { signal }));
+    backendHealthy = true;
+  } catch (_) {
+    backendHealthy = false;
+  } finally {
+    lastHealthCheck = now;
+  }
+  return backendHealthy;
+}
 
 /**
  * Generic fetch wrapper with error handling
@@ -23,6 +56,10 @@ async function apiFetch(endpoint, options = {}) {
   const config = { ...defaultOptions, ...options };
 
   try {
+    // If using proxied relative '/api' and backend is known offline, short‑circuit to avoid Vite proxy errors
+    if (API_BASE_URL.startsWith('/') && (await ensureBackend()) === false) {
+      throw new Error('BACKEND_OFFLINE');
+    }
     const response = await fetch(url, config);
 
     // Handle non-OK responses
@@ -40,6 +77,20 @@ async function apiFetch(endpoint, options = {}) {
   }
 }
 
+async function apiFetchAbs(endpoint, options = {}) {
+  const url = `${ABSOLUTE_BASE_URL}${endpoint}`;
+  const defaultOptions = { headers: { 'Content-Type': 'application/json' } };
+  const config = { ...defaultOptions, ...options };
+  const response = await fetch(url, config);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+  }
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) return await response.json();
+  return await response.text();
+}
+
 /**
  * Scene API endpoints
  */
@@ -47,12 +98,36 @@ export const scenesAPI = {
   /**
    * Get all scenes
    */
+  /**
+   * @returns {Promise<Scene[]>}
+   */
   async getAll() {
-    return apiFetch('/scenes');
+    // Prefer proxy when healthy; if empty array returned, fallback to absolute
+    if (API_BASE_URL.startsWith('/')) {
+      const healthy = await ensureBackend();
+      if (healthy) {
+        try {
+          const res = await apiFetch('/scenes');
+          if (Array.isArray(res) && res.length > 0) return res;
+          // fallback to absolute if proxy yields empty
+          return await apiFetchAbs('/scenes');
+        } catch (_) {
+          // fallback absolute
+          return await apiFetchAbs('/scenes');
+        }
+      }
+      // unhealthy: short circuit (will be caught by callers)
+    }
+    // Absolute by default
+    return apiFetchAbs('/scenes');
   },
 
   /**
    * Get a single scene by ID
+   */
+  /**
+   * @param {string} id
+   * @returns {Promise<Scene>}
    */
   async getById(id) {
     return apiFetch(`/scenes/${id}`);
@@ -67,6 +142,10 @@ export const scenesAPI = {
    * @param {Array} sceneData.choices - Array of choice objects
    * @param {Array} sceneData.stateChanges - Array of state change objects
    */
+  /**
+   * @param {Partial<Scene>} sceneData
+   * @returns {Promise<Scene>}
+   */
   async create(sceneData) {
     return apiFetch('/scenes', {
       method: 'POST',
@@ -77,6 +156,11 @@ export const scenesAPI = {
   /**
    * Update an existing scene
    */
+  /**
+   * @param {string} id
+   * @param {Partial<Scene>} sceneData
+   * @returns {Promise<Scene>}
+   */
   async update(id, sceneData) {
     return apiFetch(`/scenes/${id}`, {
       method: 'PUT',
@@ -86,6 +170,10 @@ export const scenesAPI = {
 
   /**
    * Delete a scene
+   */
+  /**
+   * @param {string} id
+   * @returns {Promise<{ ok: boolean }|any>}
    */
   async delete(id) {
     return apiFetch(`/scenes/${id}`, {
@@ -101,6 +189,9 @@ export const chaptersAPI = {
   /**
    * Get all chapters
    */
+  /**
+   * @returns {Promise<Chapter[]>}
+   */
   async getAll() {
     return apiFetch('/chapters');
   },
@@ -108,12 +199,19 @@ export const chaptersAPI = {
   /**
    * Get a single chapter by ID
    */
+  /**
+   * @param {string} id
+   * @returns {Promise<Chapter>}
+   */
   async getById(id) {
     return apiFetch(`/chapters/${id}`);
   },
 
   /**
    * Create a new chapter
+   */
+  /**
+   * @param {Partial<Chapter>} chapterData
    */
   async create(chapterData) {
     return apiFetch('/chapters', {
@@ -125,6 +223,10 @@ export const chaptersAPI = {
   /**
    * Update a chapter
    */
+  /**
+   * @param {string} id
+   * @param {Partial<Chapter>} chapterData
+   */
   async update(id, chapterData) {
     return apiFetch(`/chapters/${id}`, {
       method: 'PUT',
@@ -134,6 +236,9 @@ export const chaptersAPI = {
 
   /**
    * Delete a chapter
+   */
+  /**
+   * @param {string} id
    */
   async delete(id) {
     return apiFetch(`/chapters/${id}`, {
@@ -201,12 +306,7 @@ export const projectsAPI = {
  * Health check endpoint
  */
 export async function healthCheck() {
-  try {
-    const response = await apiFetch('/health');
-    return response.status === 'ok';
-  } catch (error) {
-    return false;
-  }
+  return await ensureBackend();
 }
 
 /**

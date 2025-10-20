@@ -258,7 +258,7 @@ int main(void) {
     svr.Get("/api/chapters", [](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM chapters ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
@@ -317,7 +317,7 @@ int main(void) {
     svr.Get("/api/scenes", [](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
@@ -443,7 +443,7 @@ int main(void) {
     svr.Post("/api/build", [](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
@@ -483,12 +483,25 @@ int main(void) {
         // Determine chapters — prefer explicit chapters table, fall back to chapterIds seen in scenes
         std::set<std::string> chapterIds;
         sqlite3_stmt* ch = nullptr;
-        if (sqlite3_prepare_v2(db, "SELECT data FROM chapters ORDER BY id", -1, &ch, nullptr) == SQLITE_OK) {
+        std::unordered_map<std::string, std::string> chapterMeta;
+        if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM chapters ORDER BY id", -1, &ch, nullptr) == SQLITE_OK) {
             while (sqlite3_step(ch) == SQLITE_ROW) {
                 const unsigned char* data = sqlite3_column_text(ch, 0);
                 if (!data) continue;
                 std::string json = reinterpret_cast<const char*>(data);
                 std::string cid = json_get_string_field(json, "id");
+                // extract meta (naive)
+                size_t mp = json.find("\"meta\"");
+                if (mp != std::string::npos) {
+                    // very naive string value extract
+                    size_t q1 = json.find('"', json.find(':', mp));
+                    if (q1 != std::string::npos) {
+                        size_t q2 = json.find('"', q1 + 1);
+                        if (q2 != std::string::npos) {
+                            chapterMeta[cid] = json.substr(q1 + 1, q2 - (q1 + 1));
+                        }
+                    }
+                }
                 if (!cid.empty()) chapterIds.insert(cid);
             }
         }
@@ -501,7 +514,7 @@ int main(void) {
         for (const auto &cid : chapterIds) {
             auto it = chapterScenes.find(cid);
             const auto &scenesForChapter = (it != chapterScenes.end()) ? it->second : std::vector<std::string>{};
-            std::string header = generate_chapter_header_basic(cid, scenesForChapter);
+            std::string header = generate_chapter_header_basic(cid, scenesForChapter, chapterMeta.count(cid)? chapterMeta[cid] : "");
             std::string hfile = outdir + "/" + cid + ".h";
             std::ofstream hofs(hfile.c_str());
             if (hofs) {

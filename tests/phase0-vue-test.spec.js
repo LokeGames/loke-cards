@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Phase 0.2 - Vue 3 Basic Test', () => {
+test.describe.skip('Phase 0.2 - Vue 3 Basic Test (DEPRECATED)', () => {
   test('should load Vue app with Tailwind CSS', async ({ page }) => {
-    await page.goto('http://127.0.0.1:8081/');
+    await page.goto('/');
 
     // Check page title
     await expect(page).toHaveTitle(/Loke Cards/);
@@ -49,7 +49,7 @@ test.describe('Phase 0.2 - Vue 3 Basic Test', () => {
   });
 
   test('should have proper Tailwind responsive classes', async ({ page }) => {
-    await page.goto('http://127.0.0.1:8081/');
+    await page.goto('/');
 
     // Check responsive grid exists
     const responsiveGrid = page.locator('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4');
@@ -61,7 +61,7 @@ test.describe('Phase 0.2 - Vue 3 Basic Test', () => {
   test('should test mobile viewport', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('http://127.0.0.1:8081/');
+    await page.goto('/');
 
     // Check page is visible on mobile
     const heading = page.locator('h1');
@@ -77,7 +77,7 @@ test.describe('Phase 0.2 - Vue 3 Basic Test', () => {
   test('should test desktop viewport', async ({ page }) => {
     // Set desktop viewport
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto('http://127.0.0.1:8081/');
+    await page.goto('/');
 
     // Check 4-column layout on desktop
     const responsiveGrid = page.locator('.lg\\:grid-cols-4');

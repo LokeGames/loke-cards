@@ -61,8 +61,9 @@ export function useSceneValidation(sceneData) {
    */
   function validateChapterId(chapterId) {
     const id = (chapterId || '').trim();
+    // Chapter is optional for form validity; if empty, treat as valid
     if (!id) {
-      return 'Chapter ID is required';
+      return '';
     }
 
     if (!isValidCIdentifier(id)) {
@@ -108,8 +109,13 @@ export function useSceneValidation(sceneData) {
     }
 
     // nextScene is optional (can be NULL for disabled options)
-    if (choice.nextScene && !isValidCIdentifier(choice.nextScene)) {
-      return `Choice ${index + 1}: Next scene must be a valid C identifier or empty`;
+    if (choice.nextScene) {
+      if (!isValidCIdentifier(choice.nextScene)) {
+        return `Choice ${index + 1}: Next scene must be a valid C identifier or empty`;
+      }
+      if (!choice.nextScene.startsWith('scene_')) {
+        return `Choice ${index + 1}: Next scene should start with "scene_"`;
+      }
     }
 
     return '';
