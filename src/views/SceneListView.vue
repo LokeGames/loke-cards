@@ -75,9 +75,26 @@ const toast = useToastStore();
 onMounted(async () => {
   try {
     const data = await api.scenes.getAll();
-    // API returns array of scene objects; filter invalid entries
-    const arr = Array.isArray(data) ? data : [];
-    scenes.value = arr.filter((s) => s && (s.sceneId || s.id));
+    // Normalize API rows that wrap JSON in `data` column or return JSON strings
+    const normalize = (row) => {
+      let src = row;
+      if (row == null) return null;
+      if (typeof row === 'string') {
+        try { src = JSON.parse(row); } catch { return null; }
+      }
+      if (row && row.data) {
+        try {
+          const parsed = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+          src = { ...parsed };
+          if (!src.id && row.id) src.id = row.id;
+        } catch { /* ignore */ }
+      }
+      // Ensure id fallback from sceneId
+      if (!src.id && src.sceneId) src.id = src.sceneId;
+      return src;
+    };
+    const arr = (Array.isArray(data) ? data : []).map(normalize).filter(Boolean);
+    scenes.value = arr;
   } catch (e) {
     // Fallback to local storage when offline or backend unavailable
     try {

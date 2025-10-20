@@ -59,10 +59,26 @@ onMounted(async () => {
   } finally {
     chaptersLoading.value = false;
   }
-  // scenes for stats
+  // scenes for stats (normalize server rows)
   try {
     const s = await api.scenes.getAll();
-    scenes.value = Array.isArray(s) ? s : [];
+    const normalize = (row) => {
+      let src = row;
+      if (row == null) return null;
+      if (typeof row === 'string') {
+        try { src = JSON.parse(row); } catch { return null; }
+      }
+      if (row && row.data) {
+        try {
+          const parsed = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+          src = { ...parsed };
+          if (!src.id && row.id) src.id = row.id;
+        } catch {}
+      }
+      if (!src.id && src.sceneId) src.id = src.sceneId;
+      return src;
+    };
+    scenes.value = (Array.isArray(s) ? s : []).map(normalize).filter(Boolean);
   } catch (e) {
     try { scenes.value = await getAllScenesLocal(); }
     catch { scenesError.value = `Failed to load scenes: ${e.message}`; }
