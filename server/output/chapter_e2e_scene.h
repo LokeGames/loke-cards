@@ -3,7 +3,6 @@
 
 #include <loke/scene.h>
 
-// Forward declarations for all scenes in this chapter
-void scene_e2e_test(GameState* state);
+// No scenes yet
 
 #endif // CHAPTER_E2E_SCENE_H

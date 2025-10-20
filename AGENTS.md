@@ -41,3 +41,44 @@
 ## Agent Notes
 - Follow TODOs in `TODO.md`; keep changes minimal and aligned with existing patterns.
 - Avoid modifying `server/` unless explicitly scoped; frontend lives in `src/`.
+
+## NodeView (Phase 5 — Extended)
+- Reference: `doc/cards-vue-flow.md` for architecture, builders, ELK layout.
+- Packages are already present: `@vue-flow/core`, `@vue-flow/minimap`, `@vue-flow/background`, `elkjs`.
+- File layout to use:
+  - `src/stores/graph.js` — loads chapters/scenes/links (API with LocalForage fallback)
+  - `src/graph/builders.js` — build nodes/edges from domain data
+  - `src/graph/layout.js` — ELK auto‑layout helper (optional)
+  - `src/graph/nodeTypes.js` — register `SceneNode` and `ChapterNode`
+  - `src/components/ChapterGraph.vue`, `src/components/GlobalGraph.vue`
+  - Node components live in `src/components/nodes/`
+- Routes:
+  - Global: `/nodes` → `GlobalGraph.vue`
+  - Per‑chapter: `/chapter/:id/nodes` → `ChapterGraph.vue`
+- Data access:
+  - Prefer `src/api/client.js`; on failure fall back to `src/lib/storage.js` (offline‑first).
+  - If links are not persisted, derive edges from scene `choices` (choice.next → edge target).
+- Interactions:
+  - Persist positions on drag‑stop; connect to create links; delete to remove nodes/edges.
+  - Keep UI responsive; use Minimap and Background.
+- Testing (Playwright):
+  - Assert node/edge counts, navigation Global ↔ Chapter, drag persistence, and connect/create link.
+
+## UI/Styling
+- Use Tailwind with dark mode variants (`dark:`). Follow existing palette mapping.
+- Reuse base components (`BaseButton`, `BaseInput`) and patterns in `views/`.
+- Keep components small and colocated when helpful.
+
+## Data & Sync
+- Use Pinia stores for app state; keep `lib/storage.js` logic intact and wrap via stores.
+- Update `.env` locally from `.env.example`; base URL `VITE_API_BASE_URL` must point to backend.
+
+## Testing & Dev
+- Dev server runs on `http://127.0.0.1:8081` (`npm run dev`).
+- Run E2E tests with `npm test` (expects dev server on 8081).
+- When adding UI that affects snapshots, update with `npx playwright test --update-snapshots` deliberately.
+
+## Constraints
+- Don’t introduce new dependencies without need; packages for NodeView are already included.
+- Don’t change `server/` unless specifically requested.
+- Follow Conventional Commits and update `doc/CHANGELOG.md` for notable changes.

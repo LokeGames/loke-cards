@@ -59,11 +59,11 @@ test.describe('Phase 2 - Scene Editor', () => {
 
   test('Choices list - add and remove choices', async ({ page }) => {
     // Initial choice should exist
-    await expect(page.locator('text=Choice 1')).toBeVisible();
+    await expect(page.locator('span.text-sm.font-semibold:has-text("Choice 1")').first()).toBeVisible();
 
     // Add a new choice
     await page.click('button:has-text("Add Choice")');
-    await expect(page.locator('text=Choice 2')).toBeVisible();
+    await expect(page.locator('span.text-sm.font-semibold:has-text("Choice 2")').first()).toBeVisible();
 
     // Remove a choice (click X button on second choice)
     const removeButtons = page.locator('button[title="Remove choice"]');
@@ -72,7 +72,7 @@ test.describe('Phase 2 - Scene Editor', () => {
       await removeButtons.nth(1).click();
 
       // Should only have 1 choice now
-      await expect(page.locator('text=Choice 2')).not.toBeVisible();
+      await expect(page.locator('span.text-sm.font-semibold:has-text("Choice 2")').first()).not.toBeVisible();
     }
   });
 
@@ -81,8 +81,8 @@ test.describe('Phase 2 - Scene Editor', () => {
     const addButton = page.locator('button:has-text("Add State Change")');
     await addButton.click();
 
-    // Should see "State Change 1"
-    await expect(page.locator('text=State Change 1')).toBeVisible();
+    // Should see "State Change 1" heading (not error message)
+    await expect(page.locator('span.text-sm.font-semibold:has-text("State Change 1")').first()).toBeVisible();
 
     // Should see operator dropdown
     await expect(page.locator('select').filter({ hasText: '=' }).first()).toBeVisible();
@@ -142,7 +142,7 @@ test.describe('Phase 2 - Scene Editor', () => {
     // All form elements should still be visible on mobile using specific selectors
     const sceneIdInput = page.locator('.scene-editor-view input').first();
     await expect(sceneIdInput).toBeVisible();
-    await expect(page.locator('textarea')).toBeVisible();
+    await expect(page.locator('textarea#scene-text')).toBeVisible();
     await expect(page.locator('button:has-text("Save Scene")')).toBeVisible();
   });
 

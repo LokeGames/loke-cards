@@ -86,11 +86,9 @@ test.describe('Phase 1 - App Shell Layout', () => {
     await page.goto('/');
     await page.waitForSelector('#app', { timeout: 5000 });
 
-    // Check #app has full viewport classes
-    const app = page.locator('#app');
-    const classes = await app.getAttribute('class');
-    expect(classes).toContain('h-screen');
-    expect(classes).toContain('w-screen');
+    // Check main #app container (the rendered Vue component, not placeholder)
+    await expect(page.locator('#app.h-screen')).toBeVisible();
+    await expect(page.locator('#app.w-screen')).toBeVisible();
   });
 
   test('should navigate between routes', async ({ page }) => {

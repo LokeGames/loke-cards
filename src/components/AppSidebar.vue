@@ -19,6 +19,7 @@
             <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Scenes</RouterLink></li>
             <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Chapters</RouterLink></li>
             <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">C code</RouterLink></li>
+            <li><RouterLink to="/nodes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Node View</RouterLink></li>
             <li><RouterLink to="/settings" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block" @click="ui.closeSidebar()">Settings</RouterLink></li>
           </ul>
 
@@ -64,6 +65,7 @@
       <li><RouterLink to="/scenes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Scenes</RouterLink></li>
       <li><RouterLink to="/chapters" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Chapters</RouterLink></li>
       <li><RouterLink to="/code" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">C code</RouterLink></li>
+      <li><RouterLink to="/nodes" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Node View</RouterLink></li>
       <li><RouterLink to="/settings" class="nav-item text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded block">Settings</RouterLink></li>
     </ul>
 

@@ -9,6 +9,7 @@ void scene_hills(GameState* state);
 void scene_house(GameState* state);
 void scene_path(GameState* state);
 void scene_playwright_test(GameState* state);
+void scene_test_codegen(GameState* state);
 void scene_township(GameState* state);
 
 #endif // CHAPTER01_H

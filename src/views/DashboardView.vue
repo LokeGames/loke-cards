@@ -31,6 +31,21 @@
       </div>
     </section>
 
+    <!-- Quick Stats -->
+    <section aria-labelledby="stats-heading" class="">
+      <h2 id="stats-heading" class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Project Stats</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="p-3 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-center">
+          <div class="text-xs text-gray-500 dark:text-gray-500">Chapters</div>
+          <div class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ stats.chapters }}</div>
+        </div>
+        <div class="p-3 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-center">
+          <div class="text-xs text-gray-500 dark:text-gray-500">Scenes</div>
+          <div class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ stats.scenes }}</div>
+        </div>
+      </div>
+    </section>
+
     <!-- Recent Chapters -->
     <section aria-labelledby="chapters-heading">
       <div class="flex items-center justify-between mb-2">
@@ -52,6 +67,28 @@
         </ul>
       </div>
     </section>
+
+    <!-- Recent Scenes -->
+    <section aria-labelledby="scenes-heading">
+      <div class="flex items-center justify-between mb-2">
+        <h2 id="scenes-heading" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Recent Scenes</h2>
+        <RouterLink to="/scenes" class="text-xs text-blue-600 hover:underline">View all</RouterLink>
+      </div>
+      <div class="rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div v-if="scenesLoading" class="p-3 text-sm text-gray-600 dark:text-gray-400">Loading…</div>
+        <div v-else-if="scenesError" class="p-3 text-sm text-red-700 dark:text-red-400">{{ scenesError }}</div>
+        <ul v-else class="divide-y divide-gray-200 dark:divide-gray-800">
+          <li v-for="sc in recentScenes" :key="sc.sceneId || sc.id" class="p-3 flex items-center justify-between">
+            <div>
+              <div class="font-medium text-gray-800 dark:text-gray-100">{{ sc.sceneId || sc.id }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-500">Chapter: {{ sc.chapter || sc.chapterId || '—' }}</div>
+            </div>
+            <RouterLink :to="{ name: 'EditScene', params: { id: sc.sceneId || sc.id } }" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Edit</RouterLink>
+          </li>
+          <li v-if="recentScenes.length === 0" class="p-3 text-sm text-gray-600 dark:text-gray-400">No scenes yet.</li>
+        </ul>
+      </div>
+    </section>
   </div>
   
 </template>
@@ -59,13 +96,22 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import api from '../api/client.js';
-import { getAllChapters as getAllChaptersLocal } from '../lib/storage.js';
+import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal } from '../lib/storage.js';
 
 const chapters = ref([]);
 const chaptersLoading = ref(true);
 const chaptersError = ref('');
+const scenes = ref([]);
+const scenesLoading = ref(true);
+const scenesError = ref('');
+const stats = ref({ chapters: 0, scenes: 0 });
 
 const recentChapters = computed(() => chapters.value.slice(0, 5));
+const recentScenes = computed(() => {
+  const arr = Array.isArray(scenes.value) ? scenes.value.slice() : [];
+  arr.sort((a, b) => Number(b.updatedAt ?? b.createdAt ?? 0) - Number(a.updatedAt ?? a.createdAt ?? 0));
+  return arr.slice(0, 5);
+});
 
 onMounted(async () => {
   try {
@@ -80,6 +126,17 @@ onMounted(async () => {
   } finally {
     chaptersLoading.value = false;
   }
+  // scenes for stats
+  try {
+    const s = await api.scenes.getAll();
+    scenes.value = Array.isArray(s) ? s : [];
+  } catch (e) {
+    try { scenes.value = await getAllScenesLocal(); }
+    catch { scenesError.value = `Failed to load scenes: ${e.message}`; }
+  } finally {
+    scenesLoading.value = false;
+  }
+  stats.value = { chapters: chapters.value.length, scenes: scenes.value.length };
 });
 </script>
 

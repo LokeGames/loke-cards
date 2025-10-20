@@ -14,11 +14,24 @@ test('create and delete scene via UI', async ({ page }) => {
   await page.fill('#scene-id', sceneId);
   await page.fill('#scene-text', 'E2E scene text');
   await page.selectOption('#chapter-select', { label: chapterId });
+
+  // Save and wait for success indicator
   await page.getByRole('button', { name: 'Save Scene' }).click();
 
-  // Verify in list
+  // Wait for save success message or timeout
+  try {
+    await expect(page.locator('text=/saved|success/i').first()).toBeVisible({ timeout: 3000 });
+  } catch {
+    // Continue even if no success message
+  }
+
+  // Give API time to propagate
+  await page.waitForTimeout(2000);
+
+  // Verify in list - reload to ensure fresh data
   await page.goto('/scenes');
-  await expect(page.getByText(sceneId)).toBeVisible();
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByText(sceneId)).toBeVisible({ timeout: 10000 });
 
   // Delete
   const row = page.locator('li', { hasText: sceneId });

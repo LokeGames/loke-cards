@@ -1,0 +1,112 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]: Loke Cards
+    - navigation "Breadcrumb" [ref=e6]:
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - link "Scenes" [ref=e9] [cursor=pointer]:
+            - /url: /scenes
+    - generic [ref=e10]:
+      - generic [ref=e11]: Synced
+      - button "☀️" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - complementary [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e18]:
+          - link "Scenes" [ref=e19] [cursor=pointer]:
+            - /url: /scenes
+        - listitem [ref=e20]:
+          - link "Chapters" [ref=e21] [cursor=pointer]:
+            - /url: /chapters
+        - listitem [ref=e22]:
+          - link "C code" [ref=e23] [cursor=pointer]:
+            - /url: /code
+        - listitem [ref=e24]:
+          - link "Settings" [ref=e25] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=e26]:
+        - heading "Quick Actions" [level=3] [ref=e27]
+        - list [ref=e28]:
+          - listitem [ref=e29]:
+            - link "New Scene" [ref=e30] [cursor=pointer]:
+              - /url: /scene/new
+              - img [ref=e31]
+              - text: New Scene
+          - listitem [ref=e33]:
+            - link "New Chapter" [ref=e34] [cursor=pointer]:
+              - /url: /chapter/new
+              - img [ref=e35]
+              - text: New Chapter
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Scenes" [level=1] [ref=e40]
+          - link "New Scene" [ref=e41] [cursor=pointer]:
+            - /url: /scene/new
+        - paragraph [ref=e42]: Browse and manage all scenes in your project.
+        - generic [ref=e43]:
+          - generic [ref=e44]: "Total: 7"
+          - list [ref=e45]:
+            - listitem [ref=e46]:
+              - generic [ref=e47]:
+                - generic [ref=e48]: scene_forrest
+                - generic [ref=e49]: "Chapter: chapter01"
+              - generic [ref=e50]:
+                - link "Edit" [ref=e51] [cursor=pointer]:
+                  - /url: /scene/scene_forrest
+                - button "Delete" [ref=e52] [cursor=pointer]
+            - listitem [ref=e53]:
+              - generic [ref=e54]:
+                - generic [ref=e55]: scene_hills
+                - generic [ref=e56]: "Chapter: chapter01"
+              - generic [ref=e57]:
+                - link "Edit" [ref=e58] [cursor=pointer]:
+                  - /url: /scene/scene_hills
+                - button "Delete" [ref=e59] [cursor=pointer]
+            - listitem [ref=e60]:
+              - generic [ref=e61]:
+                - generic [ref=e62]: scene_house
+                - generic [ref=e63]: "Chapter: chapter01"
+              - generic [ref=e64]:
+                - link "Edit" [ref=e65] [cursor=pointer]:
+                  - /url: /scene/scene_house
+                - button "Delete" [ref=e66] [cursor=pointer]
+            - listitem [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: scene_path
+                - generic [ref=e70]: "Chapter: chapter01"
+              - generic [ref=e71]:
+                - link "Edit" [ref=e72] [cursor=pointer]:
+                  - /url: /scene/scene_path
+                - button "Delete" [ref=e73] [cursor=pointer]
+            - listitem [ref=e74]:
+              - generic [ref=e75]:
+                - generic [ref=e76]: scene_playwright_test
+                - generic [ref=e77]: "Chapter: chapter01"
+              - generic [ref=e78]:
+                - link "Edit" [ref=e79] [cursor=pointer]:
+                  - /url: /scene/scene_playwright_test
+                - button "Delete" [ref=e80] [cursor=pointer]
+            - listitem [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e83]: scene_test_codegen
+                - generic [ref=e84]: "Chapter: chapter01"
+              - generic [ref=e85]:
+                - link "Edit" [ref=e86] [cursor=pointer]:
+                  - /url: /scene/scene_test_codegen
+                - button "Delete" [ref=e87] [cursor=pointer]
+            - listitem [ref=e88]:
+              - generic [ref=e89]:
+                - generic [ref=e90]: scene_township
+                - generic [ref=e91]: "Chapter: chapter01"
+              - generic [ref=e92]:
+                - link "Edit" [ref=e93] [cursor=pointer]:
+                  - /url: /scene/scene_township
+                - button "Delete" [ref=e94] [cursor=pointer]
+```

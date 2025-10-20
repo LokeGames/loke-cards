@@ -62,6 +62,12 @@ const routes = [
     meta: { title: 'Settings' }
   },
   {
+    path: '/nodes',
+    name: 'NodeView',
+    component: () => import('../views/NodeView.vue'),
+    meta: { title: 'Node View' }
+  },
+  {
     path: '/test/base-button',
     name: 'BaseButtonTest',
     component: () => import('../views/BaseButtonTestView.vue'),
