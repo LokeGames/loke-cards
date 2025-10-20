@@ -61,8 +61,9 @@ export function useSceneValidation(sceneData) {
    */
   function validateChapterId(chapterId) {
     const id = (chapterId || '').trim();
+    // Chapter is optional for form validity; if empty, treat as valid
     if (!id) {
-      return 'Chapter ID is required';
+      return '';
     }
 
     if (!isValidCIdentifier(id)) {

@@ -161,7 +161,9 @@ const sceneData = reactive({
   sceneId: '',
   chapterId: '',
   sceneText: '',
-  choices: [],
+  choices: [
+    { text: '', nextScene: '', enabled: true }
+  ],
   stateChanges: [],
   meta: ''
 });
@@ -180,6 +182,14 @@ const serverCodeStatus = ref(null);
 const serverCode = ref('');
 const codeViewMode = ref(localStorage.getItem('codeViewMode') || 'local'); // 'local' | 'server'
 const allScenes = ref([]);
+const isDirty = computed(() => {
+  try {
+    if (!initialSnapshot.value) return false;
+    return JSON.stringify(sceneData) !== initialSnapshot.value;
+  } catch {
+    return false;
+  }
+});
 
 // Composables
 const codeGenerator = useCodeGenerator();
@@ -353,11 +363,15 @@ function handleReset() {
 // Load scene data if editing and chapters from API
 onMounted(async () => {
   try {
-    // Load chapters
+    // Load chapters from API and merge with local (ensure locally-created items appear)
     const chaptersData = await api.chapters.getAll();
-    if (chaptersData && Array.isArray(chaptersData)) {
-      availableChapters.value = chaptersData;
-    }
+    const localChapters = await getAllChaptersLocal().catch(() => []);
+    const byId = new Map();
+    (Array.isArray(chaptersData) ? chaptersData : []).forEach(c => byId.set(c.id, c));
+    (Array.isArray(localChapters) ? localChapters : []).forEach(c => {
+      if (!byId.has(c.id)) byId.set(c.id, c);
+    });
+    availableChapters.value = Array.from(byId.values());
   } catch (error) {
     // Fallback to local storage when offline or backend unavailable
     try {
@@ -369,10 +383,17 @@ onMounted(async () => {
 
   // Load scenes for choices suggestions
   try {
+    // Merge server and local scenes for suggestions
     const scenesData = await api.scenes.getAll();
-    if (scenesData && Array.isArray(scenesData)) {
-      allScenes.value = scenesData.map(s => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter }));
-    }
+    const localScenes = await getAllScenesLocal().catch(() => []);
+    const normalize = (s) => ({ id: s.sceneId || s.id, chapterId: s.chapterId || s.chapter });
+    const byId = new Map();
+    (Array.isArray(scenesData) ? scenesData : []).forEach(s => byId.set(normalize(s).id, normalize(s)));
+    (Array.isArray(localScenes) ? localScenes : []).forEach(s => {
+      const n = normalize(s);
+      if (!byId.has(n.id)) byId.set(n.id, n);
+    });
+    allScenes.value = Array.from(byId.values());
   } catch (e) {
     try {
       const localScenes = await getAllScenesLocal();

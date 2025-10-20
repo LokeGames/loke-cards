@@ -27,7 +27,6 @@
               - option "Chapter 01"
               - option "Chapter 02"
               - option "chapter_e2e_scene"
-              - option "E2E Test Chapter"
               - option "+ Create New Chapter"
             - paragraph [ref=e27]: Select the chapter this scene belongs to
           - generic [ref=e28]:
@@ -40,42 +39,56 @@
             - generic [ref=e35]:
               - generic [ref=e36]: Choices (optional)
               - button "+ Add Choice" [ref=e37] [cursor=pointer]
-            - paragraph [ref=e39]: No choices yet. Click "Add Choice" to create one.
-            - paragraph [ref=e40]: 0/10 choices. If none, a default "Continue" will be generated.
-          - generic [ref=e41]:
-            - generic [ref=e42]:
-              - generic [ref=e43]: State Changes (optional)
-              - button "+ Add State Change" [ref=e44] [cursor=pointer]
-            - paragraph [ref=e46]: No state changes. Click "Add State Change" to modify game state.
-            - paragraph [ref=e47]: Modify GameState variables (e.g., health, gold, has_key)
-          - generic [ref=e48]:
-            - generic [ref=e49]: Meta (optional)
-            - textbox "Meta (optional)" [ref=e50]:
+            - generic [ref=e39]:
+              - generic [ref=e40]:
+                - generic [ref=e41]: Choice 1
+                - button "Remove choice" [ref=e42] [cursor=pointer]:
+                  - img [ref=e43]
+              - generic [ref=e45]:
+                - generic [ref=e46]: Choice Text *
+                - textbox "Enter the forest" [ref=e47]
+              - generic [ref=e48]:
+                - generic [ref=e49]: Next Scene
+                - combobox "Type to search... (or leave empty for NULL)" [ref=e50]
+                - paragraph [ref=e51]: Suggestions show scene and chapter. Value is the scene function name.
+              - generic [ref=e52]:
+                - checkbox "Enabled (show this choice to player)" [checked] [ref=e53]
+                - generic [ref=e54]: Enabled (show this choice to player)
+            - paragraph [ref=e55]: 1/10 choices. If none, a default "Continue" will be generated.
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]: State Changes (optional)
+              - button "+ Add State Change" [ref=e59] [cursor=pointer]
+            - paragraph [ref=e61]: No state changes. Click "Add State Change" to modify game state.
+            - paragraph [ref=e62]: Modify GameState variables (e.g., health, gold, has_key)
+          - generic [ref=e63]:
+            - generic [ref=e64]: Meta (optional)
+            - textbox "Meta (optional)" [ref=e65]:
               - /placeholder: Notes, communication, or meta info...
-            - paragraph [ref=e51]: Included as a comment block in generated C code.
-          - generic [ref=e52]:
-            - button "Save Scene" [ref=e53] [cursor=pointer]
-            - button "Cancel" [ref=e54] [cursor=pointer]
-            - button "Reset" [ref=e55] [cursor=pointer]
-        - generic [ref=e56]:
-          - generic [ref=e57]:
-            - button "Local Code" [ref=e58] [cursor=pointer]
-            - button "Server Code" [disabled] [ref=e59]
-          - generic [ref=e60]:
-            - generic [ref=e61]:
-              - heading "Generated C Code" [level=3] [ref=e62]
-              - generic [ref=e63]:
-                - button "Copy" [ref=e64] [cursor=pointer]
-                - button [ref=e65] [cursor=pointer]:
-                  - img [ref=e66]
-            - code [ref=e70]: "#include <loke/scene.h> #include \".h\" void (GameState* state) { SceneContext* ctx = get_current_context(); scene_set_text(ctx, \"\"); scene_add_option(ctx, \"Continue\", NULL, true); // TODO: Set next scene }"
-          - generic [ref=e71]:
-            - heading "Quick Tips" [level=3] [ref=e72]
-            - button "Generate on Server" [ref=e74] [cursor=pointer]
-            - list [ref=e75]:
-              - listitem [ref=e76]: • Scene ID must start with "scene_" (e.g., scene_forest_entrance)
-              - listitem [ref=e77]: • Choices are optional (0–10). None adds a default "Continue"
-              - listitem [ref=e78]: • Use \n in scene text for newlines
-              - listitem [ref=e79]: • State changes are optional but executed before text displays
-              - listitem [ref=e80]: • Code is auto-generated as you type
+            - paragraph [ref=e66]: Included as a comment block in generated C code.
+          - generic [ref=e67]:
+            - button "Save Scene" [ref=e68] [cursor=pointer]
+            - button "Cancel" [ref=e69] [cursor=pointer]
+            - button "Reset" [ref=e70] [cursor=pointer]
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - button "Local Code" [ref=e73] [cursor=pointer]
+            - button "Server Code" [disabled] [ref=e74]
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - heading "Generated C Code" [level=3] [ref=e77]
+              - generic [ref=e78]:
+                - button "Copy" [ref=e79] [cursor=pointer]
+                - button [ref=e80] [cursor=pointer]:
+                  - img [ref=e81]
+            - code [ref=e85]: "#include <loke/scene.h> #include \".h\" void (GameState* state) { SceneContext* ctx = get_current_context(); scene_set_text(ctx, \"\"); scene_add_option(ctx, \"Option\", NULL, true); }"
+          - generic [ref=e86]:
+            - heading "Quick Tips" [level=3] [ref=e87]
+            - button "Generate on Server" [ref=e89] [cursor=pointer]
+            - list [ref=e90]:
+              - listitem [ref=e91]: • Scene ID must start with "scene_" (e.g., scene_forest_entrance)
+              - listitem [ref=e92]: • Choices are optional (0–10). None adds a default "Continue"
+              - listitem [ref=e93]: • Use \n in scene text for newlines
+              - listitem [ref=e94]: • State changes are optional but executed before text displays
+              - listitem [ref=e95]: • Code is auto-generated as you type
 ```

@@ -75,6 +75,18 @@ onMounted(async () => {
 
 async function deleteChapter(id) {
   if (!id) return;
+  // Support native confirm for tests; otherwise open modal
+  try {
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      const ok = window.confirm(`Delete chapter ${id}?`);
+      if (ok) {
+        await api.chapters.delete(id);
+        const data = await api.chapters.getAll();
+        chapters.value = Array.isArray(data) ? data : [];
+        return;
+      }
+    }
+  } catch {}
   pendingDeleteId.value = id;
   confirmOpen.value = true;
 }

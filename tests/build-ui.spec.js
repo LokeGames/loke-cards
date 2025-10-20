@@ -10,11 +10,11 @@ test('Settings build UI runs and shows artifacts', async ({ page }) => {
   // Click build and wait for status
   await buildBtn.click();
 
-  // Either success or error status should appear; success preferred
-  // Status appears (success or error)
-  await expect(page.locator('text=Build')).toBeVisible();
+  // Wait for build status message (success or error)
+  await expect(
+    page.locator('span.text-green-600, span.text-red-600').first()
+  ).toBeVisible({ timeout: 10000 });
 
-  // Artifacts list visible
-  // Note: may be empty if no scenes in DB yet; we still ensure the list area renders
-  await expect(page.getByText('Artifacts')).toBeVisible();
+  // Artifacts section visible
+  await expect(page.getByRole('heading', { name: /Generated Files|Artifacts/ })).toBeVisible();
 });

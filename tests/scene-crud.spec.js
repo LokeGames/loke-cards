@@ -23,7 +23,13 @@ test('create and delete scene via UI', async ({ page }) => {
   // Delete
   const row = page.locator('li', { hasText: sceneId });
   await row.getByRole('button', { name: 'Delete' }).click();
-  page.once('dialog', (dialog) => dialog.accept());
+
+  // Confirm via modal (AppModal component)
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'Confirm' }).click();
+
+  // Wait for modal to close and re-check list
+  await expect(page.getByRole('dialog')).not.toBeVisible();
   await expect(page.getByText(sceneId)).toHaveCount(0);
 });
 

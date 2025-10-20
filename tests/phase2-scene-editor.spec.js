@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Phase 2 - Scene Editor', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to Scene Editor (create new scene)
-    await page.goto('http://localhost:8081/scene/new');
+    await page.goto('/scene/new');
     // Wait for Vue to mount
     await page.waitForSelector('.scene-editor-view', { timeout: 5000 });
   });
@@ -26,20 +26,16 @@ test.describe('Phase 2 - Scene Editor', () => {
     // Test invalid ID (no "scene_" prefix)
     await sceneIdInput.fill('invalid_name');
     await sceneIdInput.blur();
-    await page.waitForTimeout(200);
 
     // Should show error
-    const errorText = await page.locator('text=/Scene ID should start with "scene_"/', { timeout: 2000 }).isVisible().catch(() => false);
-    expect(errorText).toBe(true);
+    await expect(page.locator('text=/Scene ID should start with "scene_"/').first()).toBeVisible({ timeout: 2000 });
 
     // Test valid ID
     await sceneIdInput.fill('scene_forest_entrance');
     await sceneIdInput.blur();
-    await page.waitForTimeout(200);
 
     // Error should disappear
-    const noError = await page.locator('text=/Scene ID should start with "scene_"/', { timeout: 1000 }).isVisible().catch(() => false);
-    expect(noError).toBe(false);
+    await expect(page.locator('text=/Scene ID should start with "scene_"/').first()).not.toBeVisible({ timeout: 2000 });
   });
 
   test('Chapter selector is visible', async ({ page }) => {
@@ -67,7 +63,6 @@ test.describe('Phase 2 - Scene Editor', () => {
 
     // Add a new choice
     await page.click('button:has-text("Add Choice")');
-    await page.waitForTimeout(200);
     await expect(page.locator('text=Choice 2')).toBeVisible();
 
     // Remove a choice (click X button on second choice)
@@ -75,7 +70,6 @@ test.describe('Phase 2 - Scene Editor', () => {
     const count = await removeButtons.count();
     if (count >= 2) {
       await removeButtons.nth(1).click();
-      await page.waitForTimeout(200);
 
       // Should only have 1 choice now
       await expect(page.locator('text=Choice 2')).not.toBeVisible();
@@ -86,7 +80,6 @@ test.describe('Phase 2 - Scene Editor', () => {
     // Click "Add State Change" button
     const addButton = page.locator('button:has-text("Add State Change")');
     await addButton.click();
-    await page.waitForTimeout(200);
 
     // Should see "State Change 1"
     await expect(page.locator('text=State Change 1')).toBeVisible();
@@ -103,15 +96,10 @@ test.describe('Phase 2 - Scene Editor', () => {
     await sceneIdInput.fill('scene_test');
     await textarea.fill('Test scene');
 
-    // Wait for code generation
-    await page.waitForTimeout(500);
-
-    // Check code preview contains C code
+    // Wait for code preview to update (check for generated code)
     const codePreview = page.locator('pre, code').first();
-    const codeText = await codePreview.textContent({ timeout: 2000 }).catch(() => '');
-
-    expect(codeText).toContain('#include');
-    expect(codeText).toContain('void scene_test');
+    await expect(codePreview).toContainText('#include', { timeout: 5000 });
+    await expect(codePreview).toContainText('void scene_test');
   });
 
   test('Copy to clipboard button exists', async ({ page }) => {
@@ -132,8 +120,6 @@ test.describe('Phase 2 - Scene Editor', () => {
     // Fill first choice text (find by label)
     const choiceInput = page.locator('label:has-text("Choice Text")').locator('..').locator('input').first();
     await choiceInput.fill('Test choice');
-
-    await page.waitForTimeout(300);
 
     // Save button should now be enabled
     await expect(saveButton).not.toBeDisabled();
@@ -185,7 +171,9 @@ test.describe('Phase 2 - Scene Editor', () => {
     // Toggle dark mode
     const themeToggle = page.locator('button[title="Toggle dark mode"], button:has-text("🌙"), button:has-text("☀️")').first();
     await themeToggle.click();
-    await page.waitForTimeout(300);
+
+    // Wait for dark class to be applied
+    await page.waitForFunction(() => document.documentElement.classList.contains('dark'));
 
     // HTML should have dark class
     const htmlClass = await page.evaluate(() => document.documentElement.className);

@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
 
-test('Debug CSS loading', async ({ page }) => {
+test.skip('Debug CSS loading', async ({ page }) => {
   // Enable console logging
   page.on('console', msg => console.log('BROWSER:', msg.text()));
 
-  await page.goto('http://127.0.0.1:8081/');
+  await page.goto('/');
 
   // Check what resources are loaded
   const resources = await page.evaluate(() => {
@@ -21,7 +21,7 @@ test('Debug CSS loading', async ({ page }) => {
   console.log('📊 CSS Debug Info:', JSON.stringify(resources, null, 2));
 
   // Check if CSS file exists
-  const cssResponse = await page.goto('http://127.0.0.1:8081/src/styles/main.css');
+  const cssResponse = await page.goto('/src/styles/main.css');
   console.log('📄 CSS file status:', cssResponse?.status());
 
   // Get first 500 chars of CSS

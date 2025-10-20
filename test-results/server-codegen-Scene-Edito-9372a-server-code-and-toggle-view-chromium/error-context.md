@@ -7,8 +7,8 @@
     - navigation "Breadcrumb" [ref=e6]:
       - list [ref=e7]:
         - listitem [ref=e8]:
-          - link "Scenes" [ref=e9] [cursor=pointer]:
-            - /url: /scenes
+          - link "New Scene" [ref=e9] [cursor=pointer]:
+            - /url: /scene/new
     - generic [ref=e10]:
       - generic [ref=e11]: Synced
       - button "☀️" [ref=e12] [cursor=pointer]
@@ -46,67 +46,89 @@
     - main [ref=e37]:
       - generic [ref=e38]:
         - generic [ref=e39]:
-          - heading "Scenes" [level=1] [ref=e40]
-          - link "New Scene" [ref=e41] [cursor=pointer]:
-            - /url: /scene/new
-        - paragraph [ref=e42]: Browse and manage all scenes in your project.
-        - generic [ref=e43]:
-          - generic [ref=e44]: "Total: 7"
-          - list [ref=e45]:
-            - listitem [ref=e46]:
-              - generic [ref=e47]:
-                - generic [ref=e48]: scene_e2e_test
-                - generic [ref=e49]: "Chapter: chapter_e2e_scene"
-              - generic [ref=e50]:
-                - link "Edit" [ref=e51] [cursor=pointer]:
-                  - /url: /scene/scene_e2e_test
-                - button "Delete" [ref=e52] [cursor=pointer]
-            - listitem [ref=e53]:
-              - generic [ref=e54]:
-                - generic [ref=e55]: scene_forrest
-                - generic [ref=e56]: "Chapter: chapter01"
-              - generic [ref=e57]:
-                - link "Edit" [ref=e58] [cursor=pointer]:
-                  - /url: /scene/scene_forrest
-                - button "Delete" [ref=e59] [cursor=pointer]
-            - listitem [ref=e60]:
-              - generic [ref=e61]:
-                - generic [ref=e62]: scene_hills
-                - generic [ref=e63]: "Chapter: chapter01"
-              - generic [ref=e64]:
-                - link "Edit" [ref=e65] [cursor=pointer]:
-                  - /url: /scene/scene_hills
-                - button "Delete" [ref=e66] [cursor=pointer]
-            - listitem [ref=e67]:
-              - generic [ref=e68]:
-                - generic [ref=e69]: scene_house
-                - generic [ref=e70]: "Chapter: chapter01"
-              - generic [ref=e71]:
-                - link "Edit" [ref=e72] [cursor=pointer]:
-                  - /url: /scene/scene_house
-                - button "Delete" [ref=e73] [cursor=pointer]
-            - listitem [ref=e74]:
-              - generic [ref=e75]:
-                - generic [ref=e76]: scene_path
-                - generic [ref=e77]: "Chapter: chapter01"
-              - generic [ref=e78]:
-                - link "Edit" [ref=e79] [cursor=pointer]:
-                  - /url: /scene/scene_path
-                - button "Delete" [ref=e80] [cursor=pointer]
-            - listitem [ref=e81]:
+          - heading "Create New Scene" [level=1] [ref=e40]
+          - paragraph [ref=e41]: Create and edit interactive fiction scenes for loke-engine
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: Scene ID *
+              - textbox "scene_forest_entrance" [ref=e46]: scene_playwright_test
+              - paragraph [ref=e47]: Must be a valid C identifier starting with "scene_" (e.g., scene_forest_entrance)
+            - generic [ref=e48]:
+              - generic [ref=e49]: Chapter *
+              - combobox [ref=e50]:
+                - option "-- Select Chapter --"
+                - option "Chapter 01" [selected]
+                - option "Chapter 02"
+                - option "chapter_e2e_scene"
+                - option "+ Create New Chapter"
+              - paragraph [ref=e51]: Select the chapter this scene belongs to
+            - generic [ref=e52]:
+              - generic [ref=e53]: Scene Text *
+              - textbox "You stand at the entrance to a dark forest. The path ahead is shrouded in mist..." [ref=e54]: Hello from Playwright
+              - generic [ref=e55]:
+                - paragraph [ref=e56]: Scene description text (supports \n for newlines)
+                - paragraph [ref=e57]: 21/2048
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - generic [ref=e60]: Choices (optional)
+                - button "+ Add Choice" [ref=e61] [cursor=pointer]
+              - generic [ref=e63]:
+                - generic [ref=e64]:
+                  - generic [ref=e65]: Choice 1
+                  - button "Remove choice" [ref=e66] [cursor=pointer]:
+                    - img [ref=e67]
+                - generic [ref=e69]:
+                  - generic [ref=e70]: Choice Text *
+                  - textbox "Enter the forest" [ref=e71]
+                  - paragraph [ref=e72]: "Choice 1: Text is required"
+                - generic [ref=e73]:
+                  - generic [ref=e74]: Next Scene
+                  - combobox "Type to search... (or leave empty for NULL)" [ref=e75]
+                  - paragraph [ref=e76]: Suggestions show scene and chapter. Value is the scene function name.
+                - generic [ref=e77]:
+                  - checkbox "Enabled (show this choice to player)" [checked] [ref=e78]
+                  - generic [ref=e79]: Enabled (show this choice to player)
+              - paragraph [ref=e80]: 1/10 choices. If none, a default "Continue" will be generated.
+            - generic [ref=e81]:
               - generic [ref=e82]:
-                - generic [ref=e83]: scene_playwright_test
-                - generic [ref=e84]: "Chapter: chapter01"
-              - generic [ref=e85]:
-                - link "Edit" [ref=e86] [cursor=pointer]:
-                  - /url: /scene/scene_playwright_test
-                - button "Delete" [ref=e87] [cursor=pointer]
-            - listitem [ref=e88]:
-              - generic [ref=e89]:
-                - generic [ref=e90]: scene_township
-                - generic [ref=e91]: "Chapter: chapter01"
-              - generic [ref=e92]:
-                - link "Edit" [ref=e93] [cursor=pointer]:
-                  - /url: /scene/scene_township
-                - button "Delete" [ref=e94] [cursor=pointer]
+                - generic [ref=e83]: State Changes (optional)
+                - button "+ Add State Change" [ref=e84] [cursor=pointer]
+              - paragraph [ref=e86]: No state changes. Click "Add State Change" to modify game state.
+              - paragraph [ref=e87]: Modify GameState variables (e.g., health, gold, has_key)
+            - generic [ref=e88]:
+              - generic [ref=e89]: Meta (optional)
+              - textbox "Meta (optional)" [ref=e90]:
+                - /placeholder: Notes, communication, or meta info...
+              - paragraph [ref=e91]: Included as a comment block in generated C code.
+            - generic [ref=e92]:
+              - button "Save Scene" [disabled] [ref=e93]
+              - button "Cancel" [ref=e94] [cursor=pointer]
+              - button "Reset" [ref=e95] [cursor=pointer]
+            - generic [ref=e96]:
+              - generic [ref=e97]: Please fix validation errors before saving
+              - button "✕" [ref=e98] [cursor=pointer]
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - button "Local Code" [ref=e101] [cursor=pointer]
+              - button "Server Code" [disabled] [ref=e102]
+            - generic [ref=e103]:
+              - generic [ref=e104]:
+                - heading "Generated C Code" [level=3] [ref=e105]
+                - generic [ref=e106]:
+                  - button "Copy" [ref=e107] [cursor=pointer]
+                  - button [ref=e108] [cursor=pointer]:
+                    - img [ref=e109]
+              - code [ref=e113]: "#include <loke/scene.h> #include \"chapter01.h\" void scene_playwright_test(GameState* state) { SceneContext* ctx = get_current_context(); scene_set_text(ctx, \"Hello from Playwright\"); scene_add_option(ctx, \"Option\", NULL, true); }"
+            - generic [ref=e114]:
+              - heading "Quick Tips" [level=3] [ref=e115]
+              - generic [ref=e116]:
+                - button "Generate on Server" [active] [ref=e117] [cursor=pointer]
+                - generic [ref=e118]: "Server codegen failed: HTTP 404"
+              - list [ref=e119]:
+                - listitem [ref=e120]: • Scene ID must start with "scene_" (e.g., scene_forest_entrance)
+                - listitem [ref=e121]: • Choices are optional (0–10). None adds a default "Continue"
+                - listitem [ref=e122]: • Use \n in scene text for newlines
+                - listitem [ref=e123]: • State changes are optional but executed before text displays
+                - listitem [ref=e124]: • Code is auto-generated as you type
 ```

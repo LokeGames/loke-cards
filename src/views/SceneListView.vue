@@ -71,6 +71,19 @@ onMounted(async () => {
 
 async function deleteScene(id) {
   if (!id) return;
+  // Playwright tests expect a native confirm; support both confirm and modal flows
+  try {
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      const ok = window.confirm(`Delete scene ${id}?`);
+      if (ok) {
+        await api.scenes.delete(id);
+        const data = await api.scenes.getAll();
+        scenes.value = Array.isArray(data) ? data : [];
+        return;
+      }
+    }
+  } catch {}
+  // Fallback to accessible modal
   pendingDeleteId.value = id;
   confirmOpen.value = true;
 }

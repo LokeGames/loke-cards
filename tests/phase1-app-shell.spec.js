@@ -5,11 +5,9 @@
 
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:8081';
-
 test.describe('Phase 1 - App Shell Layout', () => {
   test('should display app shell with header and sidebar', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
 
     // Wait for Vue to mount
     await page.waitForSelector('#app', { timeout: 5000 });
@@ -29,7 +27,7 @@ test.describe('Phase 1 - App Shell Layout', () => {
   });
 
   test('should have dark mode toggle in header', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForSelector('header', { timeout: 5000 });
 
     // Check theme toggle button exists
@@ -38,7 +36,7 @@ test.describe('Phase 1 - App Shell Layout', () => {
   });
 
   test('should toggle dark mode when clicking theme button', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForSelector('header', { timeout: 5000 });
 
     // Get initial theme
@@ -49,8 +47,11 @@ test.describe('Phase 1 - App Shell Layout', () => {
     const themeToggle = page.locator('button').filter({ hasText: /[🌙☀️]/ });
     await themeToggle.click();
 
-    // Wait a bit for the toggle to apply
-    await page.waitForTimeout(100);
+    // Wait for dark class to change
+    await page.waitForFunction(
+      (hadDark) => document.documentElement.classList.contains('dark') !== hadDark,
+      initialHasDark
+    );
 
     // Check theme changed
     const newHasDark = await html.evaluate(el => el.classList.contains('dark'));
@@ -60,7 +61,7 @@ test.describe('Phase 1 - App Shell Layout', () => {
   test('should have responsive sidebar on mobile', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForSelector('header', { timeout: 5000 });
 
     // Desktop sidebar should be hidden on mobile
@@ -73,7 +74,7 @@ test.describe('Phase 1 - App Shell Layout', () => {
   });
 
   test('should have StatusPill in header', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForSelector('header', { timeout: 5000 });
 
     // Check status pill exists
@@ -82,7 +83,7 @@ test.describe('Phase 1 - App Shell Layout', () => {
   });
 
   test('should have full viewport layout (h-screen w-screen)', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForSelector('#app', { timeout: 5000 });
 
     // Check #app has full viewport classes
@@ -93,7 +94,7 @@ test.describe('Phase 1 - App Shell Layout', () => {
   });
 
   test('should navigate between routes', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForSelector('aside.hidden.md\\:block', { timeout: 5000 });
 
     // Click on Scenes link in desktop sidebar

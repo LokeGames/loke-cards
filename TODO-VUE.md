@@ -499,20 +499,20 @@ New git branch for dev.
 
 ## Phase 4: Browser CLI Testing with Playwright
 ### 4.1 Playwright Setup
-- [ ] Install Playwright
-- [ ] Install Chrome browser binary
-- [ ] Configure playwright.config.js
-- [ ] Create `/tests` directory
+- [x] Install Playwright
+- [x] Install Chrome browser binary
+- [x] Configure playwright.config.js
+- [x] Create `/tests` directory
 
 ### 4.2 Test Scripts
 - [x] `build-ui.spec.js` - Build UI runs and artifacts list renders
 - [x] `server-codegen.spec.js` - On-demand server codegen and toggle
 - [x] `chapter-crud.spec.js` - Chapter create/delete via UI
 - [x] `scene-crud.spec.js` - Scene create/delete via UI
-- [ ] `test-layout.spec.js` - Responsive layout
-- [ ] `test-editor.spec.js` - Scene editor form flows
-- [ ] `test-api.spec.js` - API integration (extra flows)
-- [ ] `test-mobile.spec.js` - Mobile-specific tests
+- [x] `test-layout.spec.js` - Responsive layout
+- [x] `test-editor.spec.js` - Scene editor form flows
+- [x] `test-api.spec.js` - API integration (extra flows)
+- [x] `test-mobile.spec.js` - Mobile-specific tests
 
 ### 4.3 CLI Commands
 ```bash
@@ -533,7 +533,7 @@ npm run test:mobile
 - [x] Screenshot comparison
 - [x] Layout shift detection
 - [x] Accessibility testing
-- [ ] Performance metrics
+- [x] Performance metrics
 
 ---
 
@@ -558,6 +558,11 @@ npm run test:mobile
 - [ ] Quick actions
 - [ ] Mobile-optimized
 
+### 5.4 NodeView
+- [ ]  Twine style nodeview of alle chapters and scenes.
+use @doc/cards-vue-flow.md
+1. Chapters are the container for alle nodes in it´s domain
+2. all scenes are connected inside chapters and trough other chapters.
 ---
 
 ## Phase 6: Polish & Optimization

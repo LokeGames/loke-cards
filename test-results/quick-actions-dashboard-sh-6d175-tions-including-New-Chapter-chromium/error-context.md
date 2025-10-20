@@ -83,10 +83,4 @@
                 - generic [ref=e72]: "ID: chapter_e2e_scene"
               - link "New Scene" [ref=e73] [cursor=pointer]:
                 - /url: /scene/new?chapter=chapter_e2e_scene
-            - listitem [ref=e74]:
-              - generic [ref=e75]:
-                - generic [ref=e76]: E2E Test Chapter
-                - generic [ref=e77]: "ID: chapter_e2e_test"
-              - link "New Scene" [ref=e78] [cursor=pointer]:
-                - /url: /scene/new?chapter=chapter_e2e_test
 ```
