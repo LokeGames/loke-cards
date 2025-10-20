@@ -1,10 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
+// Eager-load primary views to avoid async import race conditions
+import DashboardView from '../views/DashboardView.vue';
+import SceneListView from '../views/SceneListView.vue';
+import SceneEditorView from '../views/SceneEditorView.vue';
+import ChapterListView from '../views/ChapterListView.vue';
+import ChapterEditorView from '../views/ChapterEditorView.vue';
+import CodeView from '../views/CodeView.vue';
+import SettingsView from '../views/SettingsView.vue';
+import BaseButtonTestView from '../views/BaseButtonTestView.vue';
+import NotFoundView from '../views/NotFoundView.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: () => import('../views/DashboardView.vue'),
+    component: DashboardView,
     meta: { title: 'Dashboard' }
   },
   {
@@ -14,76 +24,68 @@ const routes = [
   {
     path: '/scenes',
     name: 'SceneList',
-    component: () => import('../views/SceneListView.vue'),
+    component: SceneListView,
     meta: { title: 'Scenes' }
   },
   {
     path: '/scene/new',
     name: 'NewScene',
-    component: () => import('../views/SceneEditorView.vue'),
+    component: SceneEditorView,
     meta: { title: 'New Scene' }
   },
   {
     path: '/scene/:id',
     name: 'EditScene',
-    component: () => import('../views/SceneEditorView.vue'),
+    component: SceneEditorView,
     props: true,
     meta: { title: 'Edit Scene' }
   },
   {
     path: '/chapters',
     name: 'ChapterList',
-    component: () => import('../views/ChapterListView.vue'),
+    component: ChapterListView,
     meta: { title: 'Chapters' }
   },
   {
     path: '/chapter/new',
     name: 'NewChapter',
-    component: () => import('../views/ChapterEditorView.vue'),
+    component: ChapterEditorView,
     meta: { title: 'New Chapter' }
   },
   {
     path: '/chapter/:id',
     name: 'EditChapter',
-    component: () => import('../views/ChapterEditorView.vue'),
+    component: ChapterEditorView,
     props: true,
     meta: { title: 'Edit Chapter' }
   },
   {
     path: '/code',
     name: 'Code',
-    component: () => import('../views/CodeView.vue'),
+    component: CodeView,
     meta: { title: 'Generated C Code' }
   },
   {
     path: '/settings',
     name: 'Settings',
-    component: () => import('../views/SettingsView.vue'),
+    component: SettingsView,
     meta: { title: 'Settings' }
   },
   {
+    // Node View moved to external app (apps/nodeview)
     path: '/nodes',
-    name: 'NodeView',
-    component: () => import('../views/NodeView.vue'),
-    meta: { title: 'Node View' }
-  },
-  {
-    path: '/chapter/:id/nodes',
-    name: 'ChapterNodeView',
-    component: () => import('../components/ChapterGraph.vue'),
-    props: true,
-    meta: { title: 'Chapter Node View' }
+    redirect: '/',
   },
   {
     path: '/test/base-button',
     name: 'BaseButtonTest',
-    component: () => import('../views/BaseButtonTestView.vue'),
+    component: BaseButtonTestView,
     meta: { title: 'Button Test' }
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFoundView.vue'),
+    component: NotFoundView,
     meta: { title: 'Page Not Found' }
   },
 ];
@@ -105,6 +107,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title ? `${to.meta.title} - Loke Cards` : 'Loke Cards';
   next();
+});
+
+// Surface async component load errors to console to avoid silent stale view
+router.onError((err) => {
+  // eslint-disable-next-line no-console
+  console.error('Router error:', err);
 });
 
 export default router;

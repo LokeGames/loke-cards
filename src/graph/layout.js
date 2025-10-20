@@ -1,4 +1,5 @@
-import ELK from 'elkjs';
+// Use browser-friendly bundled build to avoid 'web-worker' resolution errors in Vite
+import ELK from 'elkjs/lib/elk.bundled.js';
 
 const elk = new ELK();
 
@@ -20,4 +21,3 @@ export async function layoutScenes(nodes = [], edges = []) {
   const posById = new Map((res.children || []).map((c) => [c.id, { x: c.x || 0, y: c.y || 0 }]));
   return nodes.map((n) => ({ ...n, position: posById.get(n.id) ?? n.position }));
 }
-

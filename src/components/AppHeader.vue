@@ -15,7 +15,8 @@
       <ol class="inline-flex items-center gap-1">
         <li v-for="(c,i) in breadcrumbs" :key="i" class="inline-flex items-center">
           <span v-if="i>0" class="px-1">/</span>
-          <RouterLink :to="c.to" class="hover:underline">{{ c.title }}</RouterLink>
+          <RouterLink v-if="safeTo(c.name)" :to="safeTo(c.name)" class="hover:underline">{{ c.title }}</RouterLink>
+          <span v-else>{{ c.title }}</span>
         </li>
       </ol>
     </nav>
@@ -30,16 +31,27 @@
 import StatusPill from './StatusPill.vue';
 import ThemeToggle from './ThemeToggle.vue';
 import { useUiStore } from '../stores/ui';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { computed } from 'vue';
 
 const ui = useUiStore();
 const route = useRoute();
-const breadcrumbs = computed(() => {
-  return route.matched
-    .filter(r => r.meta && (r.meta.title || r.name))
-    .map(r => ({ to: r.path || '/', title: r.meta.title || r.name }));
-});
+const router = useRouter();
+const breadcrumbs = computed(() =>
+  route.matched
+    .filter(r => !!r.name)
+    .map(r => ({ name: r.name, title: r.meta?.title || r.name }))
+);
+
+function safeTo(name) {
+  try {
+    const loc = { name, params: route.params };
+    router.resolve(loc); // throws if missing params
+    return loc;
+  } catch {
+    return null;
+  }
+}
 </script>
 
 <style scoped>

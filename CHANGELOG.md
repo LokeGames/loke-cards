@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 5 - NodeView (External App) - 2025-10-20
+
+### Added
+- Standalone NodeView app (separate Vue 3 + Vue Flow app)
+  - Location: `apps/nodeview`
+  - Dev: `npm run dev:nodeview` (http://127.0.0.1:8092)
+  - Build/Preview: `npm run build:nodeview`, `npm run preview:nodeview`
+  - Routes: `/` (GlobalGraph), `/chapter/:id` (ChapterGraph)
+- Copied graph code into NodeView for independent evolution
+  - Components: `apps/nodeview/src/components/GlobalGraph.vue`, `ChapterGraph.vue`
+  - Node components: `apps/nodeview/src/components/nodes/SceneNode.vue`, `ChapterNode.vue`
+  - Builders/Layout/Types: `apps/nodeview/src/graph/*` (ELK browser bundle)
+  - Store/API/Local storage: `apps/nodeview/src/stores/graph.js`, `src/api/client.js`, `src/lib/storage.js`
+- Dev orchestration
+  - `scripts/dev-full-watch.sh` now also launches NodeView on `VITE_NODEVIEW_PORT` (default 8092) with hot reload
+  - Root scripts: `dev:nodeview`, `build:nodeview`, `preview:nodeview`
+
+### Changed
+- Router stability: eager-loaded primary views, keyed RouterView with Suspense fallback; removed NodeView routes from main app
+- Breadcrumbs now validate route params before linking (avoid missing required param "id")
+- ELK import switched to browser bundle (`elkjs/lib/elk.bundled.js`) to avoid web-worker resolution errors
+- Removed invalid deep CSS import for `@vue-flow/background`
+- API client now short-circuits when backend is offline to avoid Vite proxy error spam
+- Header/Sidebar z-index increased to avoid overlap with NodeView canvas
+
+### Added (Dev Quality)
+- In-app error monitor (dev only): `src/plugins/error-monitor.js`, `src/components/DevErrorOverlay.vue`, `src/stores/debug.js`
+  - Captures Vue errors, unhandled rejections, window errors, and router errors
+- Playwright specs
+  - `tests/nodeview.spec.js` — NodeView renders and toolbar works
+  - `tests/navigation-sidebar.spec.js` — Sidebar navigation updates views and asserts no console errors
+
+### Notes
+- NodeView now falls back to LocalForage when backend is offline; edges derive from `choices[].nextScene`. NodeView link removed from main sidebar (open the external app instead).
+- Connecting two scene nodes in NodeView persists a new choice on source scene (LocalForage + best-effort API)
+
 ### Phase 4 - E2E Test Suite Optimization - 2025-10-20
 
 ### Added

@@ -12,6 +12,9 @@
     "dev:kill-ports": "bash -lc 'lsof -tiTCP:${VITE_DEV_PORT:-8081} -sTCP:LISTEN | xargs -r kill -9; lsof -tiTCP:${BACKEND_PORT:-3000} -sTCP:LISTEN | xargs -r kill -9'",
     "build": "vite build",
     "preview": "vite preview",
+    "dev:nodeview": "vite --config apps/nodeview/vite.config.js",
+    "build:nodeview": "vite build --config apps/nodeview/vite.config.js",
+    "preview:nodeview": "vite preview --config apps/nodeview/vite.config.js",
     "test": "playwright test",
     "lint": "eslint ."
   },

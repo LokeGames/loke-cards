@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import './styles/main.css'
+import { setupErrorMonitoring } from './plugins/error-monitor.js'
 
 // Create Vue app
 const app = createApp(App)
@@ -13,6 +14,11 @@ app.use(pinia)
 
 // Use router
 app.use(router)
+
+// Error monitoring (dev only)
+if (import.meta.env.DEV) {
+  setupErrorMonitoring(app, router)
+}
 
 // Mount app
 app.mount('#app')

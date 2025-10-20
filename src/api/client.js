@@ -5,8 +5,38 @@
  * Handles all HTTP requests for scenes, chapters, and projects
  */
 
-// Base URL for API (from environment variable or default to relative '/api' so Vite proxy works in dev)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Base URLs
+// Prefer absolute URL from env to bypass Vite proxy logs when backend is offline.
+const ENV_BASE = import.meta.env.VITE_API_BASE_URL;
+const DEFAULT_ABSOLUTE = 'http://127.0.0.1:3000/api';
+const API_BASE_URL = ENV_BASE || '/api';
+const ABSOLUTE_BASE_URL = (ENV_BASE && /^https?:/i.test(ENV_BASE)) ? ENV_BASE : DEFAULT_ABSOLUTE;
+
+let backendHealthy = null; // null = unknown, true/false known
+let lastHealthCheck = 0;
+const HEALTH_TTL_MS = 4000;
+
+function withTimeout(promise, ms = 800) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort('timeout'), ms);
+  return Promise.race([
+    promise(ctl.signal).finally(() => clearTimeout(t)),
+  ]).catch(() => { throw new Error('BACKEND_OFFLINE'); });
+}
+
+async function ensureBackend() {
+  const now = Date.now();
+  if (backendHealthy !== null && now - lastHealthCheck < HEALTH_TTL_MS) return backendHealthy;
+  try {
+    await withTimeout((signal) => fetch(`${ABSOLUTE_BASE_URL}/health`, { signal }));
+    backendHealthy = true;
+  } catch (_) {
+    backendHealthy = false;
+  } finally {
+    lastHealthCheck = now;
+  }
+  return backendHealthy;
+}
 
 /**
  * Generic fetch wrapper with error handling
@@ -23,6 +53,10 @@ async function apiFetch(endpoint, options = {}) {
   const config = { ...defaultOptions, ...options };
 
   try {
+    // If using proxied relative '/api' and backend is known offline, short‑circuit to avoid Vite proxy errors
+    if (API_BASE_URL.startsWith('/') && (await ensureBackend()) === false) {
+      throw new Error('BACKEND_OFFLINE');
+    }
     const response = await fetch(url, config);
 
     // Handle non-OK responses
@@ -201,12 +235,7 @@ export const projectsAPI = {
  * Health check endpoint
  */
 export async function healthCheck() {
-  try {
-    const response = await apiFetch('/health');
-    return response.status === 'ok';
-  } catch (error) {
-    return false;
-  }
+  return await ensureBackend();
 }
 
 /**

@@ -56,10 +56,16 @@ const syncStatus = ref(null);
 async function loadArtifacts() {
   artifactsLoading.value = true;
   try {
+    const healthy = await api.healthCheck();
+    if (!healthy) {
+      artifacts.value = [];
+      return;
+    }
     const list = await api.build.artifacts();
     artifacts.value = Array.isArray(list) ? list : [];
   } catch (e) {
-    buildStatus.value = { type: 'error', message: `Failed to load artifacts: ${e.message}` };
+    // Avoid noisy errors when backend is offline; show empty state instead
+    artifacts.value = [];
   } finally {
     artifactsLoading.value = false;
   }

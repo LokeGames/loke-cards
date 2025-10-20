@@ -3,6 +3,7 @@ import api from '../api/client.js';
 import {
   getAllChapters as getAllChaptersLocal,
   getAllScenes as getAllScenesLocal,
+  getScene as getSceneLocal,
   saveScene as saveSceneLocal,
   saveChapter as saveChapterLocal,
 } from '../lib/storage.js';
@@ -115,6 +116,50 @@ export const useGraphStore = defineStore('graph', {
         this.chapters[idx] = { ...this.chapters[idx], position };
         try { await saveChapterLocal({ id: chapterId, position, ...this.chapters[idx] }); } catch (_) {}
         try { await api.chapters.update(chapterId, { position }); } catch (_) {}
+      }
+    },
+    async addChoiceLink(sourceSceneId, targetSceneId) {
+      try {
+        // Load full scene from local storage; fallback to normalized
+        let scene = await getSceneLocal(sourceSceneId);
+        if (!scene) {
+          const s = this.scenes.find((x) => x.id === sourceSceneId);
+          if (!s) return false;
+          scene = {
+            id: s.id,
+            sceneId: s.id,
+            chapter: s.chapterId,
+            sceneText: s.sceneText || '',
+            choices: Array.isArray(s.choices) ? [...s.choices] : [],
+            stateChanges: [],
+            updatedAt: Date.now(),
+          };
+        }
+        if (!Array.isArray(scene.choices)) scene.choices = [];
+        // avoid duplicates
+        if (!scene.choices.some((c) => c && c.nextScene === targetSceneId)) {
+          scene.choices.push({ text: 'Continue', nextScene: targetSceneId, enabled: true });
+        }
+        await saveSceneLocal(scene);
+        // update local store normalized copy
+        const idx = this.scenes.findIndex((x) => x.id === sourceSceneId);
+        if (idx >= 0) {
+          const normalized = normalizeScene(scene);
+          this.scenes[idx] = { ...this.scenes[idx], choices: normalized.choices };
+        }
+        // Best-effort API update (ignore if offline)
+        try {
+          await api.scenes.update(sourceSceneId, {
+            sceneId: scene.sceneId || scene.id,
+            chapterId: scene.chapterId || scene.chapter,
+            sceneText: scene.sceneText || '',
+            choices: scene.choices || [],
+            stateChanges: scene.stateChanges || [],
+          });
+        } catch (_) {}
+        return true;
+      } catch (_) {
+        return false;
       }
     },
   },
