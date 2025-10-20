@@ -9,15 +9,17 @@ References: see `doc/cards-vue-flow.md` for architecture, builders, and layout h
 ### 5.E.0 Dependencies (status)
 - [x] `@vue-flow/core`, `@vue-flow/minimap`, `@vue-flow/background`, `elkjs` are listed in `package.json` (no extra install needed)
 
-### 5.E.1 Files & Structure
-- [ ] `src/stores/graph.js` — Pinia store for chapters/scenes/links (loadGlobal/loadChapter)
-- [ ] `src/graph/builders.js` — build chapter nodes, scene nodes, and edges
-- [ ] `src/graph/layout.js` — ELK auto‑layout helper (optional, togglable)
-- [ ] `src/graph/nodeTypes.js` — register custom node components
-- [x] `src/components/nodes/SceneNode.vue` — exists (style/props per doc)
-- [x] `src/components/nodes/ChapterNode.vue` — exists (container style)
-- [ ] `src/components/ChapterGraph.vue` — per‑chapter view (scenes + intra links)
-- [ ] `src/components/GlobalGraph.vue` — all chapters as group containers + inter links
+### 5.E.1 Files & Structure (apps/graph)
+- [x] `src/graph/stores/graph.js` — Pinia store for chapters/scenes/links
+- [x] `src/graph/builders.js` — build chapter nodes, scene nodes, and edges
+- [x] `src/graph/layout.js` — ELK auto‑layout helper (optional, togglable)
+- [x] `src/graph/nodeTypes.js` — register custom node components
+- [x] `src/graph/components/nodes/SceneNode.vue` — node component
+- [x] `src/graph/components/nodes/ChapterNode.vue` — container node
+- [x] `src/graph/components/ChapterGraph.vue` — per‑chapter view
+- [x] `src/graph/components/GlobalGraph.vue` — global view
+- [x] `src/graph/api/client.js` — API client with health gating
+- [x] `src/graph/lib/storage.js` — LocalForage (separate namespace)
 
 ### 5.E.2 Routes & Navigation (External App)
 - [x] Global graph route: `/` → `GlobalGraph.vue`
@@ -66,4 +68,9 @@ References: see `doc/cards-vue-flow.md` for architecture, builders, and layout h
 - [x] Navigation between Global ↔ Chapter views
 - [x] Fit‑view + Minimap + Background
 
-Status: External app `apps/nodeview` up with routes `/` and `/chapter/:id`. Uses loke-cards CSS and independent store/API.
+Status: External app `apps/graph` up with routes `/` and `/chapter/:id`. Uses loke-cards CSS and independent store/API.
+
+Moved from nodeview to @src/graph:
+- components: GlobalGraph.vue, ChapterGraph.vue, nodes/ChapterNode.vue, nodes/SceneNode.vue
+- builders.js, layout.js, nodeTypes.js
+- stores/graph.js, api/client.js, lib/storage.js

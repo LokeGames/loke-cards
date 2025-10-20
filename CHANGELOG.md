@@ -7,25 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 5 - NodeView (External App) - 2025-10-20
+### Phase 5 - Graph App (Two‑App Design) - 2025-10-20
 
 ### Added
-- Standalone NodeView app (separate Vue 3 + Vue Flow app)
-  - Location: `apps/nodeview`
-  - Dev: `npm run dev:nodeview` (http://127.0.0.1:8092)
-  - Build/Preview: `npm run build:nodeview`, `npm run preview:nodeview`
+- Two‑app architecture
+  - `loke-cards` (main app): forms, CRUD, codegen, settings, E2E flows
+  - `loke-graph` (external app): visual graph (Vue Flow) — fully decoupled
+- Standalone Graph app (separate Vue 3 + Vue Flow app)
+  - Location: `apps/graph`
+  - Dev: `npm run dev:graph` (http://127.0.0.1:8092)
+  - Build/Preview: `npm run build:graph`, `npm run preview:graph`
   - Routes: `/` (GlobalGraph), `/chapter/:id` (ChapterGraph)
 - Copied graph code into NodeView for independent evolution
-  - Components: `apps/nodeview/src/components/GlobalGraph.vue`, `ChapterGraph.vue`
-  - Node components: `apps/nodeview/src/components/nodes/SceneNode.vue`, `ChapterNode.vue`
-  - Builders/Layout/Types: `apps/nodeview/src/graph/*` (ELK browser bundle)
-  - Store/API/Local storage: `apps/nodeview/src/stores/graph.js`, `src/api/client.js`, `src/lib/storage.js`
+  - Components: `apps/graph/src/graph/components/GlobalGraph.vue`, `ChapterGraph.vue`
+  - Node components: `apps/graph/src/graph/components/nodes/SceneNode.vue`, `ChapterNode.vue`
+  - Builders/Layout/Types: `apps/graph/src/graph/*` (ELK browser bundle)
+  - Store/API/Local storage: `apps/graph/src/graph/stores/graph.js`, `apps/graph/src/graph/api/client.js`, `apps/graph/src/graph/lib/storage.js`
 - Dev orchestration
-  - `scripts/dev-full-watch.sh` now also launches NodeView on `VITE_NODEVIEW_PORT` (default 8092) with hot reload
-  - Root scripts: `dev:nodeview`, `build:nodeview`, `preview:nodeview`
+  - `scripts/dev-full-watch.sh` now also launches Graph app on `VITE_GRAPH_PORT` (default 8092) with hot reload
+  - Root scripts: `dev:graph`, `build:graph`, `preview:graph`
+
+### Design
+- Separation of concerns
+  - Main app (`loke-cards`) focuses on data entry, lists, editors, codegen and settings
+  - Graph app (`loke-graph`) focuses on the Twine‑style graph, layouts and visual flows
+- Runtime & styling
+  - The graph app imports `src/styles/main.css` for consistent styling (Tailwind)
+  - Each app has its own LocalForage namespace (loke‑cards vs loke‑graph)
+- API & offline
+  - Both apps talk to the same backend via `/api` or `VITE_API_BASE_URL`
+  - Both apps fall back to LocalForage when backend is offline (health‑gated requests)
 
 ### Changed
-- Router stability: eager-loaded primary views, keyed RouterView with Suspense fallback; removed NodeView routes from main app
+- Router stability: eager-loaded primary views, keyed RouterView with Suspense fallback; removed NodeView routes from main app; `/nodes` removed/redirected
 - Breadcrumbs now validate route params before linking (avoid missing required param "id")
 - ELK import switched to browser bundle (`elkjs/lib/elk.bundled.js`) to avoid web-worker resolution errors
 - Removed invalid deep CSS import for `@vue-flow/background`
@@ -36,11 +50,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In-app error monitor (dev only): `src/plugins/error-monitor.js`, `src/components/DevErrorOverlay.vue`, `src/stores/debug.js`
   - Captures Vue errors, unhandled rejections, window errors, and router errors
 - Playwright specs
-  - `tests/nodeview.spec.js` — NodeView renders and toolbar works
-  - `tests/navigation-sidebar.spec.js` — Sidebar navigation updates views and asserts no console errors
+  - `tests/navigation-sidebar.spec.js` — Sidebar navigation updates views and asserts no console errors (NodeView scenario removed)
 
 ### Notes
-- NodeView now falls back to LocalForage when backend is offline; edges derive from `choices[].nextScene`. NodeView link removed from main sidebar (open the external app instead).
+- Graph app falls back to LocalForage when backend is offline; edges derive from `choices[].nextScene`. NodeView/Graph link removed from main sidebar (open the external app instead).
+
+### Migration
+- Use `npm run dev:full:watch` to launch both apps + backend (ports: 8081, 8092, 3000)
+- Open Graph app at http://127.0.0.1:8092 (or set `VITE_GRAPH_PORT`)
+- Any previous links to `/nodes` in the main app have been removed; use the external app directly
 - Connecting two scene nodes in NodeView persists a new choice on source scene (LocalForage + best-effort API)
 
 ### Phase 4 - E2E Test Suite Optimization - 2025-10-20

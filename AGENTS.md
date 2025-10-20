@@ -42,14 +42,16 @@
 - Follow TODOs in `TODO.md`; keep changes minimal and aligned with existing patterns.
 - Avoid modifying `server/` unless explicitly scoped; frontend lives in `src/`.
 
-## External NodeView App
-- A standalone NodeView app is available under `apps/nodeview`.
+## External Graph App
+- A standalone graph app is available under `apps/graph`.
 - Run it separately from the main app:
-  - `npm run dev:nodeview` → http://127.0.0.1:8092
-  - `npm run build:nodeview`, `npm run preview:nodeview`
-- It reuses graph components and store from the main app (`src/components/GlobalGraph.vue`, `src/components/ChapterGraph.vue`, `src/stores/graph.js`).
-- Styling uses the main Tailwind/PostCSS config; Vite config points to the root `postcss.config.js`.
-- The external app talks to the same backend via `/api` proxy or `VITE_API_BASE_URL` if set.
+  - `npm run dev:graph` → http://127.0.0.1:8092
+  - `npm run build:graph`, `npm run preview:graph`
+- Graph code is self-contained under `apps/graph/src/graph`:
+  - `components/` (GlobalGraph.vue, ChapterGraph.vue, nodes/)
+  - `stores/graph.js`, `api/client.js`, `lib/storage.js`, `builders.js`, `layout.js`, `nodeTypes.js`
+- Styling uses the main Tailwind/PostCSS config; the app imports root `src/styles/main.css`.
+- The external app talks to the same backend via `/api` proxy or `VITE_API_BASE_URL`.
 
 ## NodeView (Phase 5 — Extended)
 - Reference: `doc/cards-vue-flow.md` for architecture, builders, ELK layout.

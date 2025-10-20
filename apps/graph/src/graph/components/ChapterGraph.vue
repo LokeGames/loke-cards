@@ -9,12 +9,11 @@
       v-model:nodes="nodes"
       v-model:edges="edges"
       :fit-view="true"
-      :min-zoom="0.05"
+      :min-zoom="0.1"
       :max-zoom="1.5"
       :node-types="nodeTypes"
       @node-drag-stop="onNodeDragStop"
       @connect="onConnect"
-      @node-double-click="onNodeDoubleClick"
     >
       <Background />
       <MiniMap />
@@ -23,43 +22,44 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { VueFlow, useVueFlow } from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap';
 import { Background } from '@vue-flow/background';
 import '@vue-flow/core/dist/style.css';
 import '@vue-flow/minimap/dist/style.css';
-import { useRouter } from 'vue-router';
-import { useGraphStore } from '../stores/graph.js';
-import { nodeTypes } from '../graph/nodeTypes.js';
-import { buildChapterNodes, buildSceneNodes, buildEdgesFromChoices } from '../graph/builders.js';
-import { layoutScenes } from '../graph/layout.js';
+import { useRoute } from 'vue-router';
+import { useGraphStore } from '@graph/stores/graph.js';
+import { nodeTypes } from '@graph/nodeTypes.js';
+import { buildSceneNodes, buildEdgesFromChoices } from '@graph/builders.js';
 
+const route = useRoute();
 const store = useGraphStore();
-const router = useRouter();
 const nodes = ref([]);
 const edges = ref([]);
 const { fitView, getNodes, getEdges, updateNode } = useVueFlow();
 
+const chapterScenes = computed(() => store.scenes.filter((s) => s.chapterId === route.params.id));
+
 async function refresh() {
-  await store.loadGlobal();
-  const chNodes = buildChapterNodes(store.chapters);
-  const sceneNodes = buildSceneNodes(store.scenes, true);
-  nodes.value = [...chNodes, ...sceneNodes];
-  edges.value = buildEdgesFromChoices(store.scenes);
+  await store.loadChapter(route.params.id);
+  const sceneNodes = buildSceneNodes(chapterScenes.value, false);
+  nodes.value = sceneNodes;
+  const allEdges = buildEdgesFromChoices(store.scenes);
+  const sceneIds = new Set(chapterScenes.value.map((s) => `scene-${s.id}`));
+  edges.value = allEdges.filter((e) => sceneIds.has(e.source) && sceneIds.has(e.target));
 }
 
 function onNodeDragStop(evt) {
   const n = evt.node;
-  if (!n) return;
-  if (n.type === 'scene') {
-    const id = n.id.replace('scene-', '');
-    store.persistScenePosition(id, n.position);
-  } else if (n.type === 'chapter') {
-    const id = n.id.replace('chap-', '');
-    store.persistChapterPosition(id, n.position);
-  }
+  if (n?.type === 'scene') { const id = n.id.replace('scene-', ''); store.persistScenePosition(id, n.position); }
 }
+
+onMounted(async () => { await refresh(); });
+
+function fit() { try { fitView(); } catch {} }
+async function autoLayout() { const laidOut = await (await import('@graph/layout.js')).layoutScenes(getNodes(), getEdges()); for (const n of laidOut) updateNode(n.id, { position: n.position }); }
+async function saveLayout() { const current = getNodes(); for (const n of current) { if (n.type === 'scene') await store.persistScenePosition(n.id.replace('scene-', ''), n.position); } }
 
 async function onConnect(params) {
   const sourceId = params.source?.replace('scene-', '');
@@ -68,20 +68,6 @@ async function onConnect(params) {
   edges.value = [...edges.value, { id: `edge-${params.source}-${params.target}-${Date.now()}`, source: params.source, target: params.target, animated: true, markerEnd: 'arrowclosed' }];
   await store.addChoiceLink(sourceId, targetId);
 }
-
-onMounted(async () => { await refresh(); });
-
-function onNodeDoubleClick(evt) {
-  const n = evt?.node;
-  if (n?.type === 'chapter') {
-    const id = n.id.replace('chap-', '');
-    router.push({ name: 'Chapter', params: { id } });
-  }
-}
-
-function fit() { try { fitView(); } catch {} }
-async function autoLayout() { const laidOut = await layoutScenes(getNodes(), getEdges()); for (const n of laidOut) updateNode(n.id, { position: n.position }); }
-async function saveLayout() { const current = getNodes(); for (const n of current) { if (n.type === 'scene') await store.persistScenePosition(n.id.replace('scene-', ''), n.position); else if (n.type === 'chapter') await store.persistChapterPosition(n.id.replace('chap-', ''), n.position); } }
 </script>
 
 <style scoped>
