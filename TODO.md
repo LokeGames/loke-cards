@@ -89,6 +89,11 @@ After the initial file relocation is complete, the next phase is to port the Vue
 *   [ ] Port the application structure, routing, and views from `cards-vue` to the new Svelte project in `/cards`.
 *   [ ] Replace Vue components with their new Svelte counterparts from `/shared` and `/cards`.
 *   [ ] Ensure the new Svelte application (`/cards`) correctly communicates with the existing C++ server backend.
+*   [ ] **New Drawer Menu:** Implement a new responsive drawer menu system, replacing the old side panel.
+    *   [ ] **Core Principle:** Use a single, unified menu component that adapts its behavior based on screen size (responsive).
+    *   [ ] **Desktop:** The menu appears as a permanently visible side panel. It can be collapsed into a smaller icon bar.
+    *   [ ] **Mobile/Tablet:** The menu is hidden by default and toggled by a burger/close icon. When opened, it slides in as an overlay.
+    *   [ ] **Unified State:** Use a single set of components and state for all views to ensure consistency. The burger icon is a toggle for the menu's visibility, not a separate menu.
 
 ### 4. Update Build & Workspace Configuration
 
