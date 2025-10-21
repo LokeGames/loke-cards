@@ -93,10 +93,10 @@ This project will adopt a modern, robust tooling and testing strategy based on S
 
 ### 2. Setup New Svelte Project Structure
 
-*   [ ] Create a new `/cards` directory for the Svelte main application.
-*   [ ] Create a new `/shared` directory for shared Svelte components and logic.
-*   [ ] Initialize a Svelte + Zoe project inside `/cards`.
-*   [ ] Set up `/shared` as a library/package that can be consumed by `/cards`.
+*   [X] Create a new `/cards` directory for the Svelte main application.
+*   [X] Create a new `/shared` directory for shared Svelte components and logic.
+*   [X] Initialize a Svelte + Zoe project inside `/cards`.
+*   [X] Set up `/shared` as a library/package that can be consumed by `/cards`.
 
 ### 3. Port `shared-vue` to `shared` (Svelte)
 

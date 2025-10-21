@@ -17,13 +17,19 @@
     "dev:graph": "vite --config apps/graph/vite.config.js",
     "build:graph": "vite build --config apps/graph/vite.config.js",
     "preview:graph": "vite preview --config apps/graph/vite.config.js",
+    "test:unit:cards": "npm run test:unit -w @loke/cards",
+    "dev:cards": "npm run dev -w @loke/cards",
+    "build:cards": "npm run build -w @loke/cards",
+    "preview:cards": "npm run preview -w @loke/cards",
     "test": "playwright test",
     "lint": "eslint ."
   },
   "workspaces": [
     "cards-vue",
     "graph-vue",
-    "shared-vue"
+    "shared-vue",
+    "cards",
+    "shared"
   ],
   "keywords": [
     "loke-engine",

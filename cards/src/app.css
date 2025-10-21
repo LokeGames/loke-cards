@@ -1,0 +1,2 @@
+/* Reuse existing Tailwind setup from Vue app */
+@import '../../cards-vue/src/styles/main.css';
