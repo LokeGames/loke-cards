@@ -35,4 +35,4 @@ else
 fi
 
 # Start main Vite on fixed port (foreground)
-VITE_DEV_PORT="$FRONT_PORT" vite
+VITE_DEV_PORT="$FRONT_PORT" pnpm run dev:front

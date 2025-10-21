@@ -11,7 +11,11 @@ export const nodes = [
 	() => import('./nodes/7'),
 	() => import('./nodes/8'),
 	() => import('./nodes/9'),
-	() => import('./nodes/10')
+	() => import('./nodes/10'),
+	() => import('./nodes/11'),
+	() => import('./nodes/12'),
+	() => import('./nodes/13'),
+	() => import('./nodes/14')
 ];
 
 export const server_loads = [];
@@ -25,7 +29,11 @@ export const dictionary = {
 		"/scene/new": [7],
 		"/scene/[id]": [6],
 		"/settings": [9],
-		"/toc": [10]
+		"/toc": [10],
+		"/worker-cards-crud": [12],
+		"/worker-cards": [11],
+		"/worker-chapters": [13],
+		"/worker-test": [14]
 	};
 
 export const hooks = {

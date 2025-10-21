@@ -7,5 +7,9 @@
 	"/scene/new": [],
 	"/scene/[id]": [],
 	"/settings": [],
-	"/toc": []
+	"/toc": [],
+	"/worker-cards-crud": [],
+	"/worker-cards": [],
+	"/worker-chapters": [],
+	"/worker-test": []
 }

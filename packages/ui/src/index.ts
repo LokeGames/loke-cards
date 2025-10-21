@@ -1,3 +1,2 @@
 // Placeholder UI library entry
-export {};
-
+export { default as AppModal } from './components/AppModal.svelte';

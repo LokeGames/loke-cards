@@ -27,7 +27,7 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/chapters" | "/chapter" | "/chapter/new" | "/code" | "/scenes" | "/scene" | "/scene/new" | "/scene/[id]" | "/settings" | "/toc";
+		RouteId(): "/" | "/chapters" | "/chapter" | "/chapter/new" | "/code" | "/scenes" | "/scene" | "/scene/new" | "/scene/[id]" | "/settings" | "/toc" | "/worker-cards-crud" | "/worker-cards" | "/worker-chapters" | "/worker-test";
 		RouteParams(): {
 			"/scene/[id]": { id: string }
 		};
@@ -42,9 +42,13 @@ declare module "$app/types" {
 			"/scene/new": Record<string, never>;
 			"/scene/[id]": { id: string };
 			"/settings": Record<string, never>;
-			"/toc": Record<string, never>
+			"/toc": Record<string, never>;
+			"/worker-cards-crud": Record<string, never>;
+			"/worker-cards": Record<string, never>;
+			"/worker-chapters": Record<string, never>;
+			"/worker-test": Record<string, never>
 		};
-		Pathname(): "/" | "/chapters" | "/chapters/" | "/chapter" | "/chapter/" | "/chapter/new" | "/chapter/new/" | "/code" | "/code/" | "/scenes" | "/scenes/" | "/scene" | "/scene/" | "/scene/new" | "/scene/new/" | `/scene/${string}` & {} | `/scene/${string}/` & {} | "/settings" | "/settings/" | "/toc" | "/toc/";
+		Pathname(): "/" | "/chapters" | "/chapters/" | "/chapter" | "/chapter/" | "/chapter/new" | "/chapter/new/" | "/code" | "/code/" | "/scenes" | "/scenes/" | "/scene" | "/scene/" | "/scene/new" | "/scene/new/" | `/scene/${string}` & {} | `/scene/${string}/` & {} | "/settings" | "/settings/" | "/toc" | "/toc/" | "/worker-cards-crud" | "/worker-cards-crud/" | "/worker-cards" | "/worker-cards/" | "/worker-chapters" | "/worker-chapters/" | "/worker-test" | "/worker-test/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

@@ -1,94 +1,116 @@
 // Minimal SharedWorker that responds to 'ping' with 'pong'.
 // No external dependencies; plain postMessage protocol.
 
-import type { Scene } from '@schemas';
+import * as Comlink from 'comlink';
+import { SceneSchema, ChapterSchema, GraphJSONSchema, type Scene, type Chapter, type GraphJSON } from '@schemas';
+import { createDB } from './db';
 
-type Request =
-  | { id: string; kind: 'ping' }
-  | { id: string; kind: 'rpc'; ns: 'cards'; method: string; params?: unknown };
+// Lazy DB init per port; keeps startup light
+let dbPromise: Promise<ReturnType<typeof createDB>> | null = null;
+const getDB = () => (dbPromise ??= createDB());
 
-type Response = { id: string; ok: true; result: unknown } | { id: string; ok: false; error: string };
+const api = {
+  ping(): 'pong' {
+    return 'pong' as const;
+  },
+  cards: {
+    async create(s: Scene): Promise<Scene> {
+      const parsed = SceneSchema.parse(s);
+      const db = await getDB();
+      return db.cards.create(parsed);
+    },
+    async get(id: string): Promise<Scene | null> {
+      const db = await getDB();
+      return db.cards.get(id);
+    },
+    async list(): Promise<Scene[]> {
+      const db = await getDB();
+      return db.cards.list();
+    },
+    async update(s: Scene): Promise<Scene> {
+      const parsed = SceneSchema.parse(s);
+      const db = await getDB();
+      return db.cards.update(parsed);
+    },
+    async delete(id: string): Promise<boolean> {
+      const db = await getDB();
+      return db.cards.delete(id);
+    },
+  },
+  chapters: {
+    async create(c: Chapter): Promise<Chapter> {
+      const parsed = ChapterSchema.parse(c);
+      const db = await getDB();
+      return db.chapters.create(parsed);
+    },
+    async get(id: string): Promise<Chapter | null> {
+      const db = await getDB();
+      return db.chapters.get(id);
+    },
+    async list(): Promise<Chapter[]> {
+      const db = await getDB();
+      return db.chapters.list();
+    },
+    async update(c: Chapter): Promise<Chapter> {
+      const parsed = ChapterSchema.parse(c);
+      const db = await getDB();
+      return db.chapters.update(parsed);
+    },
+    async delete(id: string): Promise<boolean> {
+      const db = await getDB();
+      return db.chapters.delete(id);
+    },
+  },
+  graph: {
+    async getProjectGraph(projectId?: string): Promise<GraphJSON> {
+      const db = await getDB();
+      const scenes = await db.cards.list();
+      const chaps = await db.chapters.list();
+      const pos = await db.positions.all();
+      const nodes = [
+        ...chaps.map((c) => ({ id: `chapter:${c.chapterId}`, type: 'chapter', label: c.title, position: (pos.find(p=>p.nodeId===`chapter:${c.chapterId}`) ? { x: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.x, y: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.y } : undefined) })),
+        ...scenes.map((s) => ({ id: `scene:${s.sceneId}`, type: 'scene', label: s.title, position: (pos.find(p=>p.nodeId===`scene:${s.sceneId}`) ? { x: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.x, y: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.y } : undefined) })),
+      ];
+      const edgesDb = await db.edges.list();
+      const edges = edgesDb.map((e) => ({ id: `edge:${e.id}`, source: `scene:${e.source}`, target: `scene:${e.target}` }));
+      const graph: GraphJSON = { projectId, nodes, edges };
+      return GraphJSONSchema.parse(graph);
+    },
+    async getChapterGraph(chapterId: string, projectId?: string): Promise<GraphJSON> {
+      const db = await getDB();
+      const scenes = (await db.cards.list()).filter((s) => s.chapterId === chapterId);
+      const chaps = (await db.chapters.list()).filter((c) => c.chapterId === chapterId);
+      const pos = await db.positions.all();
+      const nodes = [
+        ...chaps.map((c) => ({ id: `chapter:${c.chapterId}`, type: 'chapter', label: c.title, position: (pos.find(p=>p.nodeId===`chapter:${c.chapterId}`) ? { x: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.x, y: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.y } : undefined) })),
+        ...scenes.map((s) => ({ id: `scene:${s.sceneId}`, type: 'scene', label: s.title, position: (pos.find(p=>p.nodeId===`scene:${s.sceneId}`) ? { x: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.x, y: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.y } : undefined) })),
+      ];
+      const edgesDb = (await db.edges.list()).filter((e) => scenes.some((s) => s.sceneId === e.source || s.sceneId === e.target));
+      const edges = edgesDb.map((e) => ({ id: `edge:${e.id}`, source: `scene:${e.source}`, target: `scene:${e.target}` }));
+      const graph: GraphJSON = { projectId, nodes, edges };
+      return GraphJSONSchema.parse(graph);
+    },
+    async createLink(sourceSceneId: string, targetSceneId: string) {
+      const db = await getDB();
+      return db.edges.create(sourceSceneId, targetSceneId);
+    },
+    async deleteLink(edgeId: string) {
+      const db = await getDB();
+      const id = edgeId.replace(/^edge:/, '');
+      return db.edges.delete(id);
+    },
+    async setNodePosition(nodeId: string, x: number, y: number) {
+      const db = await getDB();
+      await db.positions.set(nodeId, x, y);
+      return true;
+    },
+  },
+};
 
-// In-memory stores (bootstrapping; replace with DB later)
-const cards = new Map<string, Scene>();
-type Chapter = { chapterId: string; title: string; createdAt: number; updatedAt: number };
-const chapters = new Map<string, Chapter>();
-
-function handleRpc(ns: string, method: string, params: unknown): unknown {
-  if (ns === 'cards') {
-    if (method === 'create') {
-      const s = params as Scene;
-      cards.set(s.sceneId, s);
-      return s;
-    }
-    if (method === 'get') {
-      const id = params as string;
-      return cards.get(id) || null;
-    }
-    if (method === 'list') {
-      return Array.from(cards.values());
-    }
-    if (method === 'update') {
-      const s = params as Scene;
-      if (!cards.has(s.sceneId)) throw new Error('not_found');
-      cards.set(s.sceneId, s);
-      return s;
-    }
-    if (method === 'delete') {
-      const id = params as string;
-      return cards.delete(id);
-    }
-  }
-  if (ns === 'chapters') {
-    if (method === 'create') {
-      const c = params as Chapter;
-      chapters.set(c.chapterId, c);
-      return c;
-    }
-    if (method === 'get') {
-      const id = params as string;
-      return chapters.get(id) || null;
-    }
-    if (method === 'list') {
-      return Array.from(chapters.values());
-    }
-    if (method === 'update') {
-      const c = params as Chapter;
-      if (!chapters.has(c.chapterId)) throw new Error('not_found');
-      chapters.set(c.chapterId, c);
-      return c;
-    }
-    if (method === 'delete') {
-      const id = params as string;
-      return chapters.delete(id);
-    }
-  }
-  throw new Error(`unknown_method: ${ns}.${method}`);
-}
-
-// SharedWorker global scope typings are not present in TS DOM lib by default.
+// SharedWorker connect: expose API on each port via Comlink
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (self as any).onconnect = (event: MessageEvent) => {
   const port = (event as unknown as { ports: MessagePort[] }).ports[0];
-  port.onmessage = (e: MessageEvent<Request>) => {
-    const msg = e.data;
-    if (!msg) return;
-    if (msg.kind === 'ping') {
-      const res: Response = { id: msg.id, ok: true, result: 'pong' };
-      port.postMessage(res);
-      return;
-    }
-    if (msg.kind === 'rpc') {
-      try {
-        const result = handleRpc(msg.ns, msg.method, msg.params);
-        const res: Response = { id: msg.id, ok: true, result };
-        port.postMessage(res);
-      } catch (err) {
-        const res: Response = { id: msg.id, ok: false, error: err instanceof Error ? err.message : String(err) };
-        port.postMessage(res);
-      }
-      return;
-    }
-  };
+  Comlink.expose(api, port);
   port.start();
 };

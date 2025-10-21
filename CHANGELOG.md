@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - App shell layout aligned to scrollable-main pattern in `cards`.
 - Unit test: `ThemeToggle` toggles dark mode and persists preference.
 - Root scripts: `test:tdd` (Vitest watch via cards workspace) and `test:e2e:ui` (Playwright UI).
-- Phase 2 bootstrap (data worker): minimal SharedWorker with custom RPC (`ping`, `cards.create/list/get/update/delete`), type-only schemas under `packages/schemas`, worker client and routes (`/worker-test`, `/worker-cards`), and E2E tests.
+- Phase 2 (data worker): Comlink-based SharedWorker RPC (`ping`, `cards.*`, `chapters.*`) with Zod schemas in `packages/schemas`; client updated; test routes (`/worker-test`, `/worker-cards`, `/worker-cards-crud`, `/worker-chapters`) and E2E specs added.
 
 ### Added - 2025-10-21
 - Scaffolded Svelte migration (Part 2): created new workspaces `cards` (Svelte app) and `shared` (Svelte library) alongside existing Vue packages.

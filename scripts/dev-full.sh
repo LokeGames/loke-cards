@@ -36,5 +36,5 @@ kill_port "$BACKEND_PORT"
 )
 
 # Start frontend on fixed port
-VITE_DEV_PORT="$PORT" vite
+VITE_DEV_PORT="$PORT" pnpm run dev:front
 

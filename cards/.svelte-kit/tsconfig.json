@@ -7,6 +7,12 @@
 			"@shared/*": [
 				"../../shared/src/*"
 			],
+			"$lib": [
+				"../src/lib"
+			],
+			"$lib/*": [
+				"../src/lib/*"
+			],
 			"$app/types": [
 				"./types/index.d.ts"
 			]

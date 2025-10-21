@@ -6,6 +6,7 @@
   "description": "SharedWorker data layer - scaffold placeholder",
   "scripts": {},
   "dependencies": {
-    "comlink": "^4.4.2"
+    "comlink": "^4.4.2",
+    "wa-sqlite": "^1.0.0"
   }
 }

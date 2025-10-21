@@ -1,0 +1,10 @@
+{
+  "name": "Loke Front Shell",
+  "short_name": "Loke",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "icons": []
+}
+

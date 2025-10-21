@@ -8,11 +8,16 @@ export default defineConfig({
     alias: {
       '@shared': fileURLToPath(new URL('../shared/src', import.meta.url)),
     },
+    dedupe: ['svelte'],
   },
+  server: { hmr: false },
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.js'],
     globals: true,
     include: ['tests/**/*.test.{js,ts}'],
+    deps: {
+      inline: [/svelte/, /@sveltejs/],
+    },
   },
 });
