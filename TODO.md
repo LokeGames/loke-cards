@@ -108,14 +108,14 @@ This project will adopt a modern, robust tooling and testing strategy based on S
 
 ### 4. Port `cards-vue` to `cards` (Svelte)
 
-*   [ ] Port the application structure, routing, and views from `cards-vue` to the new Svelte project in `/cards`.
-*   [ ] Replace Vue components with their new Svelte counterparts from `/shared` and `/cards`.
+*   [X] Port the application structure, routing, and base views to the new Svelte project in `/cards` (home, scenes, chapters, settings, toc, code; new scene/chapter forms).
+*   [ ] Replace Vue components with their new Svelte counterparts from `/shared` and `/cards` (in progress; more views to port).
 *   [ ] Ensure the new Svelte application (`/cards`) correctly communicates with the existing C++ server backend.
-*   [ ] **New Drawer Menu:** Implement a new responsive drawer menu system, replacing the old side panel.
-    *   [ ] **Core Principle:** Use a single, unified menu component that adapts its behavior based on screen size (responsive).
-    *   [ ] **Desktop:** The menu appears as a permanently visible side panel. It can be collapsed into a smaller icon bar.
-    *   [ ] **Mobile/Tablet:** The menu is hidden by default and toggled by a burger/close icon. When opened, it slides in as an overlay.
-    *   [ ] **Unified State:** Use a single set of components and state for all views to ensure consistency. The burger icon is a toggle for the menu's visibility, not a separate menu.
+*   [X] **New Drawer Menu:** Implement a new responsive drawer menu system, replacing the old side panel.
+    *   [X] **Core Principle:** Use a single, unified menu component that adapts its behavior based on screen size (responsive).
+    *   [X] **Desktop:** The menu appears as a permanently visible side panel. It can be collapsed into a smaller icon bar.
+    *   [X] **Mobile/Tablet:** The menu is hidden by default and toggled by a burger/close icon. When opened, it slides in as an overlay.
+    *   [X] **Unified State:** Use a single set of components and state for all views to ensure consistency. The burger icon is a toggle for the menu's visibility, not a separate menu.
 
 ### 5. Update Build & Workspace Configuration
 

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import AppHeader from '@shared/lib/components/AppHeader.svelte';
-import { isSidebarOpen, closeSidebar } from '@shared/lib/stores/ui.store.js';
+import { isSidebarOpen, closeSidebar } from '@shared/lib/stores/ui.store';
 
 describe('AppHeader', () => {
   test('renders provided title', () => {
@@ -22,4 +22,3 @@ describe('AppHeader', () => {
     unsub();
   });
 });
-

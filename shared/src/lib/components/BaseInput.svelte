@@ -1,15 +1,15 @@
-<script>
-  export let id;
-  export let label = '';
-  export let type = 'text';
-  export let value = '';
-  export let placeholder = '';
-  export let error = '';
-
-  const onInput = (e) => {
-    const v = e.target.value;
-    const ev = new CustomEvent('update', { detail: v });
-    dispatchEvent(ev);
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+  export let id: string;
+  export let label: string = '';
+  export let type: string = 'text';
+  export let value: string | number = '';
+  export let placeholder: string = '';
+  export let error: string = '';
+  const dispatch = createEventDispatcher<{ update: string | number; blur: void }>();
+  const onInput = (e: Event) => {
+    const v = (e.target as HTMLInputElement).value;
+    dispatch('update', v);
   };
 </script>
 
@@ -26,9 +26,9 @@
     {placeholder}
     aria-invalid={error ? 'true' : undefined}
     aria-describedby={error ? `${id}-error` : undefined}
+    on:blur={() => dispatch('blur')}
   />
   {#if error}
     <p id={`${id}-error`} class="mt-1 text-sm text-red-600">{error}</p>
   {/if}
 </div>
-

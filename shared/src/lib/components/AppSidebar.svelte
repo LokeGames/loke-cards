@@ -1,8 +1,8 @@
-<script>
-  import { isSidebarOpen, closeSidebar } from '../stores/ui.store.js';
+<script lang="ts">
+  import { isSidebarOpen, closeSidebar } from '../stores/ui.store';
   import { onMount } from 'svelte';
   import SidebarMenu from './SidebarMenu.svelte';
-  let open;
+  let open: boolean;
   const unsubscribe = isSidebarOpen.subscribe((v) => (open = v));
   onMount(() => () => unsubscribe());
   

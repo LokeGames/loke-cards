@@ -1,5 +1,5 @@
-<script>
-  import { status, pending, markOffline, markSynced, setStatus } from '../stores/sync.store.js';
+<script lang="ts">
+  import { status, pending, markOffline, markSynced, setStatus } from '../stores/sync.store';
   import { get } from 'svelte/store';
   const online = () => get(status) !== 'offline';
 
@@ -32,4 +32,3 @@
 >
   {#if online()} Online {:else} Offline {/if}
 </button>
-

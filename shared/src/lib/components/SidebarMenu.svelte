@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import NavLink from './NavLink.svelte';
-  import { currentProject } from '../stores/project.store.js';
+  import { currentProject } from '../stores/project.store';
   import { onMount } from 'svelte';
-  import { getStorageStats } from '../storage.js';
-  let stats = { scenes: 0, chapters: 0 };
+  import { getStorageStats } from '../storage';
+  let stats: { scenes: number; chapters: number } = { scenes: 0, chapters: 0 };
   onMount(async () => {
     try { stats = await getStorageStats(); } catch {}
   });
@@ -44,4 +44,3 @@
 <style>
 .nav-item.router-link-active { /* for parity; handled by activeClass */ }
 </style>
-

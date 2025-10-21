@@ -1,10 +1,12 @@
-<script>
-  export let open = false;
-  export let title = '';
-  export let confirmText = 'Confirm';
-  export let cancelText = 'Cancel';
-  const onConfirm = () => dispatchEvent(new CustomEvent('confirm'));
-  const onCancel = () => dispatchEvent(new CustomEvent('cancel'));
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+  export let open: boolean = false;
+  export let title: string = '';
+  export let confirmText: string = 'Confirm';
+  export let cancelText: string = 'Cancel';
+  const dispatch = createEventDispatcher<{ confirm: void; cancel: void }>();
+  const onConfirm = () => dispatch('confirm');
+  const onCancel = () => dispatch('cancel');
 </script>
 
 {#if open}
@@ -24,4 +26,3 @@
     </div>
   </div>
 {/if}
-

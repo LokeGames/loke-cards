@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
-  let dark = false;
+  let dark: boolean = false;
   const apply = () => {
     if (typeof document === 'undefined') return;
     document.documentElement.classList.toggle('dark', dark);
@@ -18,4 +18,3 @@
 <button on:click={toggle} class="px-2 py-1 rounded border border-gray-200 dark:border-gray-700" aria-label="Toggle theme">
   {#if dark}🌙{:else}☀️{/if}
 </button>
-

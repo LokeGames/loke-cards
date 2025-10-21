@@ -1,8 +1,8 @@
-<script>
-  import { currentProject, projects, init, selectProject, createProject } from '../stores/project.store.js';
+<script lang="ts">
+  import { currentProject, projects, init, selectProject, createProject } from '../stores/project.store';
   import { onMount } from 'svelte';
   onMount(() => { if (!$currentProject) init(); });
-  let currentId = '';
+  let currentId: string = '';
   $: currentId = $currentProject?.id || 'default';
   const onChange = (e) => selectProject(e.target.value);
   const onCreate = async () => {
@@ -22,4 +22,3 @@
   </select>
   <button class="px-2 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white" title="New project" aria-label="New project" on:click={onCreate}>+</button>
 </div>
-

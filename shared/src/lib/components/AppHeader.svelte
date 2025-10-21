@@ -1,10 +1,10 @@
-<script>
-  import { toggleSidebar } from '../stores/ui.store.js';
+<script lang="ts">
+  import { toggleSidebar } from '../stores/ui.store';
   import StatusPill from './StatusPill.svelte';
   import NetworkToggle from './NetworkToggle.svelte';
   import ThemeToggle from './ThemeToggle.svelte';
   import ProjectPicker from './ProjectPicker.svelte';
-  export let title = 'Loke Cards';
+  export let title: string = 'Loke Cards';
 </script>
 
 <header class="flex items-center justify-between gap-3 px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">

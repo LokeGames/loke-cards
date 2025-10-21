@@ -1,6 +1,6 @@
-<script>
-  import { status, pending, lastSync, error } from '../stores/sync.store.js';
-  export let state = undefined;
+<script lang="ts">
+  import { status, pending, lastSync, error } from '../stores/sync.store';
+  export let state: 'synced' | 'syncing' | 'idle' | 'offline' | 'error' | undefined = undefined;
   $: effective = state || $status || 'idle';
   $: label = (() => {
     const p = Number($pending || 0);
@@ -34,4 +34,3 @@
 >
   {label}
 </span>
-

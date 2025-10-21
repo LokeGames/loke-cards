@@ -10,9 +10,14 @@ This file provides instructions and tips for agents working in this repository. 
 - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`...).
 
 ## Tech Stack
-- Vue 3 + Vite + Tailwind CSS.
-- State: Pinia stores in `src/stores/`.
-- E2E testing: Playwright (`tests/*.spec.js`).
+- SvelteKit + TypeScript + Tailwind CSS for new app under `cards/`.
+- Legacy: Vue 3 in `*-vue` folders (read-only during migration).
+- E2E testing: Playwright (`cards/tests-e2e`), unit tests with Vitest + Svelte Testing Library.
+
+## Language Policy
+- New frontend code is pure TypeScript: use `.ts` files and `<script lang="ts">` in Svelte components. Avoid `.js` in new code to prevent JS/TS confusion.
+- `shared/` library exports TypeScript modules only.
+- `server/` is pure C/C++ only; do not introduce TS/JS there.
 
 ## Project Layout
 - `src/` — app code: `components/`, `views/`, `stores/`, `lib/`, `styles/`, `router/`.
