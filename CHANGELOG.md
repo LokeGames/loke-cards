@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added - 2025-10-21
+- Phase 1 scaffolding: added `pnpm-workspace.yaml` and placeholder packages under `apps/`, `workers/`, and `packages/` (no new runtime deps installed yet).
+- App shell layout aligned to scrollable-main pattern in `cards`.
+- Unit test: `ThemeToggle` toggles dark mode and persists preference.
+- Root scripts: `test:tdd` (Vitest watch via cards workspace) and `test:e2e:ui` (Playwright UI).
+- Phase 2 bootstrap (data worker): minimal SharedWorker with custom RPC (`ping`, `cards.create/list/get/update/delete`), type-only schemas under `packages/schemas`, worker client and routes (`/worker-test`, `/worker-cards`), and E2E tests.
+
+### Added - 2025-10-21
 - Scaffolded Svelte migration (Part 2): created new workspaces `cards` (Svelte app) and `shared` (Svelte library) alongside existing Vue packages.
 - Implemented minimal shared components and UI store in `shared` (`AppHeader`, `AppSidebar`, `AppModal`, `ui.store`).
 - Initialized SvelteKit in `cards` (svelte.config.js, Vite kit plugin, app.html) with minimal layout and home page reusing Tailwind styles.

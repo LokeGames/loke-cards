@@ -30,11 +30,16 @@
     "build:graph-vue": "vite build --config graph-vue/vite.config.js",
     "preview:graph-vue": "vite preview --config graph-vue/vite.config.js",
     "test": "playwright test",
+    "test:tdd": "npm run test:unit:watch -w @loke/cards",
+    "test:e2e:ui": "playwright test --ui",
     "lint": "eslint ."
   },
   "workspaces": [
     "cards",
-    "shared"
+    "shared",
+    "apps/*",
+    "workers/*",
+    "packages/*"
   ],
   "keywords": [
     "loke-engine",

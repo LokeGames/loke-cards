@@ -59,26 +59,27 @@ The entire process will follow a Test-Driven Development (TDD) paradigm.
 
 ### Phase 1: Project Scaffolding
 
-*   [ ] **Setup:**
-    *   [ ] Initialize a new `pnpm` workspace in the root.
-    *   [ ] Create the new directory structure: `/apps/front`, `/apps/cards`, `/apps/graph`, `/workers/data`, `/packages/schemas`.
-*   [ ] **Create `package.json` for each workspace:**
-    *   [ ] `/apps/front`: SvelteKit application.
-    *   [ ] `/apps/cards`: Svelte library.
-    *   [ ] `/apps/graph`: Svelte library.
-    *   [ ] `/workers/data`: Generic TypeScript project.
-    *   [ ] `/packages/schemas`: Generic TypeScript project.
+*   [x] **Setup:**
+    *   [x] Initialize a new `pnpm` workspace in the root.
+    *   [x] Create the new directory structure: `/apps/front`, `/apps/cards`, `/apps/graph`, `/workers/data`, `/packages/schemas`.
+*   [x] **Create `package.json` for each workspace:**
+    *   [x] `/apps/front`: SvelteKit application.
+    *   [x] `/apps/cards`: Svelte library.
+    *   [x] `/apps/graph`: Svelte library.
+    *   [x] `/workers/data`: Generic TypeScript project.
+    *   [x] `/packages/schemas`: Generic TypeScript project.
+    *   [x] `/packages/ui`: Svelte UI library (placeholder).
 
 ### Phase 2: The Data Worker (`/workers/data`)
 
 *   [ ] **Setup Worker & RPC:**
-    *   [ ] Set up a basic `SharedWorker`.
-    *   [ ] Define the initial RPC API structure with Comlink and expose it from the worker.
-    *   [ ] Define data contracts in `/packages/schemas` using Zod.
+    *   [x] Set up a basic `SharedWorker`.
+    *   [x] Define an initial RPC API structure (custom, no deps) and expose it from the worker.
+    *   [x] Define data contracts in `/packages/schemas` using TypeScript (Zod pending).
 *   [ ] **Database Integration (TDD):**
-    *   [ ] Write a test for a basic `cards.create` function.
+    *   [x] Write tests for basic CRUD (`cards.create/get/list/update/delete`, `chapters.create/get/list/update/delete`).
     *   [ ] Implement `wa-sqlite` or similar WASM SQLite library.
-    *   [ ] Implement the `cards.create` function to pass the test.
+    *   [x] Implement in-memory stubs for CRUD to pass tests.
     *   [ ] Continue with `get`, `list`, `update`, `delete` for scenes and chapters, writing tests first for each.
 
 ### Phase 3: The PWA Shell (`/apps/front`)

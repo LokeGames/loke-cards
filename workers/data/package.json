@@ -1,0 +1,11 @@
+{
+  "name": "@loke/workers-data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SharedWorker data layer - scaffold placeholder",
+  "scripts": {},
+  "dependencies": {
+    "comlink": "^4.4.2"
+  }
+}

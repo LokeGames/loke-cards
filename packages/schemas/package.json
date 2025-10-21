@@ -1,0 +1,11 @@
+{
+  "name": "@loke/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared Zod schemas - scaffold placeholder",
+  "scripts": {},
+  "dependencies": {
+    "zod": "^4.1.12"
+  }
+}

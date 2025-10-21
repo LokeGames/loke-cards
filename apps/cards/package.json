@@ -1,0 +1,9 @@
+{
+  "name": "@loke/apps-cards",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cards micro-app (Svelte library) - scaffold placeholder",
+  "scripts": {}
+}
+
