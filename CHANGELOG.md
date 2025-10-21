@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs - 2025-10-21
 - README: Added migration note highlighting Svelte as the active app and documenting how to run legacy Vue apps optionally.
 - AGENTS.md: Added “Legacy Vue Artifacts” section clarifying that `cards-vue`, `graph-vue`, and `shared-vue` are read‑only and excluded from the toolchain, plus quick commands.
+ - AGENTS.md: Added Language Policy (pure TS in `cards/` and `shared/`, server in C/C++ only) and CI rules.
+
+### Tooling - 2025-10-21
+- Enabled TypeScript strict mode for `cards/` and `shared/` (`tsconfig.json`).
+- Added CI scripts: `check:types`, `check:svelte`, `check:ts-purity`, and aggregate `ci`.
 
 ### Refactoring - 2025-10-21
 - **Project Restructuring (Phase 1):** (Gemini)

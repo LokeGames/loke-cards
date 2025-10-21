@@ -1,3 +1,8 @@
+# VUE DEPRECATED
+cards-vue/
+graph-vue/
+shared-vue/
+
 # Dependencies
 node_modules/
 package-lock.json

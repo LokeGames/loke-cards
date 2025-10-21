@@ -19,6 +19,10 @@ This file provides instructions and tips for agents working in this repository. 
 - `shared/` library exports TypeScript modules only.
 - `server/` is pure C/C++ only; do not introduce TS/JS there.
 
+## CI Rules
+- TypeScript strict mode is enabled for `cards/` and `shared/`.
+- CI script `npm run ci` runs: ESLint, TS type checks for both packages, `svelte-check`, and a purity check that fails if `.js` files exist in `cards/` or `shared/`.
+
 ## Project Layout
 - `src/` — app code: `components/`, `views/`, `stores/`, `lib/`, `styles/`, `router/`.
 - `public/` — static assets and PWA icons.
