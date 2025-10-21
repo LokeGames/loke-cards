@@ -135,7 +135,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCodeGenerator } from '../composables/useCodeGenerator.js';
 import { useSceneValidation } from '../composables/useSceneValidation.js';
 import api from '../api/client.js';
-import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
+import { getAllScenes as getAllScenesLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
 
 // Components
 import SceneIdInput from '../components/SceneIdInput.vue';
@@ -147,6 +147,7 @@ import CodePreview from '../components/CodePreview.vue';
 import { useToastStore } from '../stores/toast.js';
 import { useSceneStore } from '../stores/scenes.js';
 import { useChapterStore } from '../stores/chapters.js';
+import { storeToRefs } from 'pinia';
 import { useProjectStore } from '../stores/project.js';
 
 const router = useRouter();
@@ -169,8 +170,9 @@ const sceneData = reactive({
   meta: ''
 });
 
-// Available chapters (loaded from API or local storage)
-const availableChapters = ref([]);
+// Available chapters from store (offline-first)
+await chapterStore.init?.();
+const { chapters: availableChapters } = storeToRefs(chapterStore);
 
 // Edit mode check
 const isEditMode = computed(() => !!route.params.id);
@@ -229,17 +231,15 @@ function validateField(fieldName) {
 // Handle create new chapter
 async function handleCreateChapter(chapterId) {
   try {
-    // Persist chapter via API, then add to local list
+    // Persist via store (handles API/local)
     await chapterStore.upsert({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
-    availableChapters.value.push({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
     saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" created.` };
     toast.success(`Chapter "${chapterId}" created`);
     setTimeout(() => (saveStatus.value = null), 1200);
   } catch (err) {
-    // Fallback: save locally when offline
+    // Fallback handled in store; ensure it exists in list by reloading store
     try {
       await chapterStore.upsert({ id: chapterId, name: chapterId, order: Date.now(), projectId: project.currentProject?.id || 'default' });
-      availableChapters.value.push({ id: chapterId, name: chapterId, projectId: project.currentProject?.id || 'default' });
       saveStatus.value = { type: 'success', message: `Chapter "${chapterId}" saved locally (offline).` };
       toast.info(`Chapter "${chapterId}" saved locally (offline)`);
       setTimeout(() => (saveStatus.value = null), 1600);
@@ -365,16 +365,7 @@ function handleReset() {
 
 // Load scene data if editing and chapters from API
 onMounted(async () => {
-  // Offline-first: load chapters from local, then try server to merge
-  try { availableChapters.value = await getAllChaptersLocal(); } catch {}
-  try {
-    const chaptersData = await api.chapters.getAll();
-    const byId = new Map((availableChapters.value || []).map((c) => [c.id, c]));
-    (Array.isArray(chaptersData) ? chaptersData : []).forEach(c => { if (!byId.has(c.id)) byId.set(c.id, c); });
-    availableChapters.value = Array.from(byId.values());
-  } catch (error) {
-    // keep local
-  }
+  // Chapters already available from store
 
   // Load scenes for choices suggestions
   // Suggestions: local first
@@ -409,9 +400,10 @@ onMounted(async () => {
         stateChanges: Array.isArray(raw.stateChanges) ? raw.stateChanges : [],
       };
       Object.assign(sceneData, scene);
-      // Ensure chapter option exists even if not loaded from API/local
-      if (scene.chapterId && !availableChapters.value.some(c => c.id === scene.chapterId)) {
-        availableChapters.value.push({ id: scene.chapterId, name: scene.chapterId });
+      // If scene references deleted/missing chapter, clear it
+      if (sceneData.chapterId && !availableChapters.value.some(c => c.id === sceneData.chapterId)) {
+        sceneData.chapterId = '';
+        toast.info('Chapter was removed. Scene is now unassigned.');
       }
     } catch (error) {
       console.error('Failed to load scene:', error);

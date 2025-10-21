@@ -1,70 +1,104 @@
-# TODO: Sammensmeltning af Loke-Cards og Loke-Graph
+# Refactoring Plan: Modularize `loke-cards`
 
-**Hovedmål:** At skabe én samlet, offline-first PWA, der kombinerer `cards`-editoren og `graph`-visualiseringen. `cards` skal være den primære, hurtigt-loadende del af applikationen, mens `graph` skal lazy-loades ved behov for at optimere den indledende brugeroplevelse.
+This document outlines the plan to refactor the `loke-cards` project into a more modular, monorepo-like structure. The goal is to improve clarity, separation of concerns, and maintainability.
 
----
+## Target Directory Structure
 
-### Udgangspunkt
+The final project structure will be organized as follows:
 
-Planen tager udgangspunkt i følgende status:
-- **Loke-Cards:** En fungerende applikation til redigering af scener.
-- **Offline Database:** Applikationen er klar til at blive koblet på en offline-database, der kører i browseren via WASM (WebAssembly).
-- **Loke-Graph:** En separat, fungerende applikation til visualisering af narrativ struktur.
+```
+/loke-cards
+├── /cards-vue/       # (a) Main Vue application (legacy artifact)
+├── /graph-vue/       # (b) Graph visualization Vue application
+├── /server/          # (c) C++ backend server (no changes needed)
+├── /shared-vue/      # (d) Shared Vue components, composables, and libs (legacy artifact)
+├── /doc/             # Documentation
+├── /node_modules/    # Root node modules
+├── package.json      # Root package.json
+└── ...               # Other root config files (vite, tailwind, etc.)
+```
 
----
+## Refactoring Steps
 
-### Fase 1: Implementering af Offline Database (WASM SQLite)
+### 1. Create New Directory Structure
 
-*Mål: At gøre `loke-cards` i stand til at læse og skrive direkte til en lokal SQLite-databasefil i browseren.* 
+*   [ ] Create `cards-vue` directory.
+*   [ ] Create `graph-vue` directory.
+*   [ ] Create `shared-vue` directory.
 
-- [ ] **Integrer WASM SQLite:** Vælg og installer et bibliotek som `sql.js`.
-- [ ] **Abstraher datalaget:** Implementer et `Repository Pattern`, der adskiller datalogik fra UI. 
-- [ ] **Opret `SQLiteRepository`:** Skriv en ny repository-implementation, der kører SQL-forespørgsler på WASM-databasen.
-- [ ] **Håndter databasefil:** Implementer UI til at lade brugeren åbne en lokal `.sqlite`-fil.
-- [ ] **Opdater `loke-cards`:** Refaktorer applikationen til at bruge det nye `SQLiteRepository` til alle dataoperationer.
+### 2. Relocate Existing Code
 
-### Fase 2: Database-synkronisering med Backend
+*   **`/cards-vue` (Main App):**
+    *   [ ] Move the contents of `src/` into `cards-vue/src/`.
+    *   [ ] Move `index.html` to `cards-vue/index.html`.
+    *   [ ] Move relevant tests from `tests/` to `cards-vue/tests/`.
+    *   [ ] Create `cards-vue/package.json` and `cards-vue/vite.config.js`.
 
-*Mål: At give brugeren mulighed for at synkronisere sin lokale offline-database med en server-backend.* 
+*   **`/graph-vue` (Graph App):**
+    *   [ ] Move the contents of `apps/graph/` into `graph-vue/`.
+    *   [ ] Move relevant tests from `tests/graph/` to `graph-vue/tests/`.
+    *   [ ] Ensure `graph-vue` has its own `package.json` and `vite.config.js`.
 
-- [ ] **Definer synkroniseringsstrategi:** Beslut en metode for synkronisering (f.eks. simpel upload/download af hele `.sqlite`-filen).
-- [ ] **Implementer API Endpoints:** Opbyg de nødvendige backend-endpoints (f.eks. `POST /api/db/upload`, `GET /api/db/download`).
-- [ ] **Implementer UI:** Tilføj knapper i brugerfladen til at starte en synkronisering (f.eks. "Synkroniser", "Push", "Pull").
+*   **`/shared-vue` (Shared Code):**
+    *   [ ] Identify and move shared components from `src/components/` to `shared-vue/src/components/`.
+    *   [ ] Identify and move shared composables/libs from `src/lib/`, `src/composables/` etc. to `shared-vue/src/`.
+    *   [ ] Set up `shared-vue` as a proper package with its own `package.json`.
 
-Offline‑first politik (gælder cards + graph)
-- [ ] UI læser altid lokalt (WASM/LocalForage) først; server bruges kun som baggrundsrefresh
-- [ ] Import fra server → lokal: engangsseed og manuel handling i Settings
-- [ ] Push lokal → server: bevidst udgående sync (LWW på `updatedAt`), aldrig auto‑overskriv lokalt
-- [ ] Heartbeat/status: vis backend status, men påvirk ikke lokal visning
+### 3. Update Build and Configuration
 
-### Fase 3: Sammensmeltning af Applikationerne (Cards + Graph)
+*   [ ] Modify the root `package.json` to use workspaces (e.g., with npm, yarn, or pnpm) to manage the sub-projects.
+*   [ ] Update `cards-vue` and `graph-vue` applications to import dependencies from `shared-vue`.
+*   [ ] Adjust Vite configurations (`vite.config.js`) in each sub-project to handle the new paths and dependencies.
+*   [ ] Update Playwright test configurations (`playwright.config.js`) to find tests in their new locations.
+*   [ ] Update `eslint.config.js`, `prettierrc`, `tsconfig.json` to work across the monorepo.
 
-*Mål: At integrere `graph`-appen som et lazy-loaded modul i den primære `loke-cards` PWA.* 
+### 4. Clean Up Root Directory
 
-- [ ] **Foren build-processen:** Fjern den separate build-konfiguration for `graph`. Den primære `vite.config.js` skal håndtere hele applikationen.
-- [ ] **Integrer Routing med Lazy Loading:**
-    - Flyt `graph`-rutene (`/graph`, `/graph/chapter/:id`) ind i `loke-cards`'s router.
-    - Brug dynamisk import (`() => import(...)`) til at sikre, at `graph`-komponenterne kun indlæses, når brugeren navigerer til dem.
-- [ ] **Integrer UI:**
-    - Tilføj navigationslinks til "Graph" i `loke-cards`'s primære sidebar/header.
-    - Sørg for, at `graph`-komponenterne rendres korrekt inden i `loke-cards`'s app-skal.
-- [ ] **Del dataadgang:** Sikr, at både `cards`- og `graph`-delene bruger den samme, delte instans af `SQLiteRepository`.
+*   [ ] After moving all relevant files, remove the old `src/`, `apps/`, `tests/` (except for root-level tests if any), and other now-empty or redundant directories from the project root.
+*   [ ] Verify that the `server/` and `doc/` directories are untouched as requested.
 
-### Fase 4: Projekt‑lag (Projects → Chapters → Scenes)
+### 5. Verification
 
-*Mål: Én aktivt valgt `project` ad gangen i UI; alle operationer er scoper til det valgte projekt.*
+*   [ ] Run `npm install` from the root to install dependencies for all workspaces.
+*   [ ] Run `npm run dev` for `graph-vue` and ensure it runs correctly.
+*   [ ] Run `graph-vue` tests and confirm they pass.
+*   [ ] Run `npm run build` for `graph-vue` and verify the output.
 
-- [ ] Datamodel: tilføj `projectId` på `chapters` og `scenes`; migrér eksisterende data til `projectId: 'default'`
-- [ ] Stores: `projectStore` med `currentProject`, liste + CRUD, persist valgt projekt (localStorage)
-- [ ] UI: `ProjectPicker` (header/sidebar) + Settings‑side til projektstyring
-- [ ] Scoping: filtrér lister, editorer, graph visninger og persistens efter `projectId`
-- [ ] Import/Export/Sync: medtag `projects` og respekter valgt projekt
-- [ ] Graph alignment: indfør `projectId` i graph store og routes; del kontekst med cards
+# Part 2: Port Vue projects to Svelte
 
-### Fase 4: PWA-optimering og Færdiggørelse
+After the initial file relocation is complete, the next phase is to port the Vue-based applications to Svelte. `cards-vue` will be the source for a new Svelte application, and `graph-vue` will be ported later.
 
-*Mål: At finpudse den samlede applikation for en gnidningsfri PWA-oplevelse.* 
+## Svelte Porting Steps
 
-- [ ] **Verificer Service Worker:** Kontroller, at service workeren cacher alle applikationens dele korrekt, inklusiv de lazy-loadede `graph`-moduler.
-- [ ] **Implementer "Åbn i nyt vindue":** Tilføj funktionalitet til `graph`-visningen, så den kan åbnes i et separat browservindue for en side-om-side-oplevelse.
-- [ ] **Synkroniser mellem vinduer:** Implementer `BroadcastChannel` API'et for at sikre, at ændringer lavet i ét vindue (f.eks. i `cards`-editoren) afspejles i realtid i det andet vindue (`graph`-visningen).
+### 1. Setup New Svelte Project Structure
+
+*   [ ] Create a new `/cards` directory for the Svelte main application.
+*   [ ] Create a new `/shared` directory for shared Svelte components and logic.
+*   [ ] Initialize a Svelte + Zoe project inside `/cards`.
+*   [ ] Set up `/shared` as a library/package that can be consumed by `/cards`.
+
+### 2. Port `shared-vue` to `shared` (Svelte)
+
+*   [ ] Systematically port shared components, composables, and libraries from `shared-vue` to Svelte equivalents in `/shared`.
+    *   [ ] Convert Vue components to Svelte components.
+    *   [ ] Adapt Vue composables to Svelte stores or modules.
+    *   [ ] Ensure all business logic is preserved.
+
+### 3. Port `cards-vue` to `cards` (Svelte)
+
+*   [ ] Port the application structure, routing, and views from `cards-vue` to the new Svelte project in `/cards`.
+*   [ ] Replace Vue components with their new Svelte counterparts from `/shared` and `/cards`.
+*   [ ] Ensure the new Svelte application (`/cards`) correctly communicates with the existing C++ server backend.
+
+### 4. Update Build & Workspace Configuration
+
+*   [ ] Add the new `/cards` and `/shared` packages to the root `package.json` workspaces.
+*   [ ] Remove the old `cards-vue` and `shared-vue` projects from the build process and workspaces.
+*   [ ] Ensure the root build, test, and lint commands are updated for the new Svelte projects.
+
+### 5. Verification
+
+*   [ ] Run `npm install` from the root.
+*   [ ] Run `npm run dev` for `/cards` and ensure the Svelte app runs correctly.
+*   [ ] Write and run tests for the new Svelte application.
+*   [ ] Confirm that all original functionality from `cards-vue` is present and working in the new `/cards` Svelte app.

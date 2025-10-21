@@ -6,6 +6,7 @@ import './styles/main.css'
 import { setupErrorMonitoring } from './plugins/error-monitor'
 import { startSyncHeartbeat } from './plugins/sync-heartbeat'
 import { autoBootstrapLocalFromServerIfEmpty } from './lib/importer'
+import { useUiStore } from './stores/ui'
 import { useProjectStore } from './stores/project'
 
 // Create Vue app
@@ -54,3 +55,10 @@ autoBootstrapLocalFromServerIfEmpty().then((res) => {
 
 // Initialize project store early so selection is ready for filters
 try { const ps = useProjectStore(pinia); ps.init(); } catch {}
+
+// Always close mobile sidebar on route change to avoid stuck overlays
+try {
+  router.afterEach(() => {
+    try { const ui = useUiStore(pinia); ui.closeSidebar() } catch {}
+  })
+} catch {}
