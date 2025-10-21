@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Refactoring - 2025-10-21
+- **Project Restructuring (Phase 1):** (Gemini)
+  - Restructured the project into a monorepo-like layout to prepare for Svelte migration.
+  - Created `cards-vue`, `graph-vue`, and `shared-vue` directories.
+  - Relocated the main Vue application source from the root (`src/`, `tests/`, `index.html`) into the `cards-vue` directory.
+  - Relocated the graph application from `apps/graph` into the `graph-vue` directory.
+  - Cleaned up the root directory by removing the now-obsolete `src/`, `apps/`, and `tests/` folders.
+
 ### Planning
 - Reorder roadmap: Phase 7 → PWA Offline‑First + Sync; Phase 8 → Deployment
 - Add SYNC design doc: `doc/SYNC-DESIGN.md` (single‑user LWW, push/pull deltas)

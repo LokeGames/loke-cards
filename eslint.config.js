@@ -38,7 +38,6 @@ export default [
       ".cache/",
       "playwright-report/",
       "test-results/",
-      "server/",
     ],
   },
   pluginJs.configs.recommended,

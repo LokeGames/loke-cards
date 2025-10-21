@@ -14,8 +14,14 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "src/**/*.js"
+    "cards-vue/**/*.ts",
+    "cards-vue/**/*.vue",
+    "cards-vue/**/*.js",
+    "graph-vue/**/*.ts",
+    "graph-vue/**/*.vue",
+    "graph-vue/**/*.js",
+    "shared-vue/**/*.ts",
+    "shared-vue/**/*.vue",
+    "shared-vue/**/*.js"
   ]
 }

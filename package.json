@@ -20,6 +20,11 @@
     "test": "playwright test",
     "lint": "eslint ."
   },
+  "workspaces": [
+    "cards-vue",
+    "graph-vue",
+    "shared-vue"
+  ],
   "keywords": [
     "loke-engine",
     "interactive-fiction",

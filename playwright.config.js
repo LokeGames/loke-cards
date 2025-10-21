@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
 const BASE_URL = process.env.PW_BASE_URL || 'http://127.0.0.1:8081';
 
 const config = defineConfig({
-  testDir: './tests',
+  testDir: ['./cards-vue/tests', './graph-vue/tests'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
