@@ -1,203 +1,215 @@
-# Refactoring Plan: Modularize `loke-cards`
+# Master Plan: PWA Shell & Micro-App Architecture
 
-This document outlines the plan to refactor the `loke-cards` project into a more modular, monorepo-like structure. The goal is to improve clarity, separation of concerns, and maintainability.
+This document outlines the definitive plan for restructuring the Loke project into a modern, performant, and scalable PWA. It is based on the architecture defined in `doc/FUTURE/pwa-setup.md` and supersedes all previous TODO files.
 
-## Target Directory Structure
+The core concept is a central PWA "shell" that lazy-loads independent UI applications (`cards` and `graph`), with all data managed by a dedicated, non-blocking web worker.
 
-The final project structure will be organized as follows:
+## Architectural Roles
 
-```
-/loke-cards
-├── /cards-vue/       # (a) Main Vue application (legacy artifact)
-├── /graph-vue/       # (b) Graph visualization Vue application
-├── /server/          # (c) C++ backend server (no changes needed)
-├── /shared-vue/      # (d) Shared Vue components, composables, and libs (legacy artifact)
-├── /doc/             # Documentation
-├── /node_modules/    # Root node modules
-├── package.json      # Root package.json
-└── ...               # Other root config files (vite, tailwind, etc.)
-```
+- **`/apps/front` (The PWA Shell):** A SvelteKit application that acts as the main entry point. Its responsibilities are:
+    - Rendering the main app layout (header, app switcher, etc.).
+    - Handling routing and lazy-loading the micro-apps.
+    - Managing the overall theme (Tailwind CSS, dark/light mode).
+    - Initializing the Service Worker and managing the PWA lifecycle.
+    - **It does NOT handle data logic directly.**
 
-## Refactoring Steps
+- **`/apps/cards` & `/apps/graph` (Micro-Apps):** Independent Svelte libraries containing only UI components for their specific domain. They are completely stateless and receive all data by making RPC calls to the data worker.
 
-### 1. Create New Directory Structure
+- **`/workers/data` (The Data Layer):** A `SharedWorker` that is the single source of truth for all application data. Its responsibilities are:
+    - Running a WASM-powered SQLite database (e.g., `wa-sqlite`).
+    - Exposing a clear, typed RPC API (using Comlink) for the UI apps to consume (e.g., `data.cards.list()`, `data.scenes.update()`).
+    - Handling all synchronization logic with the backend server.
+    - Managing offline capabilities and data conflicts.
 
-*   [X] Create `cards-vue` directory.
-*   [X] Create `graph-vue` directory.
-*   [X] Create `shared-vue` directory.
+- **`/packages/schemas`:** A shared package containing Zod schemas for all data types, ensuring type safety between the worker and the UI apps.
 
-### 2. Relocate Existing Code
+---
 
-*   **`/cards-vue` (Main App):**
-    *   [X] Move the contents of `src/` into `cards-vue/src/`.
-    *   [X] Move `index.html` to `cards-vue/index.html`.
-    *   [X] Move relevant tests from `tests/` to `cards-vue/tests/`.
-    *   [ ] Move `cards-vue/package.json` and `cards-vue/vite.config.js`.
+## UI/UX Design & Layout Specification
 
-*   **`/graph-vue` (Graph App):**
-    *   [X] Move the contents of `apps/graph/` into `graph-vue/`.
-    *   [X] Move relevant tests from `tests/graph/` to `graph-vue/tests/`.
+This section, derived from `doc/doc-vue/vue-layout.md`, defines the core UI/UX principles for the Svelte-based PWA shell (`/apps/front`).
 
+**Core Design Principles:**
+*   **Full Screen:** The application must always occupy the full `100vw` and `100vh` of the viewport. No `max-w-` containers at the root level.
+*   **App Shell:** The layout must consist of a stable header and sidebar. Only the main content area should scroll, not the entire page.
+*   **Responsive App, Not Page:** The layout adapts to different screen sizes, but content should fill the available space rather than narrowing to a single centered column on wide screens.
+*   **Themeable:** A light/dark mode must be implemented using Tailwind's `class` strategy. The user's choice must be persisted in `localStorage`.
+*   **Keyboard-Friendly:** All interactive elements must be accessible via keyboard, with clear focus rings and proper ARIA landmarks.
 
-*   **`/shared-vue` (Shared Code):**
-    *   [X] Identify and move shared components from `src/components/` to `shared-vue/src/components/`.
-    *   [X] Identify and move shared composables/libs from `src/lib/`, `src/composables/` etc. to `shared-vue/src/`.
-    *
+**Layout Structure (`/apps/front`):**
+*   **`AppShell` (root `+layout.svelte`):**
+    *   A `flex flex-col` container at `h-screen w-screen`.
+    *   Contains the `AppHeader` and a body `div`.
+*   **`AppHeader`:**
+    *   A sticky top bar containing the app switcher, breadcrumbs, status indicators, and the theme toggle.
+*   **`ShellBody`:**
+    *   A `flex flex-1 overflow-hidden` container.
+    *   Contains the `AppSidebar` and the `AppMain` content area.
+*   **`AppSidebar`:**
+    *   A fixed-width sidebar on desktop (`w-64`).
+    *   A slide-in drawer on mobile, controlled by a store.
+*   **`AppMain` (`<slot />`):**
+    *   The main content area, which must be `flex-1 overflow-auto` to enable internal scrolling.
 
-### 3. Update Build and Configuration
+---
 
-*   [X] Modify the root `package.json` to use workspaces (e.g., with npm, yarn, or pnpm) to manage the sub-projects.
-*
-*   [X] Adjust Vite configurations (`vite.config.js`) in each sub-project to handle the new paths and dependencies.
-*   [X] Update Playwright test configurations (`playwright.config.js`) to find tests in their new locations.### 4. Clean Up Root Directory
+## Development Plan (TDD Approach)
 
-*   [X] After moving all relevant files, remove the old `src/`, `apps/`, `tests/` (except for root-level tests if any), and other now-empty or redundant directories from the project root.
-*   [ ] Verify that the `server/` and `doc/` directories are untouched as requested.
+The entire process will follow a Test-Driven Development (TDD) paradigm.
 
-### 5. Verification
+### Phase 1: Project Scaffolding
 
+*   [ ] **Setup:**
+    *   [ ] Initialize a new `pnpm` workspace in the root.
+    *   [ ] Create the new directory structure: `/apps/front`, `/apps/cards`, `/apps/graph`, `/workers/data`, `/packages/schemas`.
+*   [ ] **Create `package.json` for each workspace:**
+    *   [ ] `/apps/front`: SvelteKit application.
+    *   [ ] `/apps/cards`: Svelte library.
+    *   [ ] `/apps/graph`: Svelte library.
+    *   [ ] `/workers/data`: Generic TypeScript project.
+    *   [ ] `/packages/schemas`: Generic TypeScript project.
 
+### Phase 2: The Data Worker (`/workers/data`)
 
-# Part 2: Port Vue projects to Svelte
+*   [ ] **Setup Worker & RPC:**
+    *   [ ] Set up a basic `SharedWorker`.
+    *   [ ] Define the initial RPC API structure with Comlink and expose it from the worker.
+    *   [ ] Define data contracts in `/packages/schemas` using Zod.
+*   [ ] **Database Integration (TDD):**
+    *   [ ] Write a test for a basic `cards.create` function.
+    *   [ ] Implement `wa-sqlite` or similar WASM SQLite library.
+    *   [ ] Implement the `cards.create` function to pass the test.
+    *   [ ] Continue with `get`, `list`, `update`, `delete` for scenes and chapters, writing tests first for each.
 
-After the initial file relocation is complete, the next phase is to port the Vue-based applications to Svelte. `cards-vue` will be the source for a new Svelte application, and `graph-vue` will be ported later.
+### Phase 3: The PWA Shell (`/apps/front`)
 
-## Svelte Porting Steps
+*   [ ] **Build the Shell UI (TDD):**
+    *   [ ] Implement the layout according to the **"UI/UX Design & Layout Specification"** above.
+    *   [ ] Create the main `+layout.svelte` with the `AppHeader` and `AppSidebar` components.
+    *   [ ] Implement the theme toggle and ensure Tailwind CSS dark mode works and persists.
+*   [ ] **Worker Integration:**
+    *   [ ] Write code to connect to the `SharedWorker` on startup.
+    *   [ ] Create a Svelte store to hold the Comlink RPC proxy, making it available to child apps.
+*   [ ] **Routing & Lazy Loading:**
+    *   [ ] Set up routes for `/cards` and `/graph`.
+    *   [ ] Implement dynamic `import()` to lazy-load the respective micro-apps when their route is activated.
 
-**Svelte Zoe - SvelteKit based TDD porting project.**
+### Phase 4: Porting `/apps/cards`
 
-### 1. Svelte Tooling and Testing Strategy
+This phase ports the Vue components from the original `cards-vue` application to a new, stateless Svelte micro-app in `/apps/cards`. All data access will be refactored to use the RPC API provided by the `/workers/data` layer.
 
-This project will adopt a modern, robust tooling and testing strategy based on SvelteKit defaults and industry best practices to ensure a high-quality, maintainable codebase. The entire porting process will follow a **Test-Driven Development (TDD)** paradigm. For each piece of functionality or component ported, tests will be written *first* to define the requirements, and the code will then be written to make the tests pass.
+*   **Sub-Phase 4.1: Port Core UI Components**
+    *   [ ] **Port `AppLayout.vue` -> `+layout.svelte`:**
+        *   Create the root layout for the `cards` app.
+        *   *TDD:* Test that the layout renders its slot and contains the main UI shell components.
+    *   [ ] **Port `AppHeader.vue` -> `CardsHeader.svelte`:**
+        *   Port child components (`StatusPill`, `NetworkToggle`, etc.) first.
+        *   Connect UI elements to the data worker (e.g., sync status).
+        *   *TDD:* Test that breadcrumbs are correct and UI buttons dispatch correct events/calls.
+    *   [ ] **Port `AppSidebar.vue` -> `CardsSidebar.svelte`:**
+        *   Implement the drawer menu concept.
+        *   Connect navigation links to the SvelteKit router.
+        *   *TDD:* Test visibility toggle and correct link rendering.
+    *   [ ] **Port `AppModal.vue` -> `AppModal.svelte`:**
+        *   Create as a generic, reusable modal in a new `/packages/ui` library.
+        *   *TDD:* Test open/close state and event dispatching.
 
-**Core Tooling:**
-*   **Language:** TypeScript (`strict: true`)
-*   **Framework:** SvelteKit (using Vite)
-*   **Unit & Component Testing:** Vitest + Svelte Testing Library
-*   **E2E Testing:** Playwright
-*   **API Mocking:** Mock Service Worker (MSW) for testing without the C++ backend.
-*   **PWA:** `vite-plugin-pwa` for a reliable offline experience.
-*   **Linting & Formatting:** Biome (or ESLint + Prettier)
+*   **Sub-Phase 4.2: Port Editor Form Components**
+    *   [ ] **Port `SceneIdInput.vue`:**
+        *   *TDD:* Test C identifier validation logic.
+    *   [ ] **Port `ChapterSelect.vue`:**
+        *   Refactor to fetch chapters from the data worker: `await data.chapters.list()`.
+        *   *TDD:* Test that chapters are listed correctly.
+    *   [ ] **Port `SceneTextEditor.vue`:**
+        *   *TDD:* Test character counter and limits.
+    *   [ ] **Port `ChoicesList.vue` & `StateChangesList.vue`:**
+        *   Port the dynamic list management logic.
+        *   *TDD:* Test adding/removing items from the lists.
+    *   [ ] **Port `CodePreview.vue`:**
+        *   Refactor C code generation to be a pure function that takes scene data as input.
+        *   The data will be fetched from the worker by the parent editor component.
+        *   *TDD:* Test that given a scene object, the correct C code is generated.
 
-**TDD Workflow for LLM Coders:**
-1.  **Select a component** to port from the "Component Porting Plan".
-2.  **Write a component test** (`.test.ts`) using Vitest and Svelte Testing Library that asserts the component renders correctly based on its props.
-3.  **Run the test** and watch it fail.
-4.  **Write the Svelte component code** (`<script lang="ts">`) until the test passes.
-5.  **Write Playwright E2E tests** for critical user flows involving the component.
-6.  Refactor and clean up the code, ensuring all tests continue to pass.
+*   **Sub-Phase 4.3: Port Views and Integrate**
+    *   [ ] **Port `SceneEditorView.vue`:**
+        *   Rebuild the editor view using the newly ported Svelte form components.
+        *   **Crucially, all data loading and saving must go through the worker's RPC API.**
+        *   `loadScene()` will call `await data.scenes.get(id)`.
+        *   `saveScene()` will call `await data.scenes.update(sceneObject)`.
+        *   *TDD:* Write E2E tests to create a new scene, edit it, save it, and verify the data is persisted correctly by querying the worker.
+    *   [ ] **Port List Views (`SceneListView.vue`, `ChapterListView.vue`):**
+        *   Refactor to fetch all data from the worker.
+        *   *TDD:* Test that the lists render the correct number of items returned by the worker.
+    *   [ ] **Integrate with Shell:**
+        *   Ensure the completed `/cards` app correctly lazy-loads within the `/front` shell.
+        *   Verify that all data flows correctly from the worker to the UI and back.
 
-**Testing Pyramid:**
-*   **Unit/Component Tests (70%):** Fast, isolated tests for components and business logic using Vitest.
-*   **Integration Tests (25%):** Tests for interactions between components, stores, and mocked APIs.
-*   **E2E Tests (5%):** High-level user flow tests using Playwright to verify the application works from end to end.
+### Phase 5: Porting `/apps/graph` (from Vue Flow to LiteGraph.js)
 
-### 2. Setup New Svelte Project Structure
+This phase ports the graph visualization to a new Svelte-based micro-app, replacing the Vue Flow engine with the more performant LiteGraph.js. It will follow a strict TDD workflow and aims to replicate and enhance the functionality described in the original Vue graph plan.
 
-*   [X] Create a new `/cards` directory for the Svelte main application.
-*   [X] Create a new `/shared` directory for shared Svelte components and logic.
-*   [X] Initialize a Svelte + Zoe project inside `/cards`.
-*   [X] Set up `/shared` as a library/package that can be consumed by `/cards`.
+*   **Sub-Phase 5.1: Core Architecture & Setup**
+    *   [ ] **Setup LiteGraph.js:**
+        *   [ ] Install `litegraph.js` in the `/apps/graph` workspace.
+        *   [ ] Create a Svelte component to host the `LGraphCanvas`.
+        *   [ ] Initialize the canvas in `onMount` with a background grid.
+    *   [ ] **Data Model & Worker Integration:**
+        *   [ ] Define the `GraphJSON` data structures in `/packages/schemas`.
+        *   [ ] Implement the `data.graph.getProjectGraph()` method in the data worker, which respects the currently active project ID.
+        *   [ ] Implement a read-only loader in the `/apps/graph` UI that fetches data from the worker and displays it.
+    *   [ ] **Implement Core Node Types (TDD):**
+        *   [ ] Write Vitest unit tests for `SceneNode` and `ChapterNode` classes.
+        *   [ ] Create `LGraphNode` classes for these concepts. `ChapterNode` should function as a container/group.
+        *   [ ] Register the custom nodes with LiteGraph.js.
 
-### 3. Port `shared-vue` to `shared` (Svelte)
+*   **Sub-Phase 5.2: Global Graph View**
+    *   [ ] **Implement Global Graph Rendering:**
+        *   [ ] Render all chapters as large container nodes.
+        *   [ ] Render all scenes as smaller nodes within their respective chapter containers.
+        *   [ ] Render all links/edges between scenes, both within and between chapters.
+    *   [ ] **Implement Basic Interactions (TDD):**
+        *   [ ] Write Playwright tests for core interactions.
+        *   [ ] Enable pan and zoom on the canvas.
+        *   [ ] Enable dragging/moving of scene and chapter nodes.
+        *   [ ] On drag-stop, persist the new `position` to the database via the data worker.
+    *   [ ] **Implement Navigation:**
+        *   [ ] On double-click of a `ChapterNode`, navigate to the focused Chapter Graph view.
+    *   [ ] **Implement UI Controls:**
+        *   [ ] Add a minimap for quick navigation.
+        *   [ ] Add zoom and fit-to-view controls.
+        *   [ ] Add a (currently disabled) "Auto-Layout" button.
 
-*   [X] Systematically port shared components, composables, and libraries from `shared-vue` to Svelte equivalents in `/shared`.
-    *   [X] Convert Vue components to Svelte components.
-    *   [X] Adapt Vue composables to Svelte stores or modules.
-    *   [X] Ensure all business logic is preserved (initial pass; refine alongside app integration).
+*   **Sub-Phase 5.3: Chapter Graph View (Focused)**
+    *   [ ] **Implement Chapter Graph Rendering:**
+        *   [ ] Create a new route/view that accepts a chapter ID.
+        *   [ ] Display *only* the scenes belonging to the selected chapter.
+        *   [ ] Render only the links between scenes *within* that chapter.
+    *   [ ] **Implement Editing Interactions (TDD):**
+        *   [ ] **Link Creation:** Enable creating new links between scenes by dragging from a node's output slot to another's input slot. Persist the new link via the data worker.
+        *   [ ] **Node/Link Deletion:** Enable deleting nodes and links using the `delete` key or a context menu action. Persist changes via the worker.
+        *   [ ] **Node Editor:** On click of a scene node, open a properties panel (or modal) to edit its details (title, text, etc.).
+        *   [ ] **Context Menu:** Implement a right-click context menu on the canvas to create new scenes.
 
-### 4. Port `cards-vue` to `cards` (Svelte)
+*   **Sub-Phase 5.4: Data Sync & Finalization**
+    *   [ ] **Project Syncing:**
+        *   [ ] Ensure the graph app listens for project change events from the `/front` shell.
+        *   [ ] On project change, reload the graph with data for the new project ID from the worker.
+    *   [ ] **Testing & Verification:**
+        *   [ ] Write E2E tests (Playwright) for the key user stories:
+            *   Global graph renders correctly.
+            *   Navigation to chapter view works.
+            *   Creating/deleting a scene and a link in the chapter view persists after a reload.
+    *   [ ] **Cleanup:**
+        *   [ ] Remove all `vue-flow` dependencies and the old `/graph-vue` directory.
+        *   [ ] Update `CHANGELOG.md` with the successful migration of the graph module.
 
-*   [X] Port the application structure, routing, and base views to the new Svelte project in `/cards` (home, scenes, chapters, settings, toc, code; new scene/chapter forms).
-*   [ ] Replace Vue components with their new Svelte counterparts from `/shared` and `/cards` (in progress; more views to port).
-*   [ ] Ensure the new Svelte application (`/cards`) correctly communicates with the existing C++ server backend.
-*   [X] **New Drawer Menu:** Implement a new responsive drawer menu system, replacing the old side panel.
-    *   [X] **Core Principle:** Use a single, unified menu component that adapts its behavior based on screen size (responsive).
-    *   [X] **Desktop:** The menu appears as a permanently visible side panel. It can be collapsed into a smaller icon bar.
-    *   [X] **Mobile/Tablet:** The menu is hidden by default and toggled by a burger/close icon. When opened, it slides in as an overlay.
-    *   [X] **Unified State:** Use a single set of components and state for all views to ensure consistency. The burger icon is a toggle for the menu's visibility, not a separate menu.
+### Phase 6: PWA Features & Finalization
 
-### 5. Update Build & Workspace Configuration
-
-*   [X] Modify the root `package.json` to use workspaces (e.g., with npm, yarn, or pnpm) to manage the sub-projects.
-*   [X] Remove the old `cards-vue` and `shared-vue` projects from the build process and workspaces.
-*   [X] Ensure the root build, test, and lint commands are updated for the new Svelte projects.
-
-### 6. Verification
-
-*   [ ] Run `npm install` from the root.
-*   [ ] Run `npm run dev` for `/cards` and ensure the Svelte app runs correctly.
-*   [ ] Write and run tests for the new Svelte application.
-*   [ ] Confirm that all original functionality from `cards-vue` is present and working in the new `/cards` Svelte app.
-
-### Component Porting Plan (Vue to Svelte)
-
-This section outlines the plan for porting individual Vue components to Svelte. Each component will be analyzed for its dependencies and a checklist will be created for its replacement.
-
-#### 1. AppLayout.vue
-- **Purpose:** The main application shell. Provides the overall page structure (header, sidebar, main content).
-- **Dependencies:**
-    - `AppHeader.vue`
-    - `AppSidebar.vue`
-    - `vue-router` (`router-view`)
-- **Svelte Porting Plan:**
-    - [ ] Create `+layout.svelte` in the root of the new SvelteKit app (`/cards/src/routes`).
-    - [ ] Replicate the flexbox structure using Tailwind CSS classes.
-    - [ ] Create Svelte versions of `AppHeader` and `AppSidebar`.
-    - [ ] Use a `<slot />` element to render the page content (equivalent to `router-view`).
-- **TDD Testing Strategy:**
-    - **Component Test (Vitest):**
-        - [ ] Write a test to ensure the layout renders its `<slot />`.
-        - [ ] Write a test to confirm that `AppHeader` and `AppSidebar` are present in the layout.
-    - **E2E Test (Playwright):**
-        - [ ] An E2E test that navigates to the home page should implicitly verify this layout, checking for the header and main content area.
-
-#### 2. AppHeader.vue
-- **Purpose:** The top navigation bar. Contains the logo, breadcrumbs, and action icons.
-- **Dependencies:**
-    - Components: `StatusPill.vue`, `NetworkToggle.vue`, `ProjectPicker.vue`, `ThemeToggle.vue`
-    - Stores: `useUiStore` (for toggling the sidebar).
-    - `vue-router` (for breadcrumbs).
-- **Svelte Porting Plan:**
-    - [ ] Create `AppHeader.svelte` in `/shared/src/lib/components`.
-    - [ ] Port child components (`StatusPill`, `NetworkToggle`, etc.) to Svelte first.
-    - [ ] Create a `ui.store.ts` in Svelte to manage UI state (e.g., `isSidebarOpen`). This will be a Svelte writable store.
-    - [ ] Implement the breadcrumb logic using SvelteKit's `$page.url` and navigation stores.
-    - [ ] The sidebar toggle button will call a function in the `ui.store.ts`.
-- **TDD Testing Strategy:**
-    - **Component Test (Vitest):**
-        - [ ] Test that the component renders the title.
-        - [ ] Test that the breadcrumbs are generated correctly based on a mock navigation path.
-        - [ ] Test that clicking the sidebar toggle button calls the correct store function.
-
-#### 3. AppSidebar.vue
-- **Purpose:** The main navigation sidebar/drawer.
-- **Dependencies:**
-    - Components: `NavLink.vue`, `SidebarMenu.vue`
-    - Stores: `useUiStore` (to control visibility).
-- **Svelte Porting Plan:**
-    - [ ] Create `AppSidebar.svelte` in `/shared/src/lib/components`.
-    - [ ] This component will implement the new "Drawer Menu" concept.
-    - [ ] The visibility will be controlled by the `isSidebarOpen` value from the new Svelte `ui.store.ts`.
-    - [ ] The mobile view (drawer) and desktop view (fixed panel) will be handled with responsive Tailwind classes (`md:block`, etc.).
-    - [ ] Port `SidebarMenu.vue` to Svelte.
-- **TDD Testing Strategy:**
-    - **Component Test (Vitest):**
-        - [ ] Test that the sidebar is hidden by default on small screens.
-        - [ ] Test that it becomes visible when the `isSidebarOpen` store value is true.
-        - [ ] Test that the correct navigation links are rendered.
-
-#### 4. AppModal.vue
-- **Purpose:** A generic modal dialog component.
-- **Dependencies:** None (it's a self-contained component).
-- **Svelte Porting Plan:**
-    - [ ] Create `AppModal.svelte` in `/shared/src/lib/components`.
-    - [ ] Replicate the props (`open`, `title`).
-    - [ ] Use Svelte's `on:click` for event handling (`close`, `confirm`).
-    - [ ] Use a `<slot />` for the modal content.
-    - [ ] This is a good candidate for a generic, reusable shared component.
-- **TDD Testing Strategy:**
-    - **Component Test (Vitest):**
-        - [ ] Test that the modal is not in the DOM when `open` is false.
-        - [ ] Test that it appears when `open` is true.
-        - [ ] Test that clicking the 'Confirm' and 'Cancel' buttons dispatches the correct events.
+*   [ ] **Implement Service Worker:**
+    *   [ ] Use `vite-plugin-pwa` to set up caching for the application shell and assets.
+    *   [ ] Define a network-first or stale-while-revalidate strategy for data.
+*   [ ] **E2E Testing (Playwright):**
+    *   [ ] Write end-to-end tests that cover user flows across both `cards` and `graph` apps.
+    *   [ ] Create tests specifically for offline functionality, verifying that the app works without a network connection.
+*   [ ] **Cleanup:**
+    *   [ ] Remove the old `TODO-FRONT.md` and `TODO-CARDS.md` files, as this file is now the master plan.

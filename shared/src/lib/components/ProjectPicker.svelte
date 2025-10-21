@@ -14,8 +14,8 @@
 </script>
 
 <div class="flex items-center gap-2">
-  <label class="text-xs text-gray-500 dark:text-gray-400">Project</label>
-  <select bind:value={currentId} on:change={onChange} class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+  <label class="text-xs text-gray-500 dark:text-gray-400" for="project-picker">Project</label>
+  <select id="project-picker" bind:value={currentId} on:change={onChange} class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
     {#each $projects as p}
       <option value={p.id}>{p.name || p.id}</option>
     {/each}

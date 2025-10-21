@@ -6,7 +6,7 @@ This file provides instructions and tips for agents working in this repository. 
 - Work primarily in the frontend under `src/`. Avoid modifying `server/` unless explicitly requested.
 - Keep changes minimal, focused, and aligned with existing patterns and file layout.
 - Do not introduce new dependencies unless absolutely necessary (NodeView packages are already present).
-- Follow TODOs in `TODO.md`. Update `doc/CHANGELOG.md` for notable changes.
+- Follow TODOs in `TODO-CARDS.md`. Update `CHANGELOG.md` (repo root) for notable changes.
 - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`...).
 
 ## Tech Stack
@@ -23,12 +23,15 @@ This file provides instructions and tips for agents working in this repository. 
 - TypeScript strict mode is enabled for `cards/` and `shared/`.
 - CI script `npm run ci` runs: ESLint, TS type checks for both packages, `svelte-check`, and a purity check that fails if `.js` files exist in `cards/` or `shared/`.
 
+## Changelog Discipline
+- Update `CHANGELOG.md` (repo root) whenever changes are substantial enough to alter API usage, shared library contracts, or integrations between packages (e.g., updates in `shared/` consumed by `cards/`). Include brief, user-oriented notes under the appropriate date/section.
+
 ## Project Layout
 - `src/` — app code: `components/`, `views/`, `stores/`, `lib/`, `styles/`, `router/`.
 - `public/` — static assets and PWA icons.
 - `tests/` — Playwright E2E specs (`*.spec.js`).
 - `server/` — C++ reference server/docs (not linted by ESLint).
-- `doc/` — changelog, proofs, docs.
+- `doc/` — proofs and docs (changelog lives at repo root: `CHANGELOG.md`).
 - External graph app: `apps/graph` (see “External Graph App”).
 
 ## Scripts
@@ -94,17 +97,17 @@ This file provides instructions and tips for agents working in this repository. 
 ## Commit & PR Guidelines
 - Follow Conventional Commits. Keep PRs focused; include description, linked issue, and before/after screenshots (place images in `screenshots/`).
 - Note environments used and attach test evidence when relevant (e.g., `playwright-report`).
-- Update `doc/CHANGELOG.md` for notable changes.
+- Update `CHANGELOG.md` (repo root) for notable changes.
 
 ## Agent Workflow Tips
-1. Read `TODO.md` and relevant files before changes.
+1. Read `TODO-CARDS.md` and relevant files before changes.
 2. Favor surgical edits; do not refactor unrelated parts.
 3. Use `src/api/client.js` for data; wrap offline logic via stores and keep `src/lib/storage.js` intact.
 4. Validate with Playwright where applicable. If adding UI that affects snapshots, update them intentionally.
 5. Align naming, file placement, and style with existing code.
 6. Avoid touching `server/` unless the task explicitly scopes it.
 7. Keep the app responsive and consistent with Tailwind dark mode variants (`dark:`) and existing palette mapping.
-8. When a task in `TODO.md` is completed, mark it with `[X]` in `TODO.md` (keep the checklist status up to date).
+8. When a task in `TODO-CARDS.md` is completed, mark it with `[X]` in `TODO-CARDS.md` (keep the checklist status up to date).
 
 ## Legacy Vue Artifacts
 - The `cards-vue`, `graph-vue`, and `shared-vue` folders are legacy artifacts kept read‑only during the Svelte migration. Do not modify them unless explicitly requested.

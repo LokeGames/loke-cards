@@ -27,11 +27,11 @@ This project follows **TDD (Test-Driven Development)**:
 
 ### Critical Process Rules
 
-- **Source of truth**: `TODO.md` - work tasks **sequentially**
+- **Source of truth**: `TODO-CARDS.md` - work tasks **sequentially**
 - **Track changes**: Log all completed/tested changes to `CHANGELOG.md`
 - **Document tests**: Add test proofs to `TEST-PROOF.md` when phases complete
-- **Check before starting**: Review `doc/`, `TODO.md`, `TEST-PROOF.md`, and `CHANGELOG.md`
-- **Mark tasks done**: Update `TODO.md` as tasks are completed (use DONE/COMPLETED markers)
+- **Check before starting**: Review `doc/`, `TODO-CARDS.md`, `TEST-PROOF.md`, and `CHANGELOG.md`
+- **Mark tasks done**: Update `TODO-CARDS.md` as tasks are completed (use DONE/COMPLETED markers)
 - **Git workflow**:
   - NEVER develop in main branch
   - Commit and push frequently

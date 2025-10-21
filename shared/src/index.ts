@@ -23,4 +23,4 @@ export { default as ProjectPicker } from './lib/components/ProjectPicker.svelte'
 export * as events from './lib/events';
 export * as validation from './lib/validation';
 export * as storage from './lib/storage';
-
+export * as api from './lib/api/client';

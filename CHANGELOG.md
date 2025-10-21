@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Tailwind content globs to include Svelte sources; added root scripts to run Svelte app via workspaces.
 - Ported `shared-vue` to Svelte equivalents in `shared` (components: BaseButton, BaseInput, BaseSkeletonList, NavLink, SidebarMenu, ThemeToggle, NetworkToggle, StatusPill, ProjectPicker; stores: ui, sync, project, toast; libs: events, validation, storage).
 - Svelte app routes scaffolded: home, scenes list, chapters list, new scene/chapter forms, settings, story map (toc), and C code placeholder. Header includes status/network/theme/project; sidebar uses drawer menu.
+- Scene editor page scaffolded at `/scene/[id]` with basic edit/save via offline storage.
+- Shared API client scaffolded in `shared/src/lib/api/client.ts` with force-offline toggle and JSON helpers; exported via `@shared`.
 
 ### Docs - 2025-10-21
 - README: Added migration note highlighting Svelte as the active app and documenting how to run legacy Vue apps optionally.

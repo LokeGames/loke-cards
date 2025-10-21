@@ -92,8 +92,8 @@ This project follows **TDD (Test-Driven Development)**:
 
 ### Critical Process Rules
 
-- **Source of truth**: `TODO.md` - work tasks **sequentially**
-- **Track changes**: Log all changes to `doc/CHANGELOG.md`
+- **Source of truth**: `TODO-CARDS.md` - work tasks **sequentially**
+- **Track changes**: Log all changes to `CHANGELOG.md` (repo root)
 - **Document tests**: Add test proofs to `doc/TEST-PROOF.md`
 - **Git workflow**:
   - NEVER develop in main branch
@@ -221,9 +221,9 @@ Set `CORS_ALLOW_ORIGIN` in the unit file to match your frontend origin.
 ## Documentation
 
 - **CLAUDE.md** - Development guidance for Claude Code
-- **TODO.md** - Project tasks and roadmap
+- **TODO-CARDS.md** - Project tasks and roadmap
 - **LOKE-FORMAT-REFERENCE.md** - C code format reference
-- **doc/CHANGELOG.md** - Change history
+- **CHANGELOG.md** (repo root) - Change history
 - **doc/TEST-PROOF.md** - Test documentation
 
 ## Related Projects

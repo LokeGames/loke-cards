@@ -19,7 +19,7 @@
 
 <!-- Mobile drawer overlay -->
 {#if open}
-  <div class="md:hidden fixed inset-0 z-40 bg-black/40" on:click={closeSidebar}></div>
+  <div class="md:hidden fixed inset-0 z-40 bg-black/40" role="button" tabindex="0" aria-label="Close menu overlay" on:click={closeSidebar} on:keydown={(e) => e.key==='Escape' && closeSidebar()}></div>
   <aside class="md:hidden fixed z-50 inset-y-0 left-0 w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-3">
     <button class="mb-3 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800" on:click={closeSidebar} aria-label="Close menu">Close</button>
     <div class="text-sm text-gray-700 dark:text-gray-300">

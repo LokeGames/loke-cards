@@ -23,10 +23,4 @@ code, pre {
   font-family: 'Fira Code', 'Courier New', monospace;
 }
 
-/* Development outlines to visualize layout (optional) */
-nav { outline: 1px solid rgba(59, 130, 246, 0.3); }
-aside#sidebar { outline: 1px solid rgba(168, 85, 247, 0.3); }
-main#main-content { outline: 1px solid rgba(34, 197, 94, 0.3); }
-#layout-wrapper { outline: 1px solid rgba(251, 146, 60, 0.3); }
-form#scene-editor-form > div { outline: 1px solid rgba(148, 163, 184, 0.2); }
-#code-preview-container { outline: 1px solid rgba(245, 158, 11, 0.3); }
+/* Remove dev outlines for a cleaner UI */

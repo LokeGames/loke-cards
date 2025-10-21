@@ -1,6 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import pluginVue from "eslint-plugin-vue";
+// Vue plugin removed; legacy Vue folders are ignored
 import svelte from "eslint-plugin-svelte";
 import svelteParser from "svelte-eslint-parser";
 import tsParser from "@typescript-eslint/parser";
@@ -43,6 +43,7 @@ export default [
       "playwright-report/",
       "test-results/",
       ".svelte-kit/",
+      "server/**",
       // Exclude legacy Vue packages from linting
       "cards-vue/**",
       "graph-vue/**",
@@ -50,7 +51,7 @@ export default [
     ],
   },
   pluginJs.configs.recommended,
-  ...pluginVue.configs['flat/essential'],
+  // Vue rules removed
   // Svelte recommended rules
   ...svelte.configs["flat/recommended"],
   // Ensure Svelte uses TS parser for <script lang="ts">
@@ -65,6 +66,10 @@ export default [
         sourceType: "module",
       },
       globals: { ...globals.browser, process: "readonly" },
+    },
+    rules: {
+      "no-empty": ["error", { "allowEmptyCatch": true }],
+      "no-unused-vars": "off",
     },
   },
   // TypeScript rules
@@ -82,6 +87,23 @@ export default [
     rules: {
       "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
       "@typescript-eslint/consistent-type-imports": "warn",
+      "no-unused-vars": "off",
+      "no-undef": "off",
+      "no-empty": ["error", { "allowEmptyCatch": true }]
+    },
+  },
+  // Test files (Vitest globals)
+  {
+    files: ["**/*.test.*"],
+    languageOptions: {
+      globals: { ...globals.browser, describe: "readonly", test: "readonly", expect: "readonly" },
+    },
+  },
+  // Node scripts
+  {
+    files: ["scripts/**/*.{js,cjs}", "*.cjs"],
+    languageOptions: {
+      globals: { ...globals.node },
     },
   },
   // JS/Vue defaults

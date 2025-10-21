@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { storage, BaseButton } from '@shared/src/index';
+  import { storage, BaseButton } from '@shared';
   type Chapter = import('@shared/src/lib/storage').Chapter;
   let chapters: Chapter[] = [];
   let loading = true;
@@ -10,11 +10,10 @@
   });
 </script>
 
-<h2 class="text-xl font-semibold mb-3">Chapters</h2>
-<div class="mb-4">
+<header class="flex items-center justify-between">
+  <h2 class="text-xl font-semibold">Chapters</h2>
   <a href="/chapter/new"><BaseButton variant="primary">New Chapter</BaseButton></a>
-  
-</div>
+</header>
 
 {#if loading}
   <p>Loading…</p>
@@ -23,11 +22,10 @@
 {:else}
   <ul class="space-y-2">
     {#each chapters as c}
-      <li class="rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3">
+      <li class="rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
         <div class="font-medium">{c.name} <span class="opacity-60">({c.id})</span></div>
         <div class="text-xs opacity-70">Order: {c.order}</div>
       </li>
     {/each}
   </ul>
 {/if}
-

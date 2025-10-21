@@ -6,6 +6,9 @@
   "svelte": "./src/index.ts",
   "main": "./src/index.ts",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "localforage": "^1.10.0"
   }
 }

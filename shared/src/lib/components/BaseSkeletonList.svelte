@@ -3,7 +3,7 @@
 </script>
 
 <div class="space-y-2" role="status" aria-live="polite" aria-busy="true">
-  {#each Array(rows) as _, i}
+  {#each Array(rows) as _}
     <div class="rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3">
       <div class="h-4 w-2/5 skeleton"></div>
       <div class="mt-2 h-3 w-3/5 skeleton"></div>
@@ -25,4 +25,3 @@
   animation: skeleton-shimmer 1.2s ease-in-out infinite;
 }
 </style>
-

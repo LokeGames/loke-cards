@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BaseInput, BaseButton, storage, toastStore } from '@shared/src/index';
+  import { BaseInput, BaseButton, storage, toastStore } from '@shared';
   let id = '';
   let name = '';
   let order = 1;
@@ -17,7 +17,7 @@
 
 <h2 class="text-xl font-semibold mb-3">New Chapter</h2>
 
-<div class="max-w-xl space-y-3">
+<div class="max-w-2xl space-y-4">
   <BaseInput id="chapter-id" label="Chapter ID" bind:value={id} on:update={(e) => id = e.detail} {error} />
   <BaseInput id="chapter-name" label="Name" bind:value={name} on:update={(e) => name = String(e.detail)} />
   <BaseInput id="chapter-order" label="Order" bind:value={order} on:update={(e) => order = Number(e.detail)} />
@@ -26,4 +26,3 @@
     <a href="/chapters" class="px-3 py-2 rounded border">Cancel</a>
   </div>
 </div>
-

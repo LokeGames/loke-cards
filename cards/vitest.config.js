@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitest/config';
-import { sveltekit } from '@sveltejs/kit/vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [svelte({ hot: false })],
   resolve: {
     alias: {
       '@shared': fileURLToPath(new URL('../shared/src', import.meta.url)),
@@ -16,4 +16,3 @@ export default defineConfig({
     include: ['tests/**/*.test.{js,ts}'],
   },
 });
-

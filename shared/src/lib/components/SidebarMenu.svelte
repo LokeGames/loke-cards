@@ -41,6 +41,4 @@
   </div>
 </div>
 
-<style>
-.nav-item.router-link-active { /* for parity; handled by activeClass */ }
-</style>
+<style></style>
