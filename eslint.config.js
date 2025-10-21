@@ -38,6 +38,10 @@ export default [
       ".cache/",
       "playwright-report/",
       "test-results/",
+      // Exclude legacy Vue packages from linting
+      "cards-vue/**",
+      "graph-vue/**",
+      "shared-vue/**",
     ],
   },
   pluginJs.configs.recommended,

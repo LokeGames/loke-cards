@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented minimal shared components and UI store in `shared` (`AppHeader`, `AppSidebar`, `AppModal`, `ui.store`).
 - Initialized SvelteKit in `cards` (svelte.config.js, Vite kit plugin, app.html) with minimal layout and home page reusing Tailwind styles.
 - Updated Tailwind content globs to include Svelte sources; added root scripts to run Svelte app via workspaces.
+ - Ported `shared-vue` to Svelte equivalents in `shared` (components: BaseButton, BaseInput, BaseSkeletonList, NavLink, SidebarMenu, ThemeToggle, NetworkToggle, StatusPill, ProjectPicker; stores: ui, sync, project, toast; libs: events, validation, storage).
+
+### Docs - 2025-10-21
+- README: Added migration note highlighting Svelte as the active app and documenting how to run legacy Vue apps optionally.
+- AGENTS.md: Added “Legacy Vue Artifacts” section clarifying that `cards-vue`, `graph-vue`, and `shared-vue` are read‑only and excluded from the toolchain, plus quick commands.
 
 ### Refactoring - 2025-10-21
 - **Project Restructuring (Phase 1):** (Gemini)

@@ -97,5 +97,14 @@ This file provides instructions and tips for agents working in this repository. 
 7. Keep the app responsive and consistent with Tailwind dark mode variants (`dark:`) and existing palette mapping.
 8. When a task in `TODO.md` is completed, mark it with `[X]` in `TODO.md` (keep the checklist status up to date).
 
+## Legacy Vue Artifacts
+- The `cards-vue`, `graph-vue`, and `shared-vue` folders are legacy artifacts kept read‑only during the Svelte migration. Do not modify them unless explicitly requested.
+- They are excluded from workspaces, Tailwind scan, ESLint, and Playwright.
+- Quick run commands (for reference only):
+  - Cards (Vue): `npm install -C cards-vue && npm run dev -C cards-vue`
+  - Graph (Vue): `npx vite --config graph-vue/vite.config.js`
+  - Shared (Vue): library only; not runnable.
+- New active app is under `cards/` (SvelteKit). Use `npm run dev` or `npm run dev:cards` to start it.
+
 ## Security
 - Do not commit secrets. Ensure `.env` is local. Validate CORS and allowed hosts in `vite.config.js` when configuring proxies.

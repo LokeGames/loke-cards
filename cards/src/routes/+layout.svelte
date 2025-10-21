@@ -1,7 +1,7 @@
 <script>
   import '../../app.css';
-  import AppHeader from '@loke/shared/src/lib/components/AppHeader.svelte';
-  import AppSidebar from '@loke/shared/src/lib/components/AppSidebar.svelte';
+  import AppHeader from '@shared/lib/components/AppHeader.svelte';
+  import AppSidebar from '@shared/lib/components/AppSidebar.svelte';
 </script>
 
 <div class="min-h-screen flex bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
@@ -14,4 +14,3 @@
   </div>
   
 </div>
-

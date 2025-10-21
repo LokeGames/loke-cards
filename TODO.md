@@ -71,6 +71,7 @@ After the initial file relocation is complete, the next phase is to port the Vue
 This project will adopt a modern, robust tooling and testing strategy based on SvelteKit defaults and industry best practices to ensure a high-quality, maintainable codebase. The entire porting process will follow a **Test-Driven Development (TDD)** paradigm. For each piece of functionality or component ported, tests will be written *first* to define the requirements, and the code will then be written to make the tests pass.
 
 **Core Tooling:**
+*   **Language:** TypeScript (`strict: true`)
 *   **Framework:** SvelteKit (using Vite)
 *   **Unit & Component Testing:** Vitest + Svelte Testing Library
 *   **E2E Testing:** Playwright
@@ -80,9 +81,9 @@ This project will adopt a modern, robust tooling and testing strategy based on S
 
 **TDD Workflow for LLM Coders:**
 1.  **Select a component** to port from the "Component Porting Plan".
-2.  **Write a component test** (`.test.js`) using Vitest and Svelte Testing Library that asserts the component renders correctly based on its props.
+2.  **Write a component test** (`.test.ts`) using Vitest and Svelte Testing Library that asserts the component renders correctly based on its props.
 3.  **Run the test** and watch it fail.
-4.  **Write the Svelte component code** until the test passes.
+4.  **Write the Svelte component code** (`<script lang="ts">`) until the test passes.
 5.  **Write Playwright E2E tests** for critical user flows involving the component.
 6.  Refactor and clean up the code, ensuring all tests continue to pass.
 
@@ -100,10 +101,10 @@ This project will adopt a modern, robust tooling and testing strategy based on S
 
 ### 3. Port `shared-vue` to `shared` (Svelte)
 
-*   [ ] Systematically port shared components, composables, and libraries from `shared-vue` to Svelte equivalents in `/shared`.
-    *   [ ] Convert Vue components to Svelte components.
-    *   [ ] Adapt Vue composables to Svelte stores or modules.
-    *   [ ] Ensure all business logic is preserved.
+*   [X] Systematically port shared components, composables, and libraries from `shared-vue` to Svelte equivalents in `/shared`.
+    *   [X] Convert Vue components to Svelte components.
+    *   [X] Adapt Vue composables to Svelte stores or modules.
+    *   [X] Ensure all business logic is preserved (initial pass; refine alongside app integration).
 
 ### 4. Port `cards-vue` to `cards` (Svelte)
 
@@ -119,8 +120,8 @@ This project will adopt a modern, robust tooling and testing strategy based on S
 ### 5. Update Build & Workspace Configuration
 
 *   [X] Modify the root `package.json` to use workspaces (e.g., with npm, yarn, or pnpm) to manage the sub-projects.
-*   [ ] Remove the old `cards-vue` and `shared-vue` projects from the build process and workspaces.
-*   [ ] Ensure the root build, test, and lint commands are updated for the new Svelte projects.
+*   [X] Remove the old `cards-vue` and `shared-vue` projects from the build process and workspaces.
+*   [X] Ensure the root build, test, and lint commands are updated for the new Svelte projects.
 
 ### 6. Verification
 
@@ -160,9 +161,9 @@ This section outlines the plan for porting individual Vue components to Svelte. 
 - **Svelte Porting Plan:**
     - [ ] Create `AppHeader.svelte` in `/shared/src/lib/components`.
     - [ ] Port child components (`StatusPill`, `NetworkToggle`, etc.) to Svelte first.
-    - [ ] Create a `ui.store.js` in Svelte to manage UI state (e.g., `isSidebarOpen`). This will be a Svelte writable store.
+    - [ ] Create a `ui.store.ts` in Svelte to manage UI state (e.g., `isSidebarOpen`). This will be a Svelte writable store.
     - [ ] Implement the breadcrumb logic using SvelteKit's `$page.url` and navigation stores.
-    - [ ] The sidebar toggle button will call a function in the `ui.store.js`.
+    - [ ] The sidebar toggle button will call a function in the `ui.store.ts`.
 - **TDD Testing Strategy:**
     - **Component Test (Vitest):**
         - [ ] Test that the component renders the title.
@@ -177,7 +178,7 @@ This section outlines the plan for porting individual Vue components to Svelte. 
 - **Svelte Porting Plan:**
     - [ ] Create `AppSidebar.svelte` in `/shared/src/lib/components`.
     - [ ] This component will implement the new "Drawer Menu" concept.
-    - [ ] The visibility will be controlled by the `isSidebarOpen` value from the new Svelte `ui.store.js`.
+    - [ ] The visibility will be controlled by the `isSidebarOpen` value from the new Svelte `ui.store.ts`.
     - [ ] The mobile view (drawer) and desktop view (fixed panel) will be handled with responsive Tailwind classes (`md:block`, etc.).
     - [ ] Port `SidebarMenu.vue` to Svelte.
 - **TDD Testing Strategy:**

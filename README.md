@@ -1,34 +1,22 @@
 # Loke Cards
 
+> Migration note: The project is being ported from Vue to SvelteKit. The new app lives in `cards/` and is the active target for development, build, and tests. Legacy Vue folders (`cards-vue`, `graph-vue`, `shared-vue`) are archived artifacts and excluded from the toolchain until the port is complete.
+
 **Progressive Web App (PWA) for authoring interactive fiction content in loke-engine format.**
 
 Loke Cards provides simple form-based "cards" for writing scenes and chapters directly in C format, which are then saved to a loke-engine server.
 
-## Quick Start
+## Quick Start (Svelte)
 
 ```bash
-# Install dependencies
+# Install dependencies (root workspaces)
 npm install
 
-# Run frontend dev server (fixed port)
-VITE_DEV_PORT=8081 npm run dev
+# Start Svelte app (SvelteKit on 5173)
+npm run dev
 
-# Run frontend + C++ backend together (port 8081 + 3000)
-npm run dev:full
-
-# If a previous dev instance was running on the same ports, kill them
-npm run dev:kill-ports
-
-# Hot reload the backend (auto rebuild+restart on changes) + Vite
-npm run dev:full:watch
-
-# Use external/real backend (only Vite; no stub backend)
-VITE_DEV_PORT=8081 npm run dev:real
-
-# Build for production
+# Build/Preview Svelte app
 npm run build
-
-# Preview production build
 npm run preview
 ```
 
@@ -36,7 +24,12 @@ npm run preview
 
 **https://loke.tail2d448.ts.net:8443/** (Installed in macOS dock)
 
-Default dev server: **http://127.0.0.1:8081** (set via `VITE_DEV_PORT`).
+Default dev server (Svelte): **http://127.0.0.1:5173**.
+
+### Running legacy Vue apps (optional)
+- Cards (Vue): `npm install -C cards-vue && npm run dev -C cards-vue`
+- Graph (Vue): `npx vite --config graph-vue/vite.config.js`
+Legacy apps are not part of the active toolchain and are kept read‑only during the port.
 
 ## Project Structure
 
