@@ -5,3 +5,194 @@
 :root {
   color-scheme: light dark;
 }
+
+/* ============================================
+   LOKE CARDS - COMPONENT CLASSES
+   Reusable component patterns for consistency
+   ============================================ */
+
+@layer components {
+  /* Page Layout */
+  .page-container {
+    @apply p-6;
+  }
+
+  .page-container-wide {
+    @apply p-6 max-w-7xl mx-auto;
+  }
+
+  .page-container-narrow {
+    @apply p-6 max-w-4xl mx-auto;
+  }
+
+  /* Headers */
+  .page-title {
+    @apply text-3xl font-bold text-gray-900 dark:text-white mb-6;
+  }
+
+  .section-title {
+    @apply text-2xl font-semibold text-gray-900 dark:text-white mb-4;
+  }
+
+  .subsection-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-white mb-3;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6;
+  }
+
+  .card-compact {
+    @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4;
+  }
+
+  .card-interactive {
+    @apply card hover:shadow-md transition-shadow;
+  }
+
+  .card-clickable {
+    @apply card hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500;
+  }
+
+  .btn-success {
+    @apply btn bg-green-600 hover:bg-green-700 text-white focus:ring-green-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 hover:bg-red-700 text-white focus:ring-red-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white focus:ring-gray-500;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1 text-sm rounded transition-colors;
+  }
+
+  /* Form Elements */
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .form-select {
+    @apply form-input;
+  }
+
+  .form-textarea {
+    @apply form-input;
+  }
+
+  .form-checkbox {
+    @apply h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded;
+  }
+
+  /* Text Styles */
+  .text-muted {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+
+  .text-subtle {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  .text-error {
+    @apply text-sm text-red-600 dark:text-red-400;
+  }
+
+  /* Empty States */
+  .empty-state {
+    @apply text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600;
+  }
+
+  .empty-state-icon {
+    @apply text-6xl mb-4;
+  }
+
+  .empty-state-title {
+    @apply text-lg font-medium text-gray-900 dark:text-white mb-2;
+  }
+
+  .empty-state-description {
+    @apply text-muted;
+  }
+
+  /* Loading States */
+  .loading-spinner {
+    @apply inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600;
+  }
+
+  .loading-container {
+    @apply text-center py-12;
+  }
+
+  /* Lists */
+  .item-list {
+    @apply grid gap-4;
+  }
+
+  .item-card {
+    @apply card-compact hover:shadow-md transition-shadow;
+  }
+
+  /* Code */
+  .code-inline {
+    @apply bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono text-sm;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-blue {
+    @apply badge bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
+  }
+
+  .badge-green {
+    @apply badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .badge-yellow {
+    @apply badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+
+  .badge-red {
+    @apply badge bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+  }
+
+  /* Alerts */
+  .alert {
+    @apply p-4 rounded-lg border;
+  }
+
+  .alert-info {
+    @apply alert bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200;
+  }
+
+  .alert-success {
+    @apply alert bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200;
+  }
+
+  .alert-warning {
+    @apply alert bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200;
+  }
+
+  .alert-error {
+    @apply alert bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200;
+  }
+}
