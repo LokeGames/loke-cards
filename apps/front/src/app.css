@@ -2,8 +2,168 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light dark;
+/* ============================================
+   LOKE CARDS - THEME SYSTEM
+   Single source of truth for all colors/spacing
+   Change values here to update entire app
+   ============================================ */
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+
+    /* ===== COLOR PALETTE ===== */
+
+    /* Brand Colors - Primary Blue */
+    --color-primary-50: 239 246 255;
+    --color-primary-100: 219 234 254;
+    --color-primary-200: 191 219 254;
+    --color-primary-300: 147 197 253;
+    --color-primary-400: 96 165 250;
+    --color-primary-500: 59 130 246;
+    --color-primary-600: 37 99 235;
+    --color-primary-700: 29 78 216;
+    --color-primary-800: 30 64 175;
+    --color-primary-900: 30 58 138;
+
+    /* Success - Green */
+    --color-success-light: 16 185 129;
+    --color-success: 5 150 105;
+    --color-success-dark: 4 120 87;
+
+    /* Warning - Orange */
+    --color-warning-light: 245 158 11;
+    --color-warning: 217 119 6;
+    --color-warning-dark: 180 83 9;
+
+    /* Danger - Red */
+    --color-danger-light: 239 68 68;
+    --color-danger: 220 38 38;
+    --color-danger-dark: 185 28 28;
+
+    /* ===== SEMANTIC COLORS (Light Mode) ===== */
+
+    /* Backgrounds */
+    --bg-page: 249 250 251;           /* Gray-50 */
+    --bg-surface: 255 255 255;        /* White */
+    --bg-elevated: 255 255 255;       /* White */
+    --bg-overlay: 0 0 0;              /* Black with opacity */
+
+    /* Text */
+    --text-primary: 17 24 39;         /* Gray-900 */
+    --text-secondary: 75 85 99;       /* Gray-600 */
+    --text-tertiary: 107 114 128;     /* Gray-500 */
+    --text-muted: 156 163 175;        /* Gray-400 */
+    --text-on-primary: 255 255 255;   /* White */
+
+    /* Borders */
+    --border-default: 229 231 235;    /* Gray-200 */
+    --border-subtle: 243 244 246;     /* Gray-100 */
+    --border-strong: 209 213 219;     /* Gray-300 */
+
+    /* Interactive States */
+    --hover-bg: 243 244 246;          /* Gray-100 */
+    --active-bg: 229 231 235;         /* Gray-200 */
+    --focus-ring: 59 130 246;         /* Blue-500 */
+
+    /* ===== SPACING ===== */
+    --spacing-xs: 0.25rem;   /* 4px */
+    --spacing-sm: 0.5rem;    /* 8px */
+    --spacing-md: 1rem;      /* 16px */
+    --spacing-lg: 1.5rem;    /* 24px */
+    --spacing-xl: 2rem;      /* 32px */
+    --spacing-2xl: 3rem;     /* 48px */
+
+    /* Card Spacing */
+    --spacing-card: 1.5rem;          /* 24px - Standard card padding */
+    --spacing-card-compact: 1rem;    /* 16px - Compact card padding */
+    --spacing-section: 2rem;         /* 32px - Section spacing */
+
+    /* ===== TYPOGRAPHY ===== */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Font Sizes */
+    --text-xs: 0.75rem;      /* 12px */
+    --text-sm: 0.875rem;     /* 14px */
+    --text-base: 1rem;       /* 16px */
+    --text-lg: 1.125rem;     /* 18px */
+    --text-xl: 1.25rem;      /* 20px */
+    --text-2xl: 1.5rem;      /* 24px */
+    --text-3xl: 1.875rem;    /* 30px */
+    --text-4xl: 2.25rem;     /* 36px */
+
+    /* ===== BORDERS & RADIUS ===== */
+    --radius-sm: 0.25rem;    /* 4px */
+    --radius-md: 0.375rem;   /* 6px */
+    --radius-lg: 0.5rem;     /* 8px */
+    --radius-xl: 0.75rem;    /* 12px */
+    --radius-full: 9999px;   /* Full round */
+
+    --border-width: 1px;
+    --border-width-thick: 2px;
+
+    /* ===== SHADOWS ===== */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+    /* ===== TRANSITIONS ===== */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ===== Z-INDEX ===== */
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1100;
+    --z-fixed: 1200;
+    --z-modal: 1300;
+    --z-popover: 1400;
+    --z-tooltip: 1500;
+  }
+
+  /* ===== DARK MODE OVERRIDES ===== */
+  .dark {
+    /* Backgrounds */
+    --bg-page: 17 24 39;              /* Gray-900 */
+    --bg-surface: 31 41 55;           /* Gray-800 */
+    --bg-elevated: 55 65 81;          /* Gray-700 */
+    --bg-overlay: 0 0 0;              /* Black with opacity */
+
+    /* Text */
+    --text-primary: 255 255 255;      /* White */
+    --text-secondary: 229 231 235;    /* Gray-200 */
+    --text-tertiary: 209 213 219;     /* Gray-300 */
+    --text-muted: 156 163 175;        /* Gray-400 */
+    --text-on-primary: 255 255 255;   /* White */
+
+    /* Borders */
+    --border-default: 75 85 99;       /* Gray-600 */
+    --border-subtle: 55 65 81;        /* Gray-700 */
+    --border-strong: 107 114 128;     /* Gray-500 */
+
+    /* Interactive States */
+    --hover-bg: 55 65 81;             /* Gray-700 */
+    --active-bg: 75 85 99;            /* Gray-600 */
+    --focus-ring: 96 165 250;         /* Blue-400 */
+  }
+}
+
+/* ===== UTILITY: Use theme colors anywhere ===== */
+@layer utilities {
+  .bg-page { background-color: rgb(var(--bg-page)); }
+  .bg-surface { background-color: rgb(var(--bg-surface)); }
+  .bg-elevated { background-color: rgb(var(--bg-elevated)); }
+
+  .text-primary { color: rgb(var(--text-primary)); }
+  .text-secondary { color: rgb(var(--text-secondary)); }
+  .text-tertiary { color: rgb(var(--text-tertiary)); }
+
+  .border-default { border-color: rgb(var(--border-default)); }
+  .border-subtle { border-color: rgb(var(--border-subtle)); }
+  .border-strong { border-color: rgb(var(--border-strong)); }
 }
 
 /* ============================================
@@ -12,77 +172,109 @@
    ============================================ */
 
 @layer components {
-  /* Page Layout */
+  /* Page Layout - Uses theme spacing */
   .page-container {
-    @apply p-6;
+    @apply p-card;
   }
 
   .page-container-wide {
-    @apply p-6 max-w-7xl mx-auto;
+    @apply p-card max-w-7xl mx-auto;
   }
 
   .page-container-narrow {
-    @apply p-6 max-w-4xl mx-auto;
+    @apply p-card max-w-4xl mx-auto;
   }
 
-  /* Headers */
+  /* Headers - Uses semantic theme colors */
   .page-title {
-    @apply text-3xl font-bold text-gray-900 dark:text-white mb-6;
+    @apply text-3xl font-bold text-primary mb-lg;
+    color: rgb(var(--text-primary));
   }
 
   .section-title {
-    @apply text-2xl font-semibold text-gray-900 dark:text-white mb-4;
+    @apply text-2xl font-semibold mb-md;
+    color: rgb(var(--text-primary));
   }
 
   .subsection-title {
-    @apply text-xl font-semibold text-gray-900 dark:text-white mb-3;
+    @apply text-xl font-semibold mb-sm;
+    color: rgb(var(--text-primary));
   }
 
-  /* Cards */
+  /* Cards - Uses semantic theme colors */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6;
+    @apply rounded-card p-card border;
+    background-color: rgb(var(--bg-surface));
+    border-color: rgb(var(--border-default));
   }
 
   .card-compact {
-    @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4;
+    @apply rounded-card p-card-compact border;
+    background-color: rgb(var(--bg-surface));
+    border-color: rgb(var(--border-default));
   }
 
   .card-interactive {
-    @apply card hover:shadow-md transition-shadow;
+    @apply card hover:shadow-md;
+    transition: box-shadow var(--transition-base);
   }
 
   .card-clickable {
-    @apply card hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors;
+    @apply card cursor-pointer;
+    transition: background-color var(--transition-base);
+  }
+  .card-clickable:hover {
+    background-color: rgb(var(--hover-bg));
   }
 
-  /* Buttons */
+  /* Buttons - Uses theme colors */
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply px-md py-sm rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+    transition: var(--transition-base);
   }
 
   .btn-primary {
-    @apply btn bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500;
+    @apply btn bg-primary-600 hover:bg-primary-700 text-white;
+    box-shadow: 0 0 0 0 rgb(var(--color-primary-500) / 0);
+  }
+  .btn-primary:focus {
+    box-shadow: 0 0 0 3px rgb(var(--color-primary-500) / 0.5);
   }
 
   .btn-success {
-    @apply btn bg-green-600 hover:bg-green-700 text-white focus:ring-green-500;
+    @apply btn text-white;
+    background-color: rgb(var(--color-success));
+  }
+  .btn-success:hover {
+    background-color: rgb(var(--color-success-dark));
   }
 
   .btn-danger {
-    @apply btn bg-red-600 hover:bg-red-700 text-white focus:ring-red-500;
+    @apply btn text-white;
+    background-color: rgb(var(--color-danger));
+  }
+  .btn-danger:hover {
+    background-color: rgb(var(--color-danger-dark));
   }
 
   .btn-secondary {
-    @apply btn bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white focus:ring-gray-500;
+    @apply btn;
+    background-color: rgb(var(--hover-bg));
+    color: rgb(var(--text-primary));
+  }
+  .btn-secondary:hover {
+    background-color: rgb(var(--active-bg));
   }
 
   .btn-sm {
-    @apply px-3 py-1 text-sm rounded transition-colors;
+    @apply px-sm py-xs text-sm rounded;
+    transition: var(--transition-base);
   }
 
-  /* Form Elements */
+  /* Form Elements - Uses semantic theme colors */
   .form-label {
-    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
+    @apply block text-sm font-medium mb-sm;
+    color: rgb(var(--text-secondary));
   }
 
   .form-input {

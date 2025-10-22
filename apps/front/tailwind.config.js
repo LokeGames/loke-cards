@@ -10,47 +10,103 @@ export default {
   ],
   theme: {
     extend: {
-      // Custom color palette for Loke Cards
+      // ===== COLORS: Use CSS variables from app.css =====
       colors: {
-        // Primary brand colors
+        // Primary brand colors (maps to --color-primary-*)
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6', // Default blue
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: 'rgb(var(--color-primary-50) / <alpha-value>)',
+          100: 'rgb(var(--color-primary-100) / <alpha-value>)',
+          200: 'rgb(var(--color-primary-200) / <alpha-value>)',
+          300: 'rgb(var(--color-primary-300) / <alpha-value>)',
+          400: 'rgb(var(--color-primary-400) / <alpha-value>)',
+          500: 'rgb(var(--color-primary-500) / <alpha-value>)',
+          600: 'rgb(var(--color-primary-600) / <alpha-value>)',
+          700: 'rgb(var(--color-primary-700) / <alpha-value>)',
+          800: 'rgb(var(--color-primary-800) / <alpha-value>)',
+          900: 'rgb(var(--color-primary-900) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-primary-500) / <alpha-value>)',
         },
         // Semantic colors
         success: {
-          light: '#10b981',
-          DEFAULT: '#059669',
-          dark: '#047857',
+          light: 'rgb(var(--color-success-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-success) / <alpha-value>)',
+          dark: 'rgb(var(--color-success-dark) / <alpha-value>)',
         },
         warning: {
-          light: '#f59e0b',
-          DEFAULT: '#d97706',
-          dark: '#b45309',
+          light: 'rgb(var(--color-warning-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-warning) / <alpha-value>)',
+          dark: 'rgb(var(--color-warning-dark) / <alpha-value>)',
         },
         danger: {
-          light: '#ef4444',
-          DEFAULT: '#dc2626',
-          dark: '#b91c1c',
+          light: 'rgb(var(--color-danger-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-danger) / <alpha-value>)',
+          dark: 'rgb(var(--color-danger-dark) / <alpha-value>)',
         },
+        // Semantic theme colors (auto light/dark)
+        page: 'rgb(var(--bg-page) / <alpha-value>)',
+        surface: 'rgb(var(--bg-surface) / <alpha-value>)',
+        elevated: 'rgb(var(--bg-elevated) / <alpha-value>)',
       },
-      // Custom spacing for consistent layouts
+      // ===== SPACING: Use CSS variables =====
       spacing: {
-        'card': '1.5rem', // p-6
-        'card-compact': '1rem', // p-4
-        'section': '2rem', // p-8
+        'xs': 'var(--spacing-xs)',
+        'sm': 'var(--spacing-sm)',
+        'md': 'var(--spacing-md)',
+        'lg': 'var(--spacing-lg)',
+        'xl': 'var(--spacing-xl)',
+        '2xl': 'var(--spacing-2xl)',
+        'card': 'var(--spacing-card)',
+        'card-compact': 'var(--spacing-card-compact)',
+        'section': 'var(--spacing-section)',
       },
-      // Custom border radius
+      // ===== BORDER RADIUS: Use CSS variables =====
       borderRadius: {
-        'card': '0.5rem', // rounded-lg
+        'sm': 'var(--radius-sm)',
+        'md': 'var(--radius-md)',
+        'lg': 'var(--radius-lg)',
+        'xl': 'var(--radius-xl)',
+        'card': 'var(--radius-lg)',
+        'full': 'var(--radius-full)',
+      },
+      // ===== FONT FAMILY: Use CSS variables =====
+      fontFamily: {
+        sans: 'var(--font-sans)',
+        mono: 'var(--font-mono)',
+      },
+      // ===== FONT SIZES: Use CSS variables =====
+      fontSize: {
+        xs: 'var(--text-xs)',
+        sm: 'var(--text-sm)',
+        base: 'var(--text-base)',
+        lg: 'var(--text-lg)',
+        xl: 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+        '4xl': 'var(--text-4xl)',
+      },
+      // ===== BOX SHADOW: Use CSS variables =====
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        DEFAULT: 'var(--shadow-md)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-xl)',
+      },
+      // ===== TRANSITIONS: Use CSS variables =====
+      transitionDuration: {
+        fast: 'var(--transition-fast)',
+        DEFAULT: 'var(--transition-base)',
+        slow: 'var(--transition-slow)',
+      },
+      // ===== Z-INDEX: Use CSS variables =====
+      zIndex: {
+        base: 'var(--z-base)',
+        dropdown: 'var(--z-dropdown)',
+        sticky: 'var(--z-sticky)',
+        fixed: 'var(--z-fixed)',
+        modal: 'var(--z-modal)',
+        popover: 'var(--z-popover)',
+        tooltip: 'var(--z-tooltip)',
       },
     },
   },
