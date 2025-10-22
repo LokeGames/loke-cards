@@ -1,3 +1,6 @@
-<h2 class="text-xl font-semibold mb-2">Shell Home</h2>
-<p class="text-sm opacity-80">PWA Shell is active.</p>
+<script lang="ts">
+  import Dashboard from '$lib/components/dashboard/Dashboard.svelte';
+</script>
+
+<Dashboard />
 

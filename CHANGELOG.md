@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - 2025-10-22
+
+- Phase 2 Dashboard Implementation: Complete dashboard with Quick Actions, Project Stats, Recent Chapters, and Recent Scenes components
+- Dashboard integrated into main route (`/`) replacing placeholder content
+- Components use existing data worker API and follow established patterns
+- Responsive grid layout with loading states and error handling
+- Navigation links to existing routes for chapters and scenes management
+
 ### Added - 2025-10-21
+
 - Phase 1 scaffolding: added `pnpm-workspace.yaml` and placeholder packages under `apps/`, `workers/`, and `packages/` (no new runtime deps installed yet).
 - App shell layout aligned to scrollable-main pattern in `cards`.
 - Unit test: `ThemeToggle` toggles dark mode and persists preference.
@@ -15,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Phase 2 (data worker): Comlink-based SharedWorker RPC (`ping`, `cards.*`, `chapters.*`) with Zod schemas in `packages/schemas`; client updated; test routes (`/worker-test`, `/worker-cards`, `/worker-cards-crud`, `/worker-chapters`) and E2E specs added.
 
 ### Added - 2025-10-21
+
 - Scaffolded Svelte migration (Part 2): created new workspaces `cards` (Svelte app) and `shared` (Svelte library) alongside existing Vue packages.
 - Implemented minimal shared components and UI store in `shared` (`AppHeader`, `AppSidebar`, `AppModal`, `ui.store`).
 - Initialized SvelteKit in `cards` (svelte.config.js, Vite kit plugin, app.html) with minimal layout and home page reusing Tailwind styles.
@@ -25,15 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared API client scaffolded in `shared/src/lib/api/client.ts` with force-offline toggle and JSON helpers; exported via `@shared`.
 
 ### Docs - 2025-10-21
+
 - README: Added migration note highlighting Svelte as the active app and documenting how to run legacy Vue apps optionally.
 - AGENTS.md: Added “Legacy Vue Artifacts” section clarifying that `cards-vue`, `graph-vue`, and `shared-vue` are read‑only and excluded from the toolchain, plus quick commands.
- - AGENTS.md: Added Language Policy (pure TS in `cards/` and `shared/`, server in C/C++ only) and CI rules.
+- AGENTS.md: Added Language Policy (pure TS in `cards/` and `shared/`, server in C/C++ only) and CI rules.
 
 ### Tooling - 2025-10-21
+
 - Enabled TypeScript strict mode for `cards/` and `shared/` (`tsconfig.json`).
 - Added CI scripts: `check:types`, `check:svelte`, `check:ts-purity`, and aggregate `ci`.
 
 ### Refactoring - 2025-10-21
+
 - **Project Restructuring (Phase 1):** (Gemini)
   - Restructured the project into a monorepo-like layout to prepare for Svelte migration.
   - Created `cards-vue`, `graph-vue`, and `shared-vue` directories.
@@ -42,13 +55,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Cleaned up the root directory by removing the now-obsolete `src/`, `apps/`, and `tests/` folders.
 
 ### Planning
+
 - Reorder roadmap: Phase 7 → PWA Offline‑First + Sync; Phase 8 → Deployment
 - Add SYNC design doc: `doc/SYNC-DESIGN.md` (single‑user LWW, push/pull deltas)
- - Projects layer: introduce `projectStore` + `ProjectPicker` (single active project)
+- Projects layer: introduce `projectStore` + `ProjectPicker` (single active project)
 
 ### Phase 7 - Offline‑First Bootstrap - 2025-10-20
 
 ### Added
+
 - Sync heartbeat that live‑checks backend health every 2s and updates UI
   - `src/plugins/sync-heartbeat.js`, wired from `src/main.js`
 - Network toggle for manual Online/Offline simulation (persists in `localStorage`)
@@ -68,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - SQL.js OPFS persistence (autosave + manual flush), Settings UI to switch and migrate
 
 ### Changed
+
 - API client normalization and canonical data shape
   - Scenes now normalized to a single shape in the app: `sceneId` (primary id), `id` mirrors `sceneId`, `chapterId` holds chapter reference
   - `api.scenes.getAll/getById` return normalized objects; `api.chapters.getAll` normalized as well
@@ -82,11 +98,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Scene/Chapter lists and Dashboard now use stores and update live without reload
 
 ### Upcoming — Projects (Single Active Project)
+
 ### Added
+
 - `projectStore` (planned): holds `currentProject`, list, CRUD; persists selection in `localStorage`.
 - `ProjectPicker` (planned): header/sidebar dropdown for selecting the active project; Settings for project management.
 
 ### Changed
+
 - Scope all Cards views (lists, editors) and operations by `projectId` (planned migration of existing data to `projectId: 'default'`).
 - API: include optional `projectId` filter and payload fields; keep backward compatible.
 - Graph app uses the same project context as Cards (viewer role):
@@ -94,6 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No independent project selection in Graph when embedded; follows Cards.
 
 ### Database/API compatibility (IDs)
+
 - No server DB schema changes in this phase (still: `chapters(id TEXT, data TEXT)`, `scenes(id TEXT, data TEXT)`).
 - Canonical scene shape for clients (recommended):
   - `sceneId` — primary scene identifier (string). Also set `id = sceneId` for compatibility.
@@ -107,14 +127,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Existing datasets with `{ id, chapter }` remain valid; no migration required.
 
 ### Fixed
+
 - Scenes losing chapter reference in lists and editor
 - Edit scene clearing Scene ID when changing chapter
 - StatusPill now reflects backend availability automatically (and shows pending count)
- - Data backfill (dev only): Updated `server/dev.db` scenes to include `sceneId=id`, `chapterId=chapter01` and a default `sceneText` to ensure consistent editing and graph rendering.
+- Data backfill (dev only): Updated `server/dev.db` scenes to include `sceneId=id`, `chapterId=chapter01` and a default `sceneText` to ensure consistent editing and graph rendering.
 
 ### Phase 6 - Polish & Hardening - 2025-10-20
 
 ### Added
+
 - Global toast notifications with accessible, animated container
   - `src/stores/toast.js`, `src/components/ToastContainer.vue`
 - Skeleton loaders for lists
@@ -129,6 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Navigation stability spec: `tests/navigation-stability.spec.js`
 
 ### Fixed - Graph App (`apps/graph`)
+
 - Fixed critical startup crash: `GlobalGraph.vue` missing `<script setup>` tag
 - Fixed CSS imports: Changed `vue-flow` to `@vue-flow` prefix for correct module resolution
 - Removed invalid `@vue-flow/background/dist/style.css` import (file doesn't exist in package)
@@ -149,6 +172,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Graph app fully functional at http://localhost:8092
 
 ### Changed
+
 - Page transitions: unified route transition around `RouterView` (no Suspense)
 - Scenes ⇄ Dashboard stability: removed page transition to eliminate out-in race; breadcrumbs now path-based; Dashboard recent scenes filtered; guards applied
 - Scene/Chapter lists: robust links via guards; filter invalid scene entries
@@ -157,16 +181,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Starts TypeScript typecheck watcher in background
 
 ### Fixed
+
 - Error monitor no longer throws in browser (removed CommonJS require)
 - Missing route params are guarded at compile‑time and runtime (typed router + guards)
 
 ### Removed
+
 - Legacy vanilla JS no longer used (to avoid DOM/nav conflicts)
   - `src/components/{Navigation,Layout,Sidebar,SceneEditor,CodePreview}.js`, `src/lib/state.js`
 
 ### Phase 5 - Graph App (Two‑App Design) - 2025-10-20
 
 ### Added
+
 - Two‑app architecture
   - `loke-cards` (main app): forms, CRUD, codegen, settings, E2E flows
   - `loke-graph` (external app): visual graph (Vue Flow) — fully decoupled
@@ -185,6 +212,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Root scripts: `dev:graph`, `build:graph`, `preview:graph`
 
 ### Design
+
 - Separation of concerns
   - Main app (`loke-cards`) focuses on data entry, lists, editors, codegen and settings
   - Graph app (`loke-graph`) focuses on the Twine‑style graph, layouts and visual flows
@@ -196,6 +224,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Both apps fall back to LocalForage when backend is offline (health‑gated requests)
 
 ### Changed
+
 - Router stability: eager-loaded primary views, keyed RouterView with Suspense fallback; removed NodeView routes from main app; `/nodes` removed/redirected
 - Breadcrumbs now validate route params before linking (avoid missing required param "id")
 - ELK import switched to browser bundle (`elkjs/lib/elk.bundled.js`) to avoid web-worker resolution errors
@@ -204,20 +233,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Header/Sidebar z-index increased to avoid overlap with NodeView canvas
 
 ### Added (Dev Quality)
+
 - In-app error monitor (dev only): `src/plugins/error-monitor.js`, `src/components/DevErrorOverlay.vue`, `src/stores/debug.js`
   - Captures Vue errors, unhandled rejections, window errors, and router errors
 - Playwright specs
   - `tests/navigation-sidebar.spec.js` — Sidebar navigation updates views and asserts no console errors (NodeView scenario removed)
 
 ### Notes
+
 - Graph app falls back to LocalForage when backend is offline; edges derive from `choices[].nextScene`. NodeView/Graph link removed from main sidebar (open the external app instead).
 
 ### Migration
+
 - Use `npm run dev:full:watch` to launch both apps + backend (ports: 8081, 8092, 3000)
 - Open Graph app at http://127.0.0.1:8092 (or set `VITE_GRAPH_PORT`)
 - Any previous links to `/nodes` in the main app have been removed; use the external app directly
 
 ### Cleanup
+
 - Removed legacy vanilla JS files no longer used by the Vue app:
   - `src/components/Navigation.js`, `Layout.js`, `Sidebar.js`, `SceneEditor.js`, `CodePreview.js`
   - `src/lib/state.js`
@@ -227,6 +260,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 4 - E2E Test Suite Optimization - 2025-10-20
 
 ### Added
+
 - Comprehensive Playwright test suite (50 tests total)
   - Phase 1 App Shell: 7 tests (layout, navigation, dark mode)
   - Phase 2 Scene Editor: 14 tests (forms, validation, code generation)
@@ -238,6 +272,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Basic Tests: 2 tests (title, screenshots)
 
 ### Changed
+
 - Optimized playwright.config.js
   - Limited to 4 workers for stability
   - Added 30s default timeout per test
@@ -257,6 +292,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - server-codegen.spec.js (1 test) - backend endpoint not implemented
 
 ### Fixed
+
 - Strict mode violations in selectors
   - Used `.first()` for multiple element matches
   - Scoped selectors to specific containers (header, main, sidebar)
@@ -273,18 +309,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better error messages and fallback handling
 
 ### Test Results
+
 **34/36 tests passing (94.4%)**
+
 - ✅ Passing: 34 tests
 - ⏭️ Skipped: 15 tests (deprecated/debug/not-implemented)
 - ❌ Failed: 1 test (scene-crud - API timing issue)
 
 **Known Issues:**
+
 - `scene-crud.spec.js`: Scene not appearing in list after save (backend API propagation delay)
 - Backend `/api/scenes/:id/code` endpoint returns "Scene not found" for all scenes
 
 ### Phase 3 - Dev Backend Integration - 2025-10-19
 
 ### Added
+
 - SQLite-backed dev API for local testing (`server/main.cpp`)
   - Tables: `chapters(id,data)`, `scenes(id,data)` in `server/dev.db`
   - Endpoints: `GET /api/health`, `GET/POST/PUT/DELETE /api/chapters`, `GET/POST/PUT/DELETE /api/scenes`, `GET /api/scenes/:id`, `GET /api/chapters/:id`
@@ -299,15 +339,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - "Build All Scenes" button (triggers `/api/build`)
   - Artifact list fetched from `/api/build/artifacts`
 - API client additions: `api.build.run()`, `api.build.artifacts()`
- - Settings: Sync local data (LocalForage) to server
- - Chapter editor supports edit mode; Chapters list adds Edit/Delete actions
- - Scenes list adds Delete action
+- Settings: Sync local data (LocalForage) to server
+- Chapter editor supports edit mode; Chapters list adds Edit/Delete actions
+- Scenes list adds Delete action
 - Dev orchestration scripts
   - `scripts/dev-full.sh` (frontend + backend), `scripts/dev-full-watch.sh` (hot reload backend), `scripts/dev-backend-watch.sh` (watch/restart)
   - npm scripts: `dev:full`, `dev:full:watch`, `dev:backend`, `dev:kill-ports`
   - `dev:real` (Vite only; use external backend)
-  
+
 ### Build System
+
 - Makefile compiles multi-file backend (`src/codegen.cpp`) with `-Iinclude`
 - Example systemd unit at `server/systemd/loke-cards-backend.service`
 - Chapter Editor implemented (`src/views/ChapterEditorView.vue`) with validation and API/local fallback
@@ -317,6 +358,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Contributor guide: `AGENTS.md`
 
 ### Changed
+
 - Choices are optional (0–10); codegen adds default "Continue" when none
 - SceneEditorView: API save falls back to LocalForage; inline “Create New Chapter” calls API with local fallback
 - Vite dev server locked to fixed port via `VITE_DEV_PORT` + `strictPort: true`
@@ -326,11 +368,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scene Editor UX: live re-validation (choices/stateChanges), Reset button, focus first invalid field, cancel confirm on unsaved changes
 
 ### Fixed
+
 - Sidebar Dashboard route: `"/"` target and redirect from `/dashboard`
 
 ### Phase 2 - Scene Editor (Fully Functional) - 2025-10-17
 
 ### Added
+
 - **Complete Scene Editor** (`SceneEditorView.vue`)
   - Responsive 2-column layout (desktop: form + code preview side-by-side)
   - Single column on mobile with collapsible preview
@@ -341,7 +385,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Form Components** (all fully responsive)
   - `SceneIdInput.vue` - Scene ID input with C identifier validation
-    - Must start with "scene_" prefix
+    - Must start with "scene\_" prefix
     - Real-time validation with error messages
     - Max 64 character length
   - `ChapterSelect.vue` - Chapter dropdown selector
@@ -360,7 +404,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `StateChangesList.vue` - Dynamic state modifications
     - Add/remove state changes (optional)
     - Variable autocomplete with datalist (health, gold, karma, etc.)
-    - Operator select (=, +=, -=, *=, /=)
+    - Operator select (=, +=, -=, \*=, /=)
     - Value autocomplete with common values
     - Live preview: `state->variable operator value;`
   - `CodePreview.vue` - C code preview component
@@ -379,7 +423,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - State changes execute before scene text
     - Generates loke-engine compatible function signatures
   - `useSceneValidation.js` - Form validation
-    - `validateSceneId()` - C identifier + "scene_" prefix check
+    - `validateSceneId()` - C identifier + "scene\_" prefix check
     - `validateChapterId()` - C identifier + "chapter" prefix check
     - `validateSceneText()` - Max 2048 characters
     - `validateChoices()` - Min 1, max 10 choices, all fields required
@@ -400,11 +444,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Handles non-OK responses with friendly error messages
 
 ### Changed
+
 - SceneEditorView now loads chapters from backend API instead of mock data
 - Save functionality uses real API calls (POST for create, PUT for update)
 - Edit mode loads existing scene data from API on mount
 
 ### Testing
+
 - Hot reload verified working with all new components ✅
 - Responsive layout tested on mobile, tablet, desktop ✅
 - Dark mode support on all new components ✅
@@ -413,6 +459,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 1 - App Shell Layout - Dark Mode Fix - 2025-10-16
 
 ### Fixed
+
 - **Dark mode text visibility on mobile and desktop**
   - Added `dark:text-*` classes to all view components (DashboardView, SceneListView, SceneEditorView, ChapterListView)
   - Fixed AppHeader text colors in dark mode (`dark:text-white`, `dark:text-gray-300`)
@@ -426,6 +473,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 1 - App Shell Layout - 2025-10-16
 
 ### Added
+
 - **Full-screen app shell layout** (`h-screen w-screen`)
   - App.vue converted to full viewport layout
   - Header + Sidebar + Main content structure
@@ -472,11 +520,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Mobile viewport testing (375px width)
 
 ### Changed
+
 - App.vue - Complete rewrite from centered layout to full-screen app shell
 - Router configuration - Added meta data for page titles and scroll behavior
 - Tailwind config - Added dark mode class strategy
 
 ### Testing
+
 - Playwright CLI tests: 6/7 passed ✅
 - Responsive testing on mobile (375px), tablet (768px), desktop (1024px+) ✅
 - Hot reload verified working ✅
@@ -485,6 +535,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Migration to Vue 3 - 2025-10-16
 
 ### Added
+
 - C++ backend setup (Phase 0.3)
   - Created `/server` directory with `cpp-httplib` and `sqlite3`.
   - Basic HTTP server on port 3000 with CORS for Tailscale.
@@ -497,29 +548,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a basic Playwright test script.
 
 ### Fixed
-- Vite dev server port to 8081 to match Tailscale proxy configuration.
 
+- Vite dev server port to 8081 to match Tailscale proxy configuration.
 
 **Decision: Rewrite with Vue 3 + C++ Backend**
 
 After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental issues:
+
 - Hot reload inconsistent with dynamic Tailwind classes in JS
 - Sidebar component visibility problems
 - Manual DOM manipulation became unmaintainable
 - Difficult debugging without framework devtools
 
 **New Technology Stack:**
+
 - Frontend: Vue 3 + Vite + Tailwind + Pinia + Vue Router
 - Backend: C++ with httplib + SQLite (replacing localStorage/LocalForage)
 - Testing: Playwright CLI for browser automation
 - No localhost URLs - Tailscale serve only
 
 **Branches:**
+
 - `vanilla-js-backup` - Preserved original work
 - `vue-rewrite` - New Vue 3 implementation (current)
 - `dev` - Original development branch
 
 **Migration Files:**
+
 - `TODO.md` - Now deprecated, points to TODO-VUE.md
 - `TODO-VUE.md` - Complete Vue 3 migration plan (20-27 hours)
 
@@ -528,6 +583,7 @@ After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental i
 ## [Vanilla JS Version] - 2025-10-16 (Deprecated)
 
 ### Added
+
 - Initial project setup with Vite, Tailwind CSS v4, and PWA support
 - LocalForage for offline storage with 4 separate stores (scenes, chapters, drafts, projects)
 - Basic folder structure (src/, public/, doc/, tests/)
@@ -557,12 +613,14 @@ After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental i
 - Validation utilities for C identifiers
 
 ### Changed
+
 - Updated Tailwind CSS from v3 to v4 with @tailwindcss/postcss plugin
 - Changed base URL from /cards subpath to dedicated port 8443
 - Exported loadDashboard and generateCCode functions for reuse
 - Made createSceneEditor async to support dynamic chapter loading
 
 ### Fixed
+
 - Tailscale serve path rewriting issues (solved with dedicated port)
 - Port conflicts with multiple Vite dev servers
 - Sidebar overlapping main content on desktop
@@ -570,6 +628,7 @@ After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental i
 - getCurrentProject naming conflict in state.js
 
 ### Removed
+
 - HTTPS configuration from Vite (handled by Tailscale serve)
 
 ---
@@ -580,4 +639,4 @@ After completing Phase 0-2 with Vanilla JavaScript, we encountered fundamental i
   - `src/stores/scenes.js` and `src/stores/chapters.js` as single source of truth (Pinia)
   - Lists and editors bind to store state; background refresh replaces content only if non-empty
   - Event bus for cross-tab updates: `src/lib/events.js`, wired in `src/lib/storage.js`
-<!-- Releases will be documented here -->
+  <!-- Releases will be documented here -->
