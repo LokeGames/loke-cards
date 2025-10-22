@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
-import api from '../api/client.js';
-import { normalizeChapters } from '../lib/normalize.js';
-import { getDb } from '../lib/db/index.js';
-import { emitDataChange } from '../lib/events.js';
-import { useSceneStore } from './scenes.js';
-import { useProjectStore } from './project.js';
+import api from '@cards/api/client.js';
+import { normalizeChapters } from '@cards/lib/normalize.js';
+import { getDb } from '@shared/lib/db/index.js';
+import { emitDataChange } from '@shared/lib/events.js';
+import { useSceneStore } from '@cards/stores/scenes.js';
+import { useProjectStore } from '@cards/stores/project.js';
 
 export const useChapterStore = defineStore('chapters', {
   state: () => ({

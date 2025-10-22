@@ -11,8 +11,8 @@
 </template>
 
 <script setup>
-import AppHeader from './AppHeader.vue';
-import AppSidebar from './AppSidebar.vue';
+import AppHeader from '@shared/components/AppHeader.vue';
+import AppSidebar from '@shared/components/AppSidebar.vue';
 </script>
 
 <style scoped>

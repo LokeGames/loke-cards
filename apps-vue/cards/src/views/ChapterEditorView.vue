@@ -1,10 +1,14 @@
 <template>
   <div class="chapter-editor-view p-4 md:p-6 max-w-3xl mx-auto">
     <div class="mb-6">
-      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-        {{ isEditMode ? 'Edit Chapter' : 'Create New Chapter' }}
+      <h1
+        class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2"
+      >
+        {{ isEditMode ? "Edit Chapter" : "Create New Chapter" }}
       </h1>
-      <p class="text-gray-600 dark:text-gray-400">Define a chapter identifier and optional display name.</p>
+      <p class="text-gray-600 dark:text-gray-400">
+        Define a chapter identifier and optional display name.
+      </p>
     </div>
 
     <div class="space-y-6">
@@ -28,10 +32,21 @@
 
       <!-- Meta (optional) -->
       <div>
-        <label for="chapter-meta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta (optional)</label>
-        <textarea id="chapter-meta" v-model="chapter.meta" rows="3" placeholder="Notes, communication, or meta info..."
-          class="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">Included as a comment block in generated chapter header.</p>
+        <label
+          for="chapter-meta"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >Meta (optional)</label
+        >
+        <textarea
+          id="chapter-meta"
+          v-model="chapter.meta"
+          rows="3"
+          placeholder="Notes, communication, or meta info..."
+          class="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ></textarea>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+          Included as a comment block in generated chapter header.
+        </p>
       </div>
 
       <!-- Actions -->
@@ -44,17 +59,26 @@
           Save Chapter
         </BaseButton>
 
-        <BaseButton variant="secondary" @click="handleCancel">Cancel</BaseButton>
+        <BaseButton variant="secondary" @click="handleCancel"
+          >Cancel</BaseButton
+        >
       </div>
 
       <!-- Inline save status removed — using toasts globally -->
 
       <!-- Tips -->
-      <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400">
+      <div
+        class="p-4 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-800 text-sm text-gray-600 dark:text-gray-400"
+      >
         <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">Tips</p>
         <ul class="list-disc ml-5 space-y-1">
-          <li>Chapter ID must start with "chapter" and be a valid C identifier.</li>
-          <li>Use short, stable IDs like <code>chapter01</code> or <code>chapter02_forest</code>.</li>
+          <li>
+            Chapter ID must start with "chapter" and be a valid C identifier.
+          </li>
+          <li>
+            Use short, stable IDs like <code>chapter01</code> or
+            <code>chapter02_forest</code>.
+          </li>
         </ul>
       </div>
     </div>
@@ -62,16 +86,16 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import BaseInput from '@shared/components/BaseInput.vue';
-import BaseButton from '../components/BaseButton.vue';
-import { useSceneValidation } from '../composables/useSceneValidation.js';
-import api from '../api/client.js';
-import { saveChapter as saveChapterLocal } from '../lib/storage.js';
-import { useToastStore } from '../stores/toast.js';
-import { useProjectStore } from '../stores/project.js';
-import { useChapterStore } from '../stores/chapters.js';
+import { reactive, ref, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import BaseInput from "@shared/components/BaseInput.vue";
+import BaseButton from "@shared/components/BaseButton.vue";
+import { useSceneValidation } from "../composables/useSceneValidation.js";
+import api from "../api/client.js";
+import { saveChapter as saveChapterLocal } from "@shared/lib/storage.js";
+import { useToastStore } from "@shared/stores/toast.js";
+import { useProjectStore } from "../stores/project.js";
+import { useChapterStore } from "../stores/chapters.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -82,9 +106,9 @@ const chapterStore = useChapterStore();
 
 // Form state
 const chapter = reactive({
-  chapterId: '',
-  name: '',
-  meta: ''
+  chapterId: "",
+  name: "",
+  meta: "",
 });
 
 const saveStatus = ref(null);
@@ -92,12 +116,14 @@ const isSaving = ref(false);
 const isEditMode = computed(() => !!route.params.id);
 
 // Reuse chapterId validation from scene validation composable
-const dummySceneData = reactive({ sceneId: '', chapterId: '' });
+const dummySceneData = reactive({ sceneId: "", chapterId: "" });
 const { validateChapterId } = useSceneValidation(dummySceneData);
 
-const errors = reactive({ chapterId: '' });
+const errors = reactive({ chapterId: "" });
 
-const isFormValid = computed(() => !errors.chapterId && chapter.chapterId.trim() !== '');
+const isFormValid = computed(
+  () => !errors.chapterId && chapter.chapterId.trim() !== "",
+);
 
 function validateChapterIdField() {
   errors.chapterId = validateChapterId(chapter.chapterId);
@@ -111,35 +137,54 @@ async function handleSave() {
   saveStatus.value = null;
 
   try {
-    const pid = project.currentProject?.id || 'default';
-    await chapterStore.upsert({ id: chapter.chapterId, name: chapter.name, meta: chapter.meta, projectId: pid });
-    saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" created.` };
+    const pid = project.currentProject?.id || "default";
+    await chapterStore.upsert({
+      id: chapter.chapterId,
+      name: chapter.name,
+      meta: chapter.meta,
+      projectId: pid,
+    });
+    saveStatus.value = {
+      type: "success",
+      message: `Chapter "${chapter.chapterId}" created.`,
+    };
     toast.success(`Chapter "${chapter.chapterId}" created`);
     setTimeout(() => {
       saveStatus.value = null;
-      router.push('/chapters');
+      router.push("/chapters");
     }, 1200);
   } catch (err) {
     try {
-      await saveChapterLocal({ id: chapter.chapterId, name: chapter.name, scenes: [], order: Date.now(), projectId: project.currentProject?.id || 'default' });
-      saveStatus.value = { type: 'success', message: `Chapter "${chapter.chapterId}" saved locally (offline).` };
+      await saveChapterLocal({
+        id: chapter.chapterId,
+        name: chapter.name,
+        scenes: [],
+        order: Date.now(),
+        projectId: project.currentProject?.id || "default",
+      });
+      saveStatus.value = {
+        type: "success",
+        message: `Chapter "${chapter.chapterId}" saved locally (offline).`,
+      };
       toast.info(`Chapter "${chapter.chapterId}" saved locally (offline)`);
       setTimeout(() => {
         saveStatus.value = null;
-        router.push('/chapters');
+        router.push("/chapters");
       }, 1400);
     } catch (e2) {
-      saveStatus.value = { type: 'error', message: `Failed to create chapter: ${err.message}` };
+      saveStatus.value = {
+        type: "error",
+        message: `Failed to create chapter: ${err.message}`,
+      };
       toast.error(`Failed to create chapter: ${err.message}`);
     }
   } finally {
-
     isSaving.value = false;
   }
 }
 
 function handleCancel() {
-  router.push('/chapters');
+  router.push("/chapters");
 }
 
 onMounted(async () => {
@@ -148,11 +193,14 @@ onMounted(async () => {
       const data = await api.chapters.getById(route.params.id);
       if (data && data.id) {
         chapter.chapterId = data.id;
-        chapter.name = data.name || '';
-        chapter.meta = data.meta || '';
+        chapter.name = data.name || "";
+        chapter.meta = data.meta || "";
       }
     } catch (e) {
-      saveStatus.value = { type: 'error', message: `Failed to load chapter: ${e.message}` };
+      saveStatus.value = {
+        type: "error",
+        message: `Failed to load chapter: ${e.message}`,
+      };
     }
   }
 });
@@ -161,6 +209,9 @@ onMounted(async () => {
 <style scoped>
 /* Ensure touch-friendly controls on mobile */
 @media (max-width: 768px) {
-  input, button { touch-action: manipulation; }
+  input,
+  button {
+    touch-action: manipulation;
+  }
 }
 </style>

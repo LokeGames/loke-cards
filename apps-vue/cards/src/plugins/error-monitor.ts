@@ -1,4 +1,4 @@
-import { useDebugStore } from '../stores/debug.js';
+import { useDebugStore } from '@cards/stores/debug.js';
 
 import type { App } from 'vue';
 import type { Router } from 'vue-router';

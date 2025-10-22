@@ -1,1 +1,0 @@
-import"../chunks/DsnmJJEf.js";import"../chunks/C5HDdxh5.js";import{f as o,a as p,n as r}from"../chunks/B8En_kGa.js";var e=o('<h2 class="text-xl font-semibold mb-3">Story Map</h2> <p class="text-sm opacity-70">Graph view will be ported later.</p>',1);function i(t){var a=e();r(2),p(t,a)}export{i as component};

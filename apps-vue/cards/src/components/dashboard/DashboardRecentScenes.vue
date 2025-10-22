@@ -23,7 +23,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { toEditScene } from '../../router/guards.js'
+import { toEditScene } from '@cards/router/guards.js'
 const props = defineProps({ scenes: { type: Array, required: true }, loading: Boolean, error: String })
 const scenesValid = computed(() => (Array.isArray(props.scenes) ? props.scenes : []).filter(sc => sc && sc.sceneId))
 </script>

@@ -1,5 +1,5 @@
-import { forceHealthCheck } from '../api/client'
-import { useSyncStore } from '../stores/syncStore'
+import { forceHealthCheck } from '@cards/api/client'
+import { useSyncStore } from '@cards/stores/syncStore'
 
 export function startSyncHeartbeat(pinia, { intervalMs = 2000 } = {}) {
   const sync = useSyncStore(pinia)

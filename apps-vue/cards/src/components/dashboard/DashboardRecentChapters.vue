@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { toNewSceneWithChapter } from '../../router/guards.js'
+import { toNewSceneWithChapter } from '@cards/router/guards.js'
 defineProps({ chapters: { type: Array, required: true }, loading: Boolean, error: String })
 </script>
 

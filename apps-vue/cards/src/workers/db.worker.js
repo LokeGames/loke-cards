@@ -1,5 +1,5 @@
 // DB Worker: routes RPC calls to core DB (LocalForage or SQL.js) off the UI thread
-import { getDbCore } from '../lib/db/core.js'
+import { getDbCore } from '@shared/lib/db/core.js'
 
 let dbPromise = null
 function getDb() {

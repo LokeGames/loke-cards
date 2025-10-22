@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import api from '../api/client.js';
-import { normalizeScene, normalizeScenes } from '../lib/normalize.js';
-import { getDb } from '../lib/db/index.js';
-import { useProjectStore } from './project.js';
+import api from '@cards/api/client.js';
+import { normalizeScene, normalizeScenes } from '@cards/lib/normalize.js';
+import { getDb } from '@shared/lib/db/index.js';
+import { useProjectStore } from '@cards/stores/project.js';
 
 export const useSceneStore = defineStore('scenes', {
   state: () => ({

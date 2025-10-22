@@ -109,11 +109,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import api from '../api/client.js';
-import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '../lib/storage.js';
+import { getAllChapters as getAllChaptersLocal, getAllScenes as getAllScenesLocal, saveChapter as saveChapterLocal, saveScene as saveSceneLocal } from '@shared/lib/storage.js';
 import { importFromServerToLocal } from '../lib/importer.js';
 import { useProjectStore } from '../stores/project.js';
-import { getDbBackend, setDbBackend, getDbInWorker, setDbInWorker, getDb } from '../lib/db/index.js';
-import { useToastStore } from '../stores/toast.js';
+import { getDbBackend, setDbBackend, getDbInWorker, setDbInWorker, getDb } from '@shared/lib/db/index.js';
+import { useToastStore } from '@shared/stores/toast.js';
 
 const building = ref(false);
 const buildStatus = ref(null);
@@ -249,12 +249,12 @@ async function replaceLocalWithServer() {
     // Clear local entries for this project
     for (const ch of chs) {
       if ((ch?.projectId || 'default') === pid) {
-        try { await (await import('../lib/storage.js')).deleteChapter(ch.id); } catch {}
+        try { await (await import('@shared/lib/storage.js')).deleteChapter(ch.id); } catch {}
       }
     }
     for (const sc of scs) {
       if ((sc?.projectId || 'default') === pid) {
-        try { await (await import('../lib/storage.js')).deleteScene(sc.id); } catch {}
+        try { await (await import('@shared/lib/storage.js')).deleteScene(sc.id); } catch {}
       }
     }
     // Import fresh from server and stamp

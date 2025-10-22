@@ -1,13 +1,13 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import App from './App.vue'
-import router from './router'
-import './styles/main.css'
-import { setupErrorMonitoring } from './plugins/error-monitor'
-import { startSyncHeartbeat } from './plugins/sync-heartbeat'
-import { autoBootstrapLocalFromServerIfEmpty } from './lib/importer'
+import App from '@cards/App.vue'
+import router from '@cards/router'
+import '@cards/styles/main.css'
+import { setupErrorMonitoring } from '@cards/plugins/error-monitor'
+import { startSyncHeartbeat } from '@cards/plugins/sync-heartbeat'
+import { autoBootstrapLocalFromServerIfEmpty } from '@cards/lib/importer'
 import { useUiStore } from '@shared/stores/ui'
-import { useProjectStore } from './stores/project'
+import { useProjectStore } from '@cards/stores/project'
 
 // Create Vue app
 const app = createApp(App)

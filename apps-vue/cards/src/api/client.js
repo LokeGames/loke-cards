@@ -127,7 +127,7 @@ async function apiFetchAbs(endpoint, options = {}) {
   return await response.text();
 }
 
-import { normalizeScene, normalizeScenes, normalizeChapters } from '../lib/normalize.js';
+import { normalizeScene, normalizeScenes, normalizeChapters } from '@cards/lib/normalize.js';
 
 /**
  * Scene API endpoints

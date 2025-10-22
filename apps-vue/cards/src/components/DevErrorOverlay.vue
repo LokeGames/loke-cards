@@ -20,7 +20,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useDebugStore } from '../stores/debug';
+import { useDebugStore } from '@cards/stores/debug';
 
 const debug = useDebugStore();
 const open = ref(true);

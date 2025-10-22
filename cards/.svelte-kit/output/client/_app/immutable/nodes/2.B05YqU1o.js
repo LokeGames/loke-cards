@@ -1,1 +1,0 @@
-import"../chunks/DsnmJJEf.js";import"../chunks/C5HDdxh5.js";import{f as t,a,n as r}from"../chunks/B8En_kGa.js";var s=t('<h2 class="text-xl font-semibold mb-2">Welcome to Loke Cards (Svelte)</h2> <p class="text-sm opacity-80">Port in progress. This is a placeholder home page.</p>',1);function i(o){var e=s();r(2),a(o,e)}export{i as component};

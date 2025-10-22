@@ -1,6 +1,4 @@
 packages:
-  - 'cards'
-  - 'apps/*'
-  - 'workers/*'
-  - 'packages/*'
-  - 'shared'
+  - "apps/*"
+  - "packages/*"
+  - "workers/*"

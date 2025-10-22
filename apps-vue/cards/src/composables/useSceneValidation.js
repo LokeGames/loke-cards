@@ -1,5 +1,5 @@
 import { ref, computed, watch } from 'vue';
-import { isValidCIdentifier } from '../lib/validation.js';
+import { isValidCIdentifier } from '@shared/lib/validation.js';
 
 /**
  * useSceneValidation - Composable for validating scene editor form data

@@ -1,1 +1,0 @@
-import{w as r}from"./D_FywxHd.js";const i=r([]);function m(e,o={}){const t=crypto.randomUUID(),a={id:t,message:e,type:o.type||"info",timeout:o.timeout??3e3};return i.update(s=>[...s,a]),a.timeout&&setTimeout(()=>n(t),a.timeout),t}function n(e){i.update(o=>o.filter(t=>t.id!==e))}export{m as a,n as r,i as t};

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { projectStore as lfProjects, saveProject, getProject, getCurrentProject } from '@shared/lib/storage.js';
-import { emitProjectChange } from '../lib/events.js';
+import { emitProjectChange } from '@shared/lib/events.js';
 
 const KEY = 'LC_PROJECT_ID';
 
@@ -35,7 +35,7 @@ async function migrateStampProjectIdOnLocal() {
     }
   };
   try {
-    const { sceneStore, chapterStore } = await import('../lib/storage.js');
+    const { sceneStore, chapterStore } = await import('@shared/lib/storage.js');
     await stamp(sceneStore);
     await stamp(chapterStore);
   } catch {}

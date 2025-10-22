@@ -1,1 +1,0 @@
-import"../chunks/DsnmJJEf.js";import"../chunks/C5HDdxh5.js";import{f as o,a,n as p}from"../chunks/B8En_kGa.js";var r=o('<h2 class="text-xl font-semibold mb-3">C Code</h2> <p class="text-sm opacity-70">Code generation/preview will be implemented during port.</p>',1);function s(e){var t=r();p(2),a(e,t)}export{s as component};

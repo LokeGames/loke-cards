@@ -23,9 +23,9 @@
 <script setup>
 import AppHeader from '@shared/components/AppHeader.vue'
 import AppSidebar from '@shared/components/AppSidebar.vue'
-import DevErrorOverlay from './components/DevErrorOverlay.vue'
-import ToastContainer from './components/ToastContainer.vue'
-import ErrorBoundary from './components/ErrorBoundary.vue'
+import DevErrorOverlay from '@cards/components/DevErrorOverlay.vue'
+import ToastContainer from '@cards/components/ToastContainer.vue'
+import ErrorBoundary from '@cards/components/ErrorBoundary.vue'
 const isDev = import.meta.env.DEV
 </script>
 

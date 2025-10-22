@@ -3,8 +3,8 @@
  * Debounced auto-save for draft scenes
  */
 
-import { saveDraft } from './storage.js';
-import { setSyncStatus } from './state.js';
+import { saveDraft } from '@shared/lib/storage.js';
+import { setSyncStatus } from '@cards/lib/state.js';
 
 let saveTimeout = null;
 const AUTOSAVE_DELAY = 2000; // 2 seconds

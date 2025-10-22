@@ -2,18 +2,18 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 // Project scoping guard
 // @ts-ignore JS modules
 import { getScene as getLocalScene, getChapter as getLocalChapter } from "@shared/lib/storage.js";
-import type { RouteName } from './typed';
+import type { RouteName } from '@cards/router/typed';
 // Eager-load primary views to avoid async import race conditions
-import DashboardView from '../views/DashboardView.vue';
-import SceneListView from '../views/SceneListView.vue';
-import SceneEditorView from '../views/SceneEditorView.vue';
-import ChapterListView from '../views/ChapterListView.vue';
-import ChapterEditorView from '../views/ChapterEditorView.vue';
-import CodeView from '../views/CodeView.vue';
-import SettingsView from '../views/SettingsView.vue';
-import BookTocView from '../views/BookTocView.vue';
-import BaseButtonTestView from '../views/BaseButtonTestView.vue';
-import NotFoundView from '../views/NotFoundView.vue';
+import DashboardView from '@cards/views/DashboardView.vue';
+import SceneListView from '@cards/views/SceneListView.vue';
+import SceneEditorView from '@cards/views/SceneEditorView.vue';
+import ChapterListView from '@cards/views/ChapterListView.vue';
+import ChapterEditorView from '@cards/views/ChapterEditorView.vue';
+import CodeView from '@cards/views/CodeView.vue';
+import SettingsView from '@cards/views/SettingsView.vue';
+import BookTocView from '@cards/views/BookTocView.vue';
+import BaseButtonTestView from '@cards/views/BaseButtonTestView.vue';
+import NotFoundView from '@cards/views/NotFoundView.vue';
 
 const routes: RouteRecordRaw[] = [
   {

@@ -1,1 +1,0 @@
-export { default as component } from "../../../../src/routes/worker-cards-crud/+page.svelte";

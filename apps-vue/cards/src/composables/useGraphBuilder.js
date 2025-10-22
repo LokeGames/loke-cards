@@ -34,7 +34,7 @@ export function buildChapterNodes(chapters) {
  * @param {string} parentChapterId - Optional parent chapter ID for grouping
  * @returns {Array} Vue Flow nodes
  */
-import { normalizeScene } from '../lib/normalize.js'
+import { normalizeScene } from '@cards/lib/normalize.js'
 
 export function buildSceneNodes(scenes, parentChapterId = null) {
   return scenes.map((raw) => {

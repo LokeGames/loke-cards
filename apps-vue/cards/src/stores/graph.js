@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
-import api from '../api/client.js';
+import api from '@cards/api/client.js'
 import {
   getAllChapters as getAllChaptersLocal,
   getAllScenes as getAllScenesLocal,
   getScene as getSceneLocal,
   saveScene as saveSceneLocal,
   saveChapter as saveChapterLocal,
-} from '../lib/storage.js';
-import { normalizeChapter, normalizeChapters, normalizeScene as normalizeSceneShape, normalizeScenes } from '../lib/normalize.js';
+} from '@shared/lib/storage.js'
+import { normalizeChapter, normalizeChapters, normalizeScene as normalizeSceneShape, normalizeScenes } from '@cards/lib/normalize.js'
 
 // Use shared normalizers from lib/normalize.js
 
