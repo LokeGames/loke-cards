@@ -4,36 +4,14 @@ export const nodes = [
 	() => import('./nodes/0'),
 	() => import('./nodes/1'),
 	() => import('./nodes/2'),
-	() => import('./nodes/3'),
-	() => import('./nodes/4'),
-	() => import('./nodes/5'),
-	() => import('./nodes/6'),
-	() => import('./nodes/7'),
-	() => import('./nodes/8'),
-	() => import('./nodes/9'),
-	() => import('./nodes/10'),
-	() => import('./nodes/11'),
-	() => import('./nodes/12'),
-	() => import('./nodes/13'),
-	() => import('./nodes/14')
+	() => import('./nodes/3')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
 		"/": [2],
-		"/cards": [3],
-		"/cards/editor": [4],
-		"/cards/scenes": [5],
-		"/chapters": [7],
-		"/chapter/new": [6],
-		"/graph": [8],
-		"/graph/chapter/[id]": [9],
-		"/graph/global": [10],
-		"/scenes": [12],
-		"/scene/new": [11],
-		"/settings": [13],
-		"/toc": [14]
+		"/settings": [3]
 	};
 
 export const hooks = {

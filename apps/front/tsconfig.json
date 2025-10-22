@@ -1,6 +1,14 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "paths": {
+      "@shared/*": ["../../shared/src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@apps-cards/*": ["../../apps/cards/src/*"],
+      "@apps-graph/*": ["../../apps/graph/src/*"],
+      "@schemas/*": ["../../packages/schemas/src/*"],
+      "@workers-data/*": ["../../workers/data/src/*"]
+    }
   }
 }

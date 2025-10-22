@@ -3,42 +3,7 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.ts"
 	],
-	"/cards": [
-		"src/routes/+layout.ts"
-	],
-	"/cards/editor": [
-		"src/routes/+layout.ts"
-	],
-	"/cards/scenes": [
-		"src/routes/+layout.ts"
-	],
-	"/chapters": [
-		"src/routes/+layout.ts"
-	],
-	"/chapter/new": [
-		"src/routes/+layout.ts"
-	],
-	"/graph": [
-		"src/routes/+layout.ts"
-	],
-	"/graph/chapter/[id]": [
-		"src/routes/+layout.ts"
-	],
-	"/graph/global": [
-		"src/routes/+layout.ts"
-	],
-	"/scenes": [
-		"src/routes/scenes/+page.ts",
-		"src/routes/+layout.ts"
-	],
-	"/scene/new": [
-		"src/routes/scene/new/+page.ts",
-		"src/routes/+layout.ts"
-	],
 	"/settings": [
-		"src/routes/+layout.ts"
-	],
-	"/toc": [
 		"src/routes/+layout.ts"
 	]
 }

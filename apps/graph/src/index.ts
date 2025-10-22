@@ -1,3 +1,2 @@
-// Placeholder Svelte library entry for Graph micro-app
-export {};
-
+// Graph micro-app entry
+export * from "./menu";
