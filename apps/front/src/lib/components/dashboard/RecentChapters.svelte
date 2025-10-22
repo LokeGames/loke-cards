@@ -1,23 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import * as Comlink from 'comlink';
+  import { db } from '@loke/shared/database';
   import type { Chapter } from '@schemas';
-
-  type DataApi = {
-    chapters: { list(): Promise<Chapter[]> };
-  };
 
   let chapters: Chapter[] = [];
   let loading = true;
 
   onMount(async () => {
     try {
-      const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-      worker.port.start();
-      const api = Comlink.wrap<DataApi>(worker.port);
-      
-      const allChapters = await api.chapters.list();
+      const allChapters = await db.getAllChapters();
       // Sort by updatedAt descending to get most recent first
       chapters = allChapters
         .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
@@ -63,8 +55,9 @@
   {:else}
     <div class="space-y-3">
       {#each chapters as chapter}
-        <div 
-          class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+        <button
+          type="button"
+          class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors text-left"
           on:click={() => goToChapter(chapter)}
         >
           <div class="flex items-center justify-between">
@@ -76,7 +69,7 @@
               {formatDate(chapter.updatedAt || chapter.createdAt)}
             </div>
           </div>
-        </div>
+        </button>
       {/each}
     </div>
   {/if}

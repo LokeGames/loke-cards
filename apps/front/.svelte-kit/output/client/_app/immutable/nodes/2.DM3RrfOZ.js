@@ -1,1 +1,0 @@
-import"../chunks/DsnmJJEf.js";import"../chunks/BnfXkLE3.js";import{f as a,a as e,n as m}from"../chunks/yF9IpEO4.js";var p=a('<h2 class="text-xl font-semibold mb-2">Shell Home</h2> <p class="text-sm opacity-80">PWA Shell is active.</p>',1);function n(t){var o=p();m(2),e(t,o)}export{n as component};

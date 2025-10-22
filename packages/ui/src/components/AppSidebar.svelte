@@ -8,15 +8,16 @@
   onMount(async () => {
     try {
       // Load cards menu
-      const cardsModule = await import('@apps-cards');
+      const cardsModule = await import('@loke/apps-cards');
       cardsMenuItems = cardsModule.cardsMenu || [];
-      
+
       // Load graph menu (if available)
       try {
-        const graphModule = await import('@apps-graph');
+        const graphModule = await import('@loke/apps-graph');
         graphMenuItems = graphModule.graphMenu || [];
       } catch (e) {
         // Graph module not available
+        console.log('Graph menu not available');
       }
     } catch (error) {
       console.error('Failed to load menus:', error);

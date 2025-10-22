@@ -1,37 +1,20 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import * as Comlink from 'comlink';
+  import { db } from '@loke/shared/database';
   import type { Chapter } from '@schemas';
 
   export let showList = true;
-
-  type DataApi = {
-    chapters: {
-      list(): Promise<Chapter[]>;
-      create(chapter: Chapter): Promise<Chapter>;
-    };
-  };
 
   let chapters: Chapter[] = [];
   let title = '';
   let status = '';
   let loading = false;
 
-  let api: Comlink.Remote<DataApi> | null = null;
-
-  function getApi() {
-    if (api) return api;
-    const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-    worker.port.start();
-    api = Comlink.wrap<DataApi>(worker.port);
-    return api;
-  }
-
   async function loadChapters() {
     if (!showList) return;
     loading = true;
     try {
-      chapters = await getApi().chapters.list();
+      chapters = await db.getAllChapters();
     } finally {
       loading = false;
     }
@@ -49,7 +32,7 @@
     }
     const now = Date.now();
     const chapterId = name.toLowerCase().replace(/\s+/g, '-');
-    await getApi().chapters.create({
+    await db.createChapter({
       chapterId,
       title: name,
       createdAt: now,

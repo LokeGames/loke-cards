@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@loke/shared": "workspace:*",
-    "@loke/worker-client": "workspace:*",
-    "comlink": "^4.4.2"
+    "@loke/ui": "workspace:*"
   }
 }

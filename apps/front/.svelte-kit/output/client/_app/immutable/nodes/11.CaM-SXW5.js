@@ -1,1 +1,0 @@
-import{r as e}from"../chunks/DKotOqJ4.js";const r=()=>{throw e(307,"/cards/editor")},t=Object.freeze(Object.defineProperty({__proto__:null,load:r},Symbol.toStringTag,{value:"Module"}));export{t as universal};

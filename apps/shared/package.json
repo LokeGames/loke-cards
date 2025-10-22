@@ -6,7 +6,10 @@
   "description": "Shared utilities and types",
   "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./database": "./src/database.ts",
+    "./types": "./src/types.ts",
+    "./utils": "./src/utils.ts"
   },
   "scripts": {
     "test": "vitest run",

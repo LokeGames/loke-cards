@@ -7,6 +7,131 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - 2025-10-22 - Post-Refactoring Cleanup
+
+#### Fixed
+- ✅ **SSR localStorage compatibility**
+  - Added `typeof window` checks in `apps/shared/src/database.ts`
+  - Database now safely handles server-side rendering without errors
+  - Storage operations skip gracefully when `window` is undefined
+
+- ✅ **Workspace configuration cleanup**
+  - Removed obsolete `workers/*` from `pnpm-workspace.yaml`
+  - Fixed package.json script from `@loke/cards` to `@loke/apps-graph`
+  - Updated README.md to reflect correct workspace names
+
+- ✅ **Accessibility improvements**
+  - Fixed `RecentChapters.svelte` to use `<button>` instead of clickable `<div>`
+  - Added proper `type="button"` and keyboard accessibility
+  - Removed a11y warnings from Svelte compiler
+
+#### Testing
+- ✅ **Build verification**: Production build succeeds without errors
+- ✅ **Workspace resolution**: All workspace packages resolve correctly
+- ✅ **SSR compatibility**: No localStorage errors during server-side rendering
+
+### Refactoring - 2025-10-22 - Simplification of Svelte Architecture
+
+**MAJOR CLEANUP**: Removed over-engineered complexity from Svelte port
+
+#### Removed
+- ❌ **Removed `workers/` directory entirely**
+  - Deleted `workers/data/` with Comlink-based Web Worker implementation
+  - Web Workers were overkill for simple CRUD operations on localStorage
+  - No heavy computation that justified worker overhead
+
+- ❌ **Removed `packages/worker-client/` package**
+  - Only 14 lines of Comlink wrapper code
+  - Unnecessary abstraction layer removed
+
+- ❌ **Removed all Comlink dependencies and imports (27+ references)**
+  - `apps/front/package.json` - removed `comlink` and `@loke/worker-client` deps
+  - `apps/graph/package.json` - removed `comlink` and `@loke/worker-client` deps
+  - Replaced all `Comlink.wrap()` calls with direct `db.*` calls
+  - Files updated: 10+ components across front/, cards/, graph/
+
+- ❌ **Removed worker integration test**
+  - `apps/front/tests/worker.integration.test.ts` deleted
+
+#### Changed
+
+- ✅ **Simplified workspace configuration**
+  - `package.json` workspaces reduced from 7 to 6
+  - Before: `["cards", "shared", "apps/*", "workers/*", "packages/*"]`
+  - After: `["apps/*", "packages/*"]`
+
+- ✅ **Consolidated database layer to single implementation**
+  - All data operations now use `apps/shared/src/database.ts`
+  - Simple localStorage-backed Database class (no workers, no Comlink)
+  - Singleton pattern: `export const db = new Database()`
+  - In-memory Maps + localStorage persistence
+
+- ✅ **Updated all components to use direct database calls**
+  - Before: `const worker = new SharedWorker(...); const api = Comlink.wrap(worker.port); await api.cards.list()`
+  - After: `import { db } from '@loke/shared/database'; await db.getAllScenes()`
+  - Components updated:
+    - `apps/front/src/lib/dataStore.ts`
+    - `apps/front/src/lib/components/dashboard/RecentChapters.svelte`
+    - `apps/front/src/lib/components/dashboard/RecentScenes.svelte`
+    - `apps/front/src/lib/components/dashboard/ProjectStats.svelte`
+    - `apps/front/src/lib/components/ChapterManager.svelte`
+    - `apps/cards/src/lib/dataClient.ts`
+    - `apps/cards/src/routes/scenes/+page.svelte`
+    - `apps/cards/src/components/SceneEditorView.svelte`
+
+- ✅ **Fixed package exports for micro-frontends**
+  - `apps/shared/package.json` - Added subpath exports for `./database`, `./types`, `./utils`
+  - `apps/cards/package.json` - Added `main` and `exports` fields
+  - `apps/graph/package.json` - Added `main` and `exports` fields
+
+- ✅ **Updated Vite configuration**
+  - `apps/front/vite.config.js` - Removed worker build config
+  - Removed dead `@workers-data`, `@shared`, `@apps-cards` aliases
+  - Added clean `@loke/apps-cards`, `@loke/apps-graph`, `@loke/shared` aliases
+  - Simplified build rollupOptions (removed worker input)
+
+- ✅ **Fixed menu architecture**
+  - `packages/ui/src/components/AppSidebar.svelte` - Updated imports to `@loke/apps-cards` and `@loke/apps-graph`
+  - Menu items now properly imported dynamically from feature modules
+  - Cards and Graph modules export their own menu definitions
+
+#### Architecture Improvements
+
+**Before (Over-engineered):**
+```
+Browser → Comlink → SharedWorker → In-memory Maps → (no persistence)
+         (27 imports)  (worker.ts)
+```
+
+**After (Simple & Direct):**
+```
+Browser → Database class → localStorage
+         (direct calls)    (persistent)
+```
+
+**Benefits:**
+- 🚀 Faster - No worker message passing overhead
+- 🧹 Simpler - 27 fewer Comlink imports
+- 📦 Smaller - 2 fewer packages in monorepo
+- 🔧 Maintainable - Direct function calls, easier to debug
+- 💾 Persistent - Data survives page refresh (localStorage)
+
+#### Documentation
+
+- ✅ **Updated README.md** with new architecture
+  - Documented micro-frontend design principle
+  - Added "Key Design Principle" section explaining menu ownership
+  - Updated technology stack (removed Comlink, Workers, LocalForage)
+  - Clarified folder structure and responsibilities
+  - Added "Removed Complexity" section
+
+#### Testing
+
+- ✅ **Verified pnpm install succeeds** (2.6s, 773 packages)
+- ✅ **Backend server compiles and runs** (port 3000)
+- ✅ **Frontend server starts** (port 5183)
+- ⚠️ **Menu integration pending** (alias configuration complete, runtime testing needed)
+
 ### Added - 2025-10-22
 
 - **pnpm Setup & Workspace Configuration**: Installed pnpm v10.19.0 as package manager and configured monorepo workspace

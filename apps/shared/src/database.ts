@@ -92,6 +92,7 @@ class Database {
   }
 
   private saveToStorage(): void {
+    if (typeof window === 'undefined') return; // Skip on server-side
     try {
       const data = {
         scenes: Array.from(this.scenes.entries()),
@@ -104,6 +105,7 @@ class Database {
   }
 
   private loadFromStorage(): void {
+    if (typeof window === 'undefined') return; // Skip on server-side
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (stored) {
@@ -120,7 +122,9 @@ class Database {
   async clear(): Promise<void> {
     this.scenes.clear();
     this.chapters.clear();
-    localStorage.removeItem(this.STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.STORAGE_KEY);
+    }
   }
 }
 

@@ -1,22 +1,10 @@
 import { writable, type Writable } from 'svelte/store';
-import * as Comlink from 'comlink';
+import { db } from '@loke/shared/database';
 
-type DataApi = {
-  ping(): 'pong';
-};
-
-export const dataApi: Writable<Comlink.Remote<DataApi> | null> = writable(null);
+// Simple store for database instance - no workers, no Comlink
+export const dataApi: Writable<typeof db | null> = writable(db);
 
 export function initDataApi(): void {
-  try {
-    // Using the same worker entry as cards; Comlink wraps the SharedWorker port
-    const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-    worker.port.start();
-    const api = Comlink.wrap<DataApi>(worker.port);
-    dataApi.set(api);
-  } catch (e) {
-    // In non-browser or unsupported environments just leave null
-    dataApi.set(null);
-  }
+  // Database is already initialized as singleton
+  dataApi.set(db);
 }
-

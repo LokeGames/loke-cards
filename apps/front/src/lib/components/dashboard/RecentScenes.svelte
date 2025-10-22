@@ -1,23 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import * as Comlink from 'comlink';
+  import { db } from '@loke/shared/database';
   import type { Scene } from '@schemas';
-
-  type DataApi = {
-    cards: { list(): Promise<Scene[]> };
-  };
 
   let scenes: Scene[] = [];
   let loading = true;
 
   onMount(async () => {
     try {
-      const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-      worker.port.start();
-      const api = Comlink.wrap<DataApi>(worker.port);
-      
-      const allScenes = await api.cards.list();
+      const allScenes = await db.getAllScenes();
       // Sort by updatedAt descending to get most recent first
       scenes = allScenes
         .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))

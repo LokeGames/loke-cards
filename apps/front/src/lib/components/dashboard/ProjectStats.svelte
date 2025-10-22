@@ -1,12 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import * as Comlink from 'comlink';
+  import { db } from '@loke/shared/database';
   import type { Chapter, Scene } from '@schemas';
-
-  type DataApi = {
-    chapters: { list(): Promise<Chapter[]> };
-    cards: { list(): Promise<Scene[]> };
-  };
 
   let chaptersCount = 0;
   let scenesCount = 0;
@@ -14,15 +9,11 @@
 
   onMount(async () => {
     try {
-      const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-      worker.port.start();
-      const api = Comlink.wrap<DataApi>(worker.port);
-      
       const [chapters, scenes] = await Promise.all([
-        api.chapters.list(),
-        api.cards.list()
+        db.getAllChapters(),
+        db.getAllScenes()
       ]);
-      
+
       chaptersCount = chapters.length;
       scenesCount = scenes.length;
     } catch (error) {

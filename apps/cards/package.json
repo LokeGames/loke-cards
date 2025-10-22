@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "description": "Cards micro-app (Svelte library)",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "test": "vitest run",
     "test:unit": "vitest run",

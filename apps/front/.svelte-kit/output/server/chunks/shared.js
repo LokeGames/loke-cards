@@ -1,4 +1,4 @@
-import { b as base64_encode, t as text_decoder, c as base64_decode } from "./utils2.js";
+import { b as base64_encode, t as text_decoder, c as base64_decode } from "./utils.js";
 const escaped = {
   "<": "\\u003C",
   "\\": "\\\\",
@@ -190,7 +190,11 @@ function unflatten(parsed, revivers) {
         const type = value[0];
         const reviver = revivers?.[type];
         if (reviver) {
-          return hydrated[index] = reviver(hydrate(value[1]));
+          let i = value[1];
+          if (typeof i !== "number") {
+            i = values.push(value[1]) - 1;
+          }
+          return hydrated[index] = reviver(hydrate(i));
         }
         switch (type) {
           case "Date":

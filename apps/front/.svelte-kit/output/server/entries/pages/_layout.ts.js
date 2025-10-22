@@ -1,15 +1,8 @@
 import { w as writable } from "../../chunks/index.js";
-import { w as wrap } from "../../chunks/comlink.js";
-const dataApi = writable(null);
+import { d as db } from "../../chunks/database.js";
+const dataApi = writable(db);
 function initDataApi() {
-  try {
-    const worker = new SharedWorker(new URL("@workers-data/worker.ts", import.meta.url), { type: "module" });
-    worker.port.start();
-    const api = wrap(worker.port);
-    dataApi.set(api);
-  } catch (e) {
-    dataApi.set(null);
-  }
+  dataApi.set(db);
 }
 const load = () => {
   if (typeof window !== "undefined") initDataApi();

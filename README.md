@@ -50,10 +50,10 @@ pnpm dev:front
 Frontend only (http://127.0.0.1:5183)
 
 ```bash
-pnpm dev:cards
+pnpm dev:graph
 ```
 
-Cards app only (http://127.0.0.1:5173)
+Graph app only (http://127.0.0.1:8092)
 
 ```bash
 pnpm dev:backend
@@ -126,41 +126,89 @@ Legacy apps are not part of the active toolchain and are kept read‑only during
 ```
 loke-cards/
 ├── apps/                # Active Svelte applications
-│   ├── cards/           # Cards micro-app (Svelte library)
-│   ├── front/           # PWA shell (SvelteKit)
-│   ├── graph/           # Graph micro-app (LiteGraph)
-│   └── shared/          # Shared utilities and types
+│   ├── front/           # PWA shell (SvelteKit) - Dashboard + Layout
+│   ├── cards/           # Cards micro-app - Scene/Chapter editors + menu
+│   ├── graph/           # Graph micro-app - Visualization + menu
+│   └── shared/          # Shared utilities, types, and database
 ├── packages/            # Shared packages
-│   ├── schemas/         # Zod schemas
-│   ├── ui/              # UI components
-│   └── worker-client/   # Worker client utilities
-├── workers/             # Web workers
-│   └── data/            # Data worker
-├── server/              # C++ backend server
+│   ├── schemas/         # Zod schemas for data validation
+│   └── ui/              # Shared UI components (Header, Sidebar, Toasts)
+├── server/              # C++ backend server (SQLite + REST API)
 ├── doc/                 # Documentation
 ├── scripts/             # Development scripts
 └── tests/               # E2E tests
 ```
 
-### Active Applications
+### Architecture Design
 
-- **`apps/front/`** - Main SvelteKit PWA shell (http://127.0.0.1:5183)
-- **`apps/cards/`** - Cards functionality as Svelte component library
-- **`apps/graph/`** - Graph visualization with LiteGraph.js
-- **`apps/shared/`** - Shared TypeScript utilities and types
+**Micro-frontend architecture** hvor hver feature-område er et selvstændigt modul:
+
+- **`apps/front/`** - SvelteKit PWA shell (http://127.0.0.1:5183)
+  - Dashboard med statistics og quick actions
+  - Layout (AppHeader, AppSidebar, AppToasts)
+  - Settings page
+  - **Import dynamisk menu** fra cards og graph moduler
+
+- **`apps/cards/`** - Cards feature modul (Svelte library)
+  - Scene editor komponenter
+  - Chapter manager komponenter
+  - **Eksporterer `cardsMenu`** til sidebar
+  - Routes defineret i `src/routes/` (ikke brugt af front endnu)
+
+- **`apps/graph/`** - Graph feature modul (LiteGraph)
+  - Graph visualization komponenter
+  - **Eksporterer `graphMenu`** til sidebar
+  - Routes defineret i `src/routes/` (ikke brugt af front endnu)
+
+- **`apps/shared/`** - Delte utilities
+  - Database (localStorage wrapper)
+  - TypeScript types
+  - Utility functions
+
+### Key Design Principle
+
+**Menu items tilhører deres feature-område**, ikke front app:
+```typescript
+// apps/cards/src/menu.ts - Cards definerer sine egne menu items
+export const cardsMenu = [
+  { label: "Scenes", href: "/cards/scenes", icon: "📄" },
+  { label: "Chapters", href: "/cards/chapters", icon: "📚" },
+  // ...
+];
+
+// packages/ui/src/components/AppSidebar.svelte - Front importerer dem
+const cardsModule = await import('@loke/apps-cards');
+cardsMenuItems = cardsModule.cardsMenu;
+```
 
 ### Legacy (Being Removed)
 
-- `apps-vue/` - Legacy Vue applications (read-only during migration)
+- `apps-vue/` - Legacy Vue applications (reference implementation)
 
 ## Technology Stack
 
-- **Vite** - Fast build tool and dev server
-- **Vanilla JavaScript** - No framework overhead
+### Frontend
+- **SvelteKit** - PWA framework with SSR/SSG capabilities
+- **Svelte 5** - Reactive UI components
+- **TypeScript** - Type-safe development
+- **Vite 7** - Fast build tool and dev server
 - **Tailwind CSS** - Utility-first CSS framework
-- **LocalForage** - Offline storage (IndexedDB/localStorage)
-- **PWA** - Progressive Web App with Service Worker
-- **Workbox** - Service Worker management
+- **pnpm** - Fast, disk-efficient package manager
+- **Workspaces** - Monorepo structure for micro-frontends
+
+### State & Storage
+- **localStorage** - Simple browser storage (via `apps/shared/database.ts`)
+- No external state management needed (Svelte's reactivity is sufficient)
+
+### Backend
+- **C++ HTTP Server** - Custom REST API (httplib.h)
+- **SQLite** - Lightweight database
+- **Port 3000** - Backend API endpoint
+
+### Removed Complexity
+- ❌ No Comlink (was overkill for simple CRUD)
+- ❌ No Web Workers (not needed without heavy computation)
+- ❌ No LocalForage (localStorage is sufficient)
 
 ## Features (Planned)
 

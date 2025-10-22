@@ -1,43 +1,53 @@
-const text_encoder = new TextEncoder();
-const text_decoder = new TextDecoder();
-function get_relative_path(from, to) {
-  const from_parts = from.split(/[/\\]/);
-  const to_parts = to.split(/[/\\]/);
-  from_parts.pop();
-  while (from_parts[0] === to_parts[0]) {
-    from_parts.shift();
-    to_parts.shift();
-  }
-  let i = from_parts.length;
-  while (i--) from_parts[i] = "..";
-  return from_parts.concat(to_parts).join("/");
+var is_array = Array.isArray;
+var index_of = Array.prototype.indexOf;
+var array_from = Array.from;
+var define_property = Object.defineProperty;
+var get_descriptor = Object.getOwnPropertyDescriptor;
+var object_prototype = Object.prototype;
+var array_prototype = Array.prototype;
+var get_prototype_of = Object.getPrototypeOf;
+var is_extensible = Object.isExtensible;
+const noop = () => {
+};
+function run(fn) {
+  return fn();
 }
-function base64_encode(bytes) {
-  if (globalThis.Buffer) {
-    return globalThis.Buffer.from(bytes).toString("base64");
+function run_all(arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i]();
   }
-  let binary = "";
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
 }
-function base64_decode(encoded) {
-  if (globalThis.Buffer) {
-    const buffer = globalThis.Buffer.from(encoded, "base64");
-    return new Uint8Array(buffer);
-  }
-  const binary = atob(encoded);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
+function deferred() {
+  var resolve;
+  var reject;
+  var promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+function fallback(value, fallback2, lazy = false) {
+  return value === void 0 ? lazy ? (
+    /** @type {() => V} */
+    fallback2()
+  ) : (
+    /** @type {V} */
+    fallback2
+  ) : value;
 }
 export {
-  text_encoder as a,
-  base64_encode as b,
-  base64_decode as c,
-  get_relative_path as g,
-  text_decoder as t
+  deferred as a,
+  array_prototype as b,
+  get_prototype_of as c,
+  define_property as d,
+  is_extensible as e,
+  index_of as f,
+  get_descriptor as g,
+  array_from as h,
+  is_array as i,
+  run as j,
+  fallback as k,
+  noop as n,
+  object_prototype as o,
+  run_all as r
 };

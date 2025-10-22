@@ -1,5 +1,5 @@
-import { n as noop } from "./utils.js";
-import { T as safe_not_equal, U as subscribe_to_store } from "./utils3.js";
+import { n as noop } from "./utils2.js";
+import { a as safe_not_equal } from "./equality.js";
 const subscriber_queue = [];
 function readable(value, start) {
   return {
@@ -53,13 +53,7 @@ function writable(value, start = noop) {
   }
   return { set, update, subscribe };
 }
-function get(store) {
-  let value;
-  subscribe_to_store(store, (_) => value = _)();
-  return value;
-}
 export {
-  get as g,
   readable as r,
   writable as w
 };

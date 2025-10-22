@@ -1,5 +1,44 @@
-import { b as HYDRATION_START, a as HYDRATION_END, V as STALE_REACTION, U as subscribe_to_store, W as ELEMENT_PRESERVE_ATTRIBUTE_CASE, X as ELEMENT_IS_INPUT, Y as ELEMENT_IS_NAMESPACED } from "./utils3.js";
-import { e as escape_html, a as set_ssr_context, b as ssr_context, p as push, c as pop } from "./context.js";
+import { t as to_class, b as to_style, c as clsx, a as attr } from "./attributes.js";
+import { e as escape_html } from "./escaping.js";
+import { a as set_ssr_context, b as ssr_context, p as push, c as pop } from "./context.js";
+const DERIVED = 1 << 1;
+const EFFECT = 1 << 2;
+const RENDER_EFFECT = 1 << 3;
+const BLOCK_EFFECT = 1 << 4;
+const BRANCH_EFFECT = 1 << 5;
+const ROOT_EFFECT = 1 << 6;
+const BOUNDARY_EFFECT = 1 << 7;
+const UNOWNED = 1 << 8;
+const DISCONNECTED = 1 << 9;
+const CLEAN = 1 << 10;
+const DIRTY = 1 << 11;
+const MAYBE_DIRTY = 1 << 12;
+const INERT = 1 << 13;
+const DESTROYED = 1 << 14;
+const EFFECT_RAN = 1 << 15;
+const EFFECT_TRANSPARENT = 1 << 16;
+const INSPECT_EFFECT = 1 << 17;
+const HEAD_EFFECT = 1 << 18;
+const EFFECT_PRESERVED = 1 << 19;
+const USER_EFFECT = 1 << 20;
+const REACTION_IS_UPDATING = 1 << 21;
+const ASYNC = 1 << 22;
+const ERROR_VALUE = 1 << 23;
+const STATE_SYMBOL = Symbol("$state");
+const LEGACY_PROPS = Symbol("legacy props");
+const STALE_REACTION = new class StaleReactionError extends Error {
+  name = "StaleReactionError";
+  message = "The reaction that called `getAbortSignal()` was re-run or destroyed";
+}();
+const COMMENT_NODE = 8;
+const HYDRATION_START = "[";
+const HYDRATION_START_ELSE = "[!";
+const HYDRATION_END = "]";
+const HYDRATION_ERROR = {};
+const ELEMENT_IS_NAMESPACED = 1;
+const ELEMENT_PRESERVE_ATTRIBUTE_CASE = 1 << 1;
+const ELEMENT_IS_INPUT = 1 << 2;
+const UNINITIALIZED = Symbol();
 const DOM_BOOLEAN_ATTRIBUTES = [
   "allowfullscreen",
   "async",
@@ -36,160 +75,6 @@ function is_boolean_attribute(name) {
 const PASSIVE_EVENTS = ["touchstart", "touchmove"];
 function is_passive_event(name) {
   return PASSIVE_EVENTS.includes(name);
-}
-function r(e) {
-  var t, f, n = "";
-  if ("string" == typeof e || "number" == typeof e) n += e;
-  else if ("object" == typeof e) if (Array.isArray(e)) {
-    var o = e.length;
-    for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
-  } else for (f in e) e[f] && (n && (n += " "), n += f);
-  return n;
-}
-function clsx$1() {
-  for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
-  return n;
-}
-const replacements = {
-  translate: /* @__PURE__ */ new Map([
-    [true, "yes"],
-    [false, "no"]
-  ])
-};
-function attr(name, value, is_boolean = false) {
-  if (name === "hidden" && value !== "until-found") {
-    is_boolean = true;
-  }
-  if (value == null || !value && is_boolean) return "";
-  const normalized = name in replacements && replacements[name].get(value) || value;
-  const assignment = is_boolean ? "" : `="${escape_html(normalized, true)}"`;
-  return ` ${name}${assignment}`;
-}
-function clsx(value) {
-  if (typeof value === "object") {
-    return clsx$1(value);
-  } else {
-    return value ?? "";
-  }
-}
-const whitespace = [..." 	\n\r\f \v\uFEFF"];
-function to_class(value, hash, directives) {
-  var classname = value == null ? "" : "" + value;
-  if (hash) {
-    classname = classname ? classname + " " + hash : hash;
-  }
-  if (directives) {
-    for (var key in directives) {
-      if (directives[key]) {
-        classname = classname ? classname + " " + key : key;
-      } else if (classname.length) {
-        var len = key.length;
-        var a = 0;
-        while ((a = classname.indexOf(key, a)) >= 0) {
-          var b = a + len;
-          if ((a === 0 || whitespace.includes(classname[a - 1])) && (b === classname.length || whitespace.includes(classname[b]))) {
-            classname = (a === 0 ? "" : classname.substring(0, a)) + classname.substring(b + 1);
-          } else {
-            a = b;
-          }
-        }
-      }
-    }
-  }
-  return classname === "" ? null : classname;
-}
-function append_styles(styles, important = false) {
-  var separator = important ? " !important;" : ";";
-  var css = "";
-  for (var key in styles) {
-    var value = styles[key];
-    if (value != null && value !== "") {
-      css += " " + key + ": " + value + separator;
-    }
-  }
-  return css;
-}
-function to_css_name(name) {
-  if (name[0] !== "-" || name[1] !== "-") {
-    return name.toLowerCase();
-  }
-  return name;
-}
-function to_style(value, styles) {
-  if (styles) {
-    var new_style = "";
-    var normal_styles;
-    var important_styles;
-    if (Array.isArray(styles)) {
-      normal_styles = styles[0];
-      important_styles = styles[1];
-    } else {
-      normal_styles = styles;
-    }
-    if (value) {
-      value = String(value).replaceAll(/\s*\/\*.*?\*\/\s*/g, "").trim();
-      var in_str = false;
-      var in_apo = 0;
-      var in_comment = false;
-      var reserved_names = [];
-      if (normal_styles) {
-        reserved_names.push(...Object.keys(normal_styles).map(to_css_name));
-      }
-      if (important_styles) {
-        reserved_names.push(...Object.keys(important_styles).map(to_css_name));
-      }
-      var start_index = 0;
-      var name_index = -1;
-      const len = value.length;
-      for (var i = 0; i < len; i++) {
-        var c = value[i];
-        if (in_comment) {
-          if (c === "/" && value[i - 1] === "*") {
-            in_comment = false;
-          }
-        } else if (in_str) {
-          if (in_str === c) {
-            in_str = false;
-          }
-        } else if (c === "/" && value[i + 1] === "*") {
-          in_comment = true;
-        } else if (c === '"' || c === "'") {
-          in_str = c;
-        } else if (c === "(") {
-          in_apo++;
-        } else if (c === ")") {
-          in_apo--;
-        }
-        if (!in_comment && in_str === false && in_apo === 0) {
-          if (c === ":" && name_index === -1) {
-            name_index = i;
-          } else if (c === ";" || i === len - 1) {
-            if (name_index !== -1) {
-              var name = to_css_name(value.substring(start_index, name_index).trim());
-              if (!reserved_names.includes(name)) {
-                if (c !== ";") {
-                  i++;
-                }
-                var property = value.substring(start_index, i).trim();
-                new_style += " " + property + ";";
-              }
-            }
-            start_index = i + 1;
-            name_index = -1;
-          }
-        }
-      }
-    }
-    if (normal_styles) {
-      new_style += append_styles(normal_styles);
-    }
-    if (important_styles) {
-      new_style += append_styles(important_styles, true);
-    }
-    new_style = new_style.trim();
-    return new_style === "" ? null : new_style;
-  }
-  return value == null ? null : String(value);
 }
 const BLOCK_OPEN = `<!--${HYDRATION_START}-->`;
 const BLOCK_CLOSE = `<!--${HYDRATION_END}-->`;
@@ -356,14 +241,14 @@ class Renderer {
     };
     if (typeof body === "function") {
       this.child((renderer) => {
-        const r2 = new Renderer(this.global, this);
-        body(r2);
+        const r = new Renderer(this.global, this);
+        body(r);
         if (this.global.mode === "async") {
-          return r2.#collect_content_async().then((content) => {
+          return r.#collect_content_async().then((content) => {
             close(renderer, content.body.replaceAll("<!---->", ""), content);
           });
         } else {
-          const content = r2.#collect_content();
+          const content = r.#collect_content();
           close(renderer, content.body.replaceAll("<!---->", ""), content);
         }
       });
@@ -380,14 +265,14 @@ class Renderer {
       this.global.set_title(head, path);
     };
     this.child((renderer) => {
-      const r2 = new Renderer(renderer.global, renderer);
-      fn(r2);
+      const r = new Renderer(renderer.global, renderer);
+      fn(r);
       if (renderer.global.mode === "async") {
-        return r2.#collect_content_async().then((content) => {
+        return r.#collect_content_async().then((content) => {
           close(content.head);
         });
       } else {
-        const content = r2.#collect_content();
+        const content = r.#collect_content();
         close(content.head);
       }
     });
@@ -736,28 +621,12 @@ function attributes(attrs, css_hash, classes, styles, flags = 0) {
   }
   return attr_str;
 }
+function stringify(value) {
+  return typeof value === "string" ? value : value == null ? "" : value + "";
+}
 function attr_class(value, hash, directives) {
   var result = to_class(value, hash, directives);
   return result ? ` class="${escape_html(result, true)}"` : "";
-}
-function store_get(store_values, store_name, store) {
-  if (store_name in store_values && store_values[store_name][0] === store) {
-    return store_values[store_name][2];
-  }
-  store_values[store_name]?.[1]();
-  store_values[store_name] = [store, null, void 0];
-  const unsub = subscribe_to_store(
-    store,
-    /** @param {any} v */
-    (v) => store_values[store_name][2] = v
-  );
-  store_values[store_name][1] = unsub;
-  return store_values[store_name][2];
-}
-function unsubscribe_stores(store_values) {
-  for (const store_name in store_values) {
-    store_values[store_name][1]();
-  }
 }
 function slot(renderer, $$props, name, slot_props, fallback_fn) {
   var slot_fn = $$props.$$slots?.[name];
@@ -784,14 +653,43 @@ function ensure_array_like(array_like_or_iterator) {
   return [];
 }
 export {
-  attr_class as a,
-  attr as b,
-  bind_props as c,
-  clsx as d,
-  ensure_array_like as e,
-  slot as f,
-  is_passive_event as i,
-  render as r,
-  store_get as s,
-  unsubscribe_stores as u
+  ASYNC as A,
+  BOUNDARY_EFFECT as B,
+  COMMENT_NODE as C,
+  DIRTY as D,
+  ERROR_VALUE as E,
+  slot as F,
+  HYDRATION_ERROR as H,
+  INERT as I,
+  LEGACY_PROPS as L,
+  MAYBE_DIRTY as M,
+  ROOT_EFFECT as R,
+  STATE_SYMBOL as S,
+  UNOWNED as U,
+  HYDRATION_END as a,
+  HYDRATION_START as b,
+  HYDRATION_START_ELSE as c,
+  EFFECT_RAN as d,
+  CLEAN as e,
+  EFFECT as f,
+  BLOCK_EFFECT as g,
+  BRANCH_EFFECT as h,
+  DESTROYED as i,
+  DERIVED as j,
+  EFFECT_TRANSPARENT as k,
+  EFFECT_PRESERVED as l,
+  INSPECT_EFFECT as m,
+  UNINITIALIZED as n,
+  HEAD_EFFECT as o,
+  STALE_REACTION as p,
+  RENDER_EFFECT as q,
+  USER_EFFECT as r,
+  DISCONNECTED as s,
+  REACTION_IS_UPDATING as t,
+  is_passive_event as u,
+  render as v,
+  bind_props as w,
+  stringify as x,
+  ensure_array_like as y,
+  attr_class as z
 };

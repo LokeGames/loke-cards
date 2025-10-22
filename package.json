@@ -8,7 +8,7 @@
     "dev:nodewatch": "bash scripts/dev-full.sh",
     "dev:backend": "bash scripts/dev-backend-watch.sh",
     "dev:front": "pnpm --filter @loke/front dev",
-    "dev:cards": "pnpm --filter @loke/cards dev",
+    "dev:graph": "pnpm --filter @loke/apps-graph dev",
     "build": "pnpm --filter @loke/front build",
     "preview": "pnpm --filter @loke/front preview",
     "check:types": "pnpm --filter @loke/* typecheck",
@@ -22,10 +22,7 @@
     "start": "bash scripts/dev-full.sh"
   },
   "workspaces": [
-    "cards",
-    "shared",
     "apps/*",
-    "workers/*",
     "packages/*"
   ],
   "keywords": [

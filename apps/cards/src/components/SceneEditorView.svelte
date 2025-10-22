@@ -5,17 +5,8 @@
   import { SceneTextEditor } from '../index';
   import { ChoicesList } from '../index';
   import { StateChangesList } from '../index';
+  import { db } from '@loke/shared/database';
   import type { Scene } from '@schemas';
-  import * as Comlink from 'comlink';
-
-  type DataApi = {
-    cards: {
-      get(id: string): Promise<Scene | null>;
-      create(s: Scene): Promise<Scene>;
-      update(s: Scene): Promise<Scene>;
-      list(): Promise<Scene[]>;
-    };
-  };
 
   export let sceneId: string | null = null;
   let chapterId = '';
@@ -25,19 +16,9 @@
   let state: { key: string; value: string }[] = [];
   let status: string = '';
 
-  let api: Comlink.Remote<DataApi> | null = null;
-  function getApi() {
-    if (api) return api;
-    const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-    worker.port.start();
-    api = Comlink.wrap<DataApi>(worker.port);
-    return api;
-  }
-
   onMount(async () => {
     if (!sceneId) return;
-    const a = getApi();
-    const existing = await a.cards.get(sceneId);
+    const existing = await db.getScene(sceneId);
     if (existing) {
       chapterId = existing.chapterId;
       title = existing.title;
@@ -46,7 +27,6 @@
   });
 
   async function save() {
-    const a = getApi();
     const now = Date.now();
     const s: Scene = {
       sceneId: sceneId || title.toLowerCase().replace(/\s+/g, '-'),
@@ -57,9 +37,9 @@
       updatedAt: now,
     } as Scene;
     if (sceneId) {
-      await a.cards.update(s);
+      await db.updateScene(sceneId, s);
     } else {
-      await a.cards.create(s);
+      await db.createScene(s);
       sceneId = s.sceneId;
     }
     status = 'saved';

@@ -1,16 +1,26 @@
-import * as Comlink from 'comlink';
+import { db } from '@loke/shared/database';
 import type { Chapter } from '@schemas';
 
-type DataApi = {
-  chapters: {
-    list(): Promise<Chapter[]>;
-  };
-};
-
 export async function getChapters(): Promise<Chapter[]> {
-  const worker = new SharedWorker(new URL('@workers-data/worker.ts', import.meta.url), { type: 'module' });
-  worker.port.start();
-  const api = Comlink.wrap<DataApi>(worker.port);
-  return api.chapters.list();
+  return db.getAllChapters();
 }
 
+export async function getScenes() {
+  return db.getAllScenes();
+}
+
+export async function createChapter(chapter: Omit<Chapter, 'id'>) {
+  return db.createChapter(chapter);
+}
+
+export async function createScene(scene: any) {
+  return db.createScene(scene);
+}
+
+export async function updateScene(id: string, updates: any) {
+  return db.updateScene(id, updates);
+}
+
+export async function deleteScene(id: string) {
+  return db.deleteScene(id);
+}
