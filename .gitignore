@@ -13,6 +13,7 @@ pnpm-lock.yaml
 dist/
 build/
 .vite/
+.svelte-kit/
 
 # Environment files
 .env
