@@ -1,0 +1,10 @@
+{
+  "name": "apps-vue-root",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "cards-vue",
+    "graph-vue",
+    "shared-vue"
+  ]
+}

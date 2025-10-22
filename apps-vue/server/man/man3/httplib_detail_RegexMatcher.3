@@ -1,0 +1,47 @@
+.TH "httplib::detail::RegexMatcher" 3 "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+httplib::detail::RegexMatcher
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <httplib\&.h>\fP
+.PP
+Inherits \fBhttplib::detail::MatcherBase\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBRegexMatcher\fP (const std::string &pattern)"
+.br
+.ti -1c
+.RI "bool \fBmatch\fP (\fBRequest\fP &request) const override"
+.br
+.in -1c
+
+Public Member Functions inherited from \fBhttplib::detail::MatcherBase\fP
+.in +1c
+.ti -1c
+.RI "\fBMatcherBase\fP (std::string pattern)"
+.br
+.ti -1c
+.RI "const std::string & \fBpattern\fP () const"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Performs std::regex_match on request path and stores the result in Request::matches
+.PP
+Note that regex match is performed directly on the whole request\&. This means that wildcard patterns may match multiple path segments with /: '/begin/(\&.*)/end' will match both '/begin/middle/end' and '/begin/1/2/end'\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "bool httplib::detail::RegexMatcher::match (\fBRequest\fP & request) const\fC [inline]\fP, \fC [override]\fP, \fC [virtual]\fP"
+
+.PP
+Implements \fBhttplib::detail::MatcherBase\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

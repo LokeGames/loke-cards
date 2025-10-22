@@ -1,0 +1,17 @@
+[Unit]
+Description=Loke Cards Backend (Dev API)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/loke-cards/server
+Environment=CORS_ALLOW_ORIGIN=http://127.0.0.1:8081
+ExecStart=/opt/loke-cards/server/server
+Restart=on-failure
+RestartSec=3
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
+

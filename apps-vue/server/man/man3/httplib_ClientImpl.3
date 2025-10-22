@@ -1,0 +1,526 @@
+.TH "httplib::ClientImpl" 3 "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+httplib::ClientImpl
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBSocket\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBClientImpl\fP (const std::string &host)"
+.br
+.ti -1c
+.RI "\fBClientImpl\fP (const std::string &host, int port)"
+.br
+.ti -1c
+.RI "\fBClientImpl\fP (const std::string &host, int port, const std::string &client_cert_path, const std::string &client_key_path)"
+.br
+.ti -1c
+.RI "virtual bool \fBis_valid\fP () const"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, ResponseHandler response_handler, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, const Headers &headers, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, const Headers &headers, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, const Headers &headers, ResponseHandler response_handler, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, const Params &params, const Headers &headers, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, const Params &params, const Headers &headers, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBGet\fP (const std::string &path, const Params &params, const Headers &headers, ResponseHandler response_handler, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBHead\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBHead\fP (const std::string &path, const Headers &headers)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const char *body, size_t content_length, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const std::string &body, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, size_t content_length, ContentProvider content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, ContentProviderWithoutLength content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Params &params)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const UploadFormDataItems &items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const char *body, size_t content_length, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, size_t content_length, ContentProvider content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, ContentProviderWithoutLength content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const Params &params)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, const std::string &boundary, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, const FormDataProviderItems &provider_items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPost\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const char *body, size_t content_length, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const std::string &body, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, size_t content_length, ContentProvider content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, ContentProviderWithoutLength content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Params &params)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const UploadFormDataItems &items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const char *body, size_t content_length, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, size_t content_length, ContentProvider content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, ContentProviderWithoutLength content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const Params &params)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, const std::string &boundary, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, const FormDataProviderItems &provider_items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPut\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const char *body, size_t content_length, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const std::string &body, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, size_t content_length, ContentProvider content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, ContentProviderWithoutLength content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Params &params)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const UploadFormDataItems &items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const char *body, size_t content_length, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, size_t content_length, ContentProvider content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, ContentProviderWithoutLength content_provider, const std::string &content_type, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const Params &params)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, const std::string &boundary, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const UploadFormDataItems &items, const FormDataProviderItems &provider_items, UploadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBPatch\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, ContentReceiver content_receiver, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const char *body, size_t content_length, const std::string &content_type, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const std::string &body, const std::string &content_type, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const Params &params, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const Headers &headers, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const Headers &headers, const char *body, size_t content_length, const std::string &content_type, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const Headers &headers, const std::string &body, const std::string &content_type, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBDelete\fP (const std::string &path, const Headers &headers, const Params &params, DownloadProgress progress=nullptr)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBOptions\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBOptions\fP (const std::string &path, const Headers &headers)"
+.br
+.ti -1c
+.RI "bool \fBsend\fP (\fBRequest\fP &req, \fBResponse\fP &res, Error &error)"
+.br
+.ti -1c
+.RI "\fBResult\fP \fBsend\fP (const \fBRequest\fP &req)"
+.br
+.ti -1c
+.RI "void \fBstop\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBhost\fP () const"
+.br
+.ti -1c
+.RI "int \fBport\fP () const"
+.br
+.ti -1c
+.RI "size_t \fBis_socket_open\fP () const"
+.br
+.ti -1c
+.RI "socket_t \fBsocket\fP () const"
+.br
+.ti -1c
+.RI "void \fBset_hostname_addr_map\fP (std::map< std::string, std::string > addr_map)"
+.br
+.ti -1c
+.RI "void \fBset_default_headers\fP (Headers headers)"
+.br
+.ti -1c
+.RI "void \fBset_header_writer\fP (std::function< ssize_t(\fBStream\fP &, Headers &)> const &writer)"
+.br
+.ti -1c
+.RI "void \fBset_address_family\fP (int family)"
+.br
+.ti -1c
+.RI "void \fBset_tcp_nodelay\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_ipv6_v6only\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_socket_options\fP (SocketOptions socket_options)"
+.br
+.ti -1c
+.RI "void \fBset_connection_timeout\fP (time_t sec, time_t usec=0)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > void \fBset_connection_timeout\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "void \fBset_read_timeout\fP (time_t sec, time_t usec=0)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > void \fBset_read_timeout\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "void \fBset_write_timeout\fP (time_t sec, time_t usec=0)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > void \fBset_write_timeout\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "void \fBset_max_timeout\fP (time_t msec)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > void \fBset_max_timeout\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "void \fBset_basic_auth\fP (const std::string &username, const std::string &password)"
+.br
+.ti -1c
+.RI "void \fBset_bearer_token_auth\fP (const std::string &token)"
+.br
+.ti -1c
+.RI "void \fBset_keep_alive\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_follow_location\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_path_encode\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_compress\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_decompress\fP (bool on)"
+.br
+.ti -1c
+.RI "void \fBset_interface\fP (const std::string &intf)"
+.br
+.ti -1c
+.RI "void \fBset_proxy\fP (const std::string &host, int port)"
+.br
+.ti -1c
+.RI "void \fBset_proxy_basic_auth\fP (const std::string &username, const std::string &password)"
+.br
+.ti -1c
+.RI "void \fBset_proxy_bearer_token_auth\fP (const std::string &token)"
+.br
+.ti -1c
+.RI "void \fBset_logger\fP (Logger logger)"
+.br
+.ti -1c
+.RI "void \fBset_error_logger\fP (ErrorLogger error_logger)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual bool \fBcreate_and_connect_socket\fP (\fBSocket\fP &socket, Error &error)"
+.br
+.ti -1c
+.RI "virtual void \fBshutdown_ssl\fP (\fBSocket\fP &socket, bool shutdown_gracefully)"
+.br
+.ti -1c
+.RI "void \fBshutdown_socket\fP (\fBSocket\fP &socket) const"
+.br
+.ti -1c
+.RI "void \fBclose_socket\fP (\fBSocket\fP &socket)"
+.br
+.ti -1c
+.RI "bool \fBprocess_request\fP (\fBStream\fP &strm, \fBRequest\fP &req, \fBResponse\fP &res, bool close_connection, Error &error)"
+.br
+.ti -1c
+.RI "bool \fBwrite_content_with_provider\fP (\fBStream\fP &strm, const \fBRequest\fP &req, Error &error) const"
+.br
+.ti -1c
+.RI "void \fBcopy_settings\fP (const \fBClientImpl\fP &rhs)"
+.br
+.ti -1c
+.RI "void \fBoutput_log\fP (const \fBRequest\fP &req, const \fBResponse\fP &res) const"
+.br
+.ti -1c
+.RI "void \fBoutput_error_log\fP (const Error &err, const \fBRequest\fP *req) const"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "const std::string \fBhost_\fP"
+.br
+.ti -1c
+.RI "const int \fBport_\fP"
+.br
+.ti -1c
+.RI "const std::string \fBhost_and_port_\fP"
+.br
+.ti -1c
+.RI "\fBSocket\fP \fBsocket_\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBsocket_mutex_\fP"
+.br
+.ti -1c
+.RI "std::recursive_mutex \fBrequest_mutex_\fP"
+.br
+.ti -1c
+.RI "size_t \fBsocket_requests_in_flight_\fP = 0"
+.br
+.ti -1c
+.RI "std::thread::id \fBsocket_requests_are_from_thread_\fP = std::thread::id()"
+.br
+.ti -1c
+.RI "bool \fBsocket_should_be_closed_when_request_is_done_\fP = false"
+.br
+.ti -1c
+.RI "std::map< std::string, std::string > \fBaddr_map_\fP"
+.br
+.ti -1c
+.RI "Headers \fBdefault_headers_\fP"
+.br
+.ti -1c
+.RI "std::function< ssize_t(\fBStream\fP &, Headers &)> \fBheader_writer_\fP"
+.br
+.ti -1c
+.RI "std::string \fBclient_cert_path_\fP"
+.br
+.ti -1c
+.RI "std::string \fBclient_key_path_\fP"
+.br
+.ti -1c
+.RI "time_t \fBconnection_timeout_sec_\fP = CPPHTTPLIB_CONNECTION_TIMEOUT_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBconnection_timeout_usec_\fP = CPPHTTPLIB_CONNECTION_TIMEOUT_USECOND"
+.br
+.ti -1c
+.RI "time_t \fBread_timeout_sec_\fP = CPPHTTPLIB_CLIENT_READ_TIMEOUT_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBread_timeout_usec_\fP = CPPHTTPLIB_CLIENT_READ_TIMEOUT_USECOND"
+.br
+.ti -1c
+.RI "time_t \fBwrite_timeout_sec_\fP = CPPHTTPLIB_CLIENT_WRITE_TIMEOUT_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBwrite_timeout_usec_\fP = CPPHTTPLIB_CLIENT_WRITE_TIMEOUT_USECOND"
+.br
+.ti -1c
+.RI "time_t \fBmax_timeout_msec_\fP = CPPHTTPLIB_CLIENT_MAX_TIMEOUT_MSECOND"
+.br
+.ti -1c
+.RI "std::string \fBbasic_auth_username_\fP"
+.br
+.ti -1c
+.RI "std::string \fBbasic_auth_password_\fP"
+.br
+.ti -1c
+.RI "std::string \fBbearer_token_auth_token_\fP"
+.br
+.ti -1c
+.RI "bool \fBkeep_alive_\fP = false"
+.br
+.ti -1c
+.RI "bool \fBfollow_location_\fP = false"
+.br
+.ti -1c
+.RI "bool \fBpath_encode_\fP = true"
+.br
+.ti -1c
+.RI "int \fBaddress_family_\fP = AF_UNSPEC"
+.br
+.ti -1c
+.RI "bool \fBtcp_nodelay_\fP = CPPHTTPLIB_TCP_NODELAY"
+.br
+.ti -1c
+.RI "bool \fBipv6_v6only_\fP = CPPHTTPLIB_IPV6_V6ONLY"
+.br
+.ti -1c
+.RI "SocketOptions \fBsocket_options_\fP = nullptr"
+.br
+.ti -1c
+.RI "bool \fBcompress_\fP = false"
+.br
+.ti -1c
+.RI "bool \fBdecompress_\fP = true"
+.br
+.ti -1c
+.RI "std::string \fBinterface_\fP"
+.br
+.ti -1c
+.RI "std::string \fBproxy_host_\fP"
+.br
+.ti -1c
+.RI "int \fBproxy_port_\fP = \-1"
+.br
+.ti -1c
+.RI "std::string \fBproxy_basic_auth_username_\fP"
+.br
+.ti -1c
+.RI "std::string \fBproxy_basic_auth_password_\fP"
+.br
+.ti -1c
+.RI "std::string \fBproxy_bearer_token_auth_token_\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBlogger_mutex_\fP"
+.br
+.ti -1c
+.RI "Logger \fBlogger_\fP"
+.br
+.ti -1c
+.RI "ErrorLogger \fBerror_logger_\fP"
+.br
+.in -1c
+.SH "Member Data Documentation"
+.PP 
+.SS "std::function<ssize_t(\fBStream\fP &, Headers &)> httplib::ClientImpl::header_writer_\fC [protected]\fP"
+\fBInitial value:\fP.PP
+.nf
+=
+      detail::write_headers
+.fi
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

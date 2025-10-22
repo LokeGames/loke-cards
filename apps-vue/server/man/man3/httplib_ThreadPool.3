@@ -1,0 +1,54 @@
+.TH "httplib::ThreadPool" 3 "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+httplib::ThreadPool
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBhttplib::TaskQueue\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBThreadPool\fP (size_t n, size_t mqr=0)"
+.br
+.ti -1c
+.RI "\fBThreadPool\fP (const \fBThreadPool\fP &)=delete"
+.br
+.ti -1c
+.RI "bool \fBenqueue\fP (std::function< void()> fn) override"
+.br
+.ti -1c
+.RI "void \fBshutdown\fP () override"
+.br
+.in -1c
+
+Public Member Functions inherited from \fBhttplib::TaskQueue\fP
+.in +1c
+.ti -1c
+.RI "virtual void \fBon_idle\fP ()"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "struct \fBworker\fP"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "bool httplib::ThreadPool::enqueue (std::function< void()> fn)\fC [inline]\fP, \fC [override]\fP, \fC [virtual]\fP"
+
+.PP
+Implements \fBhttplib::TaskQueue\fP\&.
+.SS "void httplib::ThreadPool::shutdown ()\fC [inline]\fP, \fC [override]\fP, \fC [virtual]\fP"
+
+.PP
+Implements \fBhttplib::TaskQueue\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

@@ -1,0 +1,233 @@
+.TH "httplib::Server" 3 "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+httplib::Server
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum class \fBHandlerResponse\fP { \fBHandled\fP, \fBUnhandled\fP }"
+.br
+.ti -1c
+.RI "using \fBHandler\fP = std::function< void(const \fBRequest\fP &, \fBResponse\fP &)>"
+.br
+.ti -1c
+.RI "using \fBExceptionHandler\fP = std::function< void(const \fBRequest\fP &, \fBResponse\fP &, std::exception_ptr ep)>"
+.br
+.ti -1c
+.RI "using \fBHandlerWithResponse\fP = std::function< HandlerResponse(const \fBRequest\fP &, \fBResponse\fP &)>"
+.br
+.ti -1c
+.RI "using \fBHandlerWithContentReader\fP = std::function< void(const \fBRequest\fP &, \fBResponse\fP &, const \fBContentReader\fP &content_reader)>"
+.br
+.ti -1c
+.RI "using \fBExpect100ContinueHandler\fP = std::function< int(const \fBRequest\fP &, \fBResponse\fP &)>"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual bool \fBis_valid\fP () const"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBGet\fP (const std::string &pattern, Handler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBPost\fP (const std::string &pattern, Handler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBPost\fP (const std::string &pattern, HandlerWithContentReader handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBPut\fP (const std::string &pattern, Handler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBPut\fP (const std::string &pattern, HandlerWithContentReader handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBPatch\fP (const std::string &pattern, Handler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBPatch\fP (const std::string &pattern, HandlerWithContentReader handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBDelete\fP (const std::string &pattern, Handler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBDelete\fP (const std::string &pattern, HandlerWithContentReader handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBOptions\fP (const std::string &pattern, Handler handler)"
+.br
+.ti -1c
+.RI "bool \fBset_base_dir\fP (const std::string &dir, const std::string &mount_point=std::string())"
+.br
+.ti -1c
+.RI "bool \fBset_mount_point\fP (const std::string &mount_point, const std::string &dir, Headers headers=Headers())"
+.br
+.ti -1c
+.RI "bool \fBremove_mount_point\fP (const std::string &mount_point)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_file_extension_and_mimetype_mapping\fP (const std::string &ext, const std::string &mime)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_default_file_mimetype\fP (const std::string &mime)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_file_request_handler\fP (Handler handler)"
+.br
+.ti -1c
+.RI "template<class ErrorHandlerFunc > \fBServer\fP & \fBset_error_handler\fP (ErrorHandlerFunc &&handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_exception_handler\fP (ExceptionHandler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_pre_routing_handler\fP (HandlerWithResponse handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_post_routing_handler\fP (Handler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_pre_request_handler\fP (HandlerWithResponse handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_expect_100_continue_handler\fP (Expect100ContinueHandler handler)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_logger\fP (Logger logger)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_pre_compression_logger\fP (Logger logger)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_error_logger\fP (ErrorLogger error_logger)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_address_family\fP (int family)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_tcp_nodelay\fP (bool on)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_ipv6_v6only\fP (bool on)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_socket_options\fP (SocketOptions socket_options)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_default_headers\fP (Headers headers)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_header_writer\fP (std::function< ssize_t(\fBStream\fP &, Headers &)> const &writer)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_keep_alive_max_count\fP (size_t count)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_keep_alive_timeout\fP (time_t sec)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_read_timeout\fP (time_t sec, time_t usec=0)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > \fBServer\fP & \fBset_read_timeout\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_write_timeout\fP (time_t sec, time_t usec=0)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > \fBServer\fP & \fBset_write_timeout\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_idle_interval\fP (time_t sec, time_t usec=0)"
+.br
+.ti -1c
+.RI "template<class Rep , class Period > \fBServer\fP & \fBset_idle_interval\fP (const std::chrono::duration< Rep, Period > &duration)"
+.br
+.ti -1c
+.RI "\fBServer\fP & \fBset_payload_max_length\fP (size_t length)"
+.br
+.ti -1c
+.RI "bool \fBbind_to_port\fP (const std::string &host, int port, int socket_flags=0)"
+.br
+.ti -1c
+.RI "int \fBbind_to_any_port\fP (const std::string &host, int socket_flags=0)"
+.br
+.ti -1c
+.RI "bool \fBlisten_after_bind\fP ()"
+.br
+.ti -1c
+.RI "bool \fBlisten\fP (const std::string &host, int port, int socket_flags=0)"
+.br
+.ti -1c
+.RI "bool \fBis_running\fP () const"
+.br
+.ti -1c
+.RI "void \fBwait_until_ready\fP () const"
+.br
+.ti -1c
+.RI "void \fBstop\fP ()"
+.br
+.ti -1c
+.RI "void \fBdecommission\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::function< \fBTaskQueue\fP *(void)> \fBnew_task_queue\fP"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBprocess_request\fP (\fBStream\fP &strm, const std::string &remote_addr, int remote_port, const std::string &local_addr, int local_port, bool close_connection, bool &connection_closed, const std::function< void(\fBRequest\fP &)> &setup_request)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::atomic< socket_t > \fBsvr_sock_\fP {INVALID_SOCKET}"
+.br
+.ti -1c
+.RI "size_t \fBkeep_alive_max_count_\fP = CPPHTTPLIB_KEEPALIVE_MAX_COUNT"
+.br
+.ti -1c
+.RI "time_t \fBkeep_alive_timeout_sec_\fP = CPPHTTPLIB_KEEPALIVE_TIMEOUT_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBread_timeout_sec_\fP = CPPHTTPLIB_SERVER_READ_TIMEOUT_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBread_timeout_usec_\fP = CPPHTTPLIB_SERVER_READ_TIMEOUT_USECOND"
+.br
+.ti -1c
+.RI "time_t \fBwrite_timeout_sec_\fP = CPPHTTPLIB_SERVER_WRITE_TIMEOUT_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBwrite_timeout_usec_\fP = CPPHTTPLIB_SERVER_WRITE_TIMEOUT_USECOND"
+.br
+.ti -1c
+.RI "time_t \fBidle_interval_sec_\fP = CPPHTTPLIB_IDLE_INTERVAL_SECOND"
+.br
+.ti -1c
+.RI "time_t \fBidle_interval_usec_\fP = CPPHTTPLIB_IDLE_INTERVAL_USECOND"
+.br
+.ti -1c
+.RI "size_t \fBpayload_max_length_\fP = CPPHTTPLIB_PAYLOAD_MAX_LENGTH"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.
