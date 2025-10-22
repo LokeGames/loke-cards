@@ -3,6 +3,7 @@
 This file provides instructions and tips for agents working in this repository. It applies to the entire repo unless a more deeply nested `AGENTS.md` overrides it.
 
 ## Scope & Principles
+
 - Work primarily in the frontend under `src/`. Avoid modifying `server/` unless explicitly requested.
 - Keep changes minimal, focused, and aligned with existing patterns and file layout.
 - Do not introduce new dependencies unless absolutely necessary (NodeView packages are already present).
@@ -10,23 +11,28 @@ This file provides instructions and tips for agents working in this repository. 
 - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`...).
 
 ## Tech Stack
+
 - SvelteKit + TypeScript + Tailwind CSS for new app under `cards/`.
 - Legacy: Vue 3 in `*-vue` folders (read-only during migration).
 - E2E testing: Playwright (`cards/tests-e2e`), unit tests with Vitest + Svelte Testing Library.
 
 ## Language Policy
+
 - New frontend code is pure TypeScript: use `.ts` files and `<script lang="ts">` in Svelte components. Avoid `.js` in new code to prevent JS/TS confusion.
 - `shared/` library exports TypeScript modules only.
 - `server/` is pure C/C++ only; do not introduce TS/JS there.
 
 ## CI Rules
+
 - TypeScript strict mode is enabled for `cards/` and `shared/`.
 - CI script `npm run ci` runs: ESLint, TS type checks for both packages, `svelte-check`, and a purity check that fails if `.js` files exist in `cards/` or `shared/`.
 
 ## Changelog Discipline
+
 - Update `CHANGELOG.md` (repo root) whenever changes are substantial enough to alter API usage, shared library contracts, or integrations between packages (e.g., updates in `shared/` consumed by `cards/`). Include brief, user-oriented notes under the appropriate date/section.
 
 ## Project Layout
+
 - `src/` — app code: `components/`, `views/`, `stores/`, `lib/`, `styles/`, `router/`.
 - `public/` — static assets and PWA icons.
 - `tests/` — Playwright E2E specs (`*.spec.js`).
@@ -35,33 +41,45 @@ This file provides instructions and tips for agents working in this repository. 
 - External graph app: `apps/graph` (see “External Graph App”).
 
 ## Scripts
-- `npm run dev` — start Vite dev server at `http://127.0.0.1:8081`.
+
+- `npm run dev` — start full dev stack (cards on 5173, front on 5183).
+- `npm run dev:cards` — start cards app only (http://127.0.0.1:5173).
+- `npm run dev:front` — start front shell only (http://127.0.0.1:5183).
 - `npm run build` — production build to `dist/`.
 - `npm run preview` — serve built app locally.
-- `npm test` — run Playwright tests (expects dev server on 8081). Tip: run `npm run dev` in one terminal and tests in another.
 - `npm run lint` — ESLint (Vue + JS; `server/` is ignored).
+- `npm run check:types` — TypeScript type checking for all packages.
+- `npm test` — run Playwright E2E tests.
+- `npm run test:unit` — run Vitest unit tests for all packages.
+- `npx playwright test cards/tests-e2e/worker-cards.spec.ts` — run single test file.
 
 ## Coding Style
-- JavaScript + Vue 3, Tailwind CSS. Indent with 2 spaces.
+
+- SvelteKit + TypeScript + Tailwind CSS. Indent with 2 spaces.
 - Prettier: use semicolons, single quotes, and `trailingComma: es5`.
-- Vue components: `PascalCase.vue` (e.g., `SceneEditorView.vue`).
-- Composables: `useX.js` (e.g., `useSceneValidation.js`).
-- Stores: `src/stores/*.js` (Pinia). Utilities in `src/lib/`.
-- Keep modules small; colocate tests/UI examples under `views/` or `tests/` as appropriate.
+- Svelte components: `PascalCase.svelte` (e.g., `SceneEditor.svelte`).
+- TypeScript files: `.ts` only, no `.js` in new code.
+- Imports: group external libs first, then workspace packages, then local modules.
+- Error handling: use try/catch with proper typing, avoid `any`.
+- Functions: prefer explicit return types, use interfaces for data shapes.
 
 ## Data & Configuration
+
 - Copy `.env.example` to `.env` during setup. Key vars:
   - `VITE_API_BASE_URL` — API base for the client (e.g., `http://localhost:3000/api`).
   - `VITE_LOKE_ENGINE_API` — dev proxy target used by Vite.
 - Do not commit secrets. Validate CORS and allowed hosts in `vite.config.js`.
 
-## Testing Guidelines (Playwright)
-- Specs live in `tests/*.spec.js`; screenshots and reports in `playwright-report/` and `test-results/`.
-- Run all tests: `npm test` (ensure dev server on 8081).
-- Update snapshots deliberately when UI changes: `npx playwright test --update-snapshots`.
-- Prefer E2E coverage for user flows (scene create/edit, chapter list, dark mode). Add targeted specs for regressions.
+## Testing Guidelines
+
+- E2E: Playwright specs in `*/tests-e2e/**/*.spec.ts`. Reports in `playwright-report/`.
+- Unit: Vitest specs in `*/tests/**/*.spec.ts` or `*.test.ts`.
+- Run single E2E test: `npx playwright test cards/tests-e2e/worker-cards.spec.ts`.
+- Run single unit test: `pnpm --filter @loke/cards test worker-cards.spec.ts`.
+- Update snapshots: `npx playwright test --update-snapshots`.
 
 ## External Graph App
+
 - Standalone app under `apps/graph` (self-contained).
 - Scripts:
   - `npm run dev:graph` → http://127.0.0.1:8092
@@ -73,6 +91,7 @@ This file provides instructions and tips for agents working in this repository. 
 - Uses same backend via `/api` proxy or `VITE_API_BASE_URL`.
 
 ## NodeView (Phase 5 — Extended)
+
 - Reference: `doc/cards-vue-flow.md` for architecture, builders, and ELK layout.
 - Packages are preinstalled: `@vue-flow/core`, `@vue-flow/minimap`, `@vue-flow/background`, `elkjs`.
 - File layout to use:
@@ -95,11 +114,13 @@ This file provides instructions and tips for agents working in this repository. 
   - Assert node/edge counts, navigation Global ↔ Chapter, drag persistence, and connect/create link.
 
 ## Commit & PR Guidelines
+
 - Follow Conventional Commits. Keep PRs focused; include description, linked issue, and before/after screenshots (place images in `screenshots/`).
 - Note environments used and attach test evidence when relevant (e.g., `playwright-report`).
 - Update `CHANGELOG.md` (repo root) for notable changes.
 
 ## Agent Workflow Tips
+
 1. Read `TODO-CARDS.md` and relevant files before changes.
 2. Favor surgical edits; do not refactor unrelated parts.
 3. Use `src/api/client.js` for data; wrap offline logic via stores and keep `src/lib/storage.js` intact.
@@ -110,6 +131,7 @@ This file provides instructions and tips for agents working in this repository. 
 8. When a task in `TODO-CARDS.md` is completed, mark it with `[X]` in `TODO-CARDS.md` (keep the checklist status up to date).
 
 ## Legacy Vue Artifacts
+
 - The `cards-vue`, `graph-vue`, and `shared-vue` folders are legacy artifacts kept read‑only during the Svelte migration. Do not modify them unless explicitly requested.
 - They are excluded from workspaces, Tailwind scan, ESLint, and Playwright.
 - Quick run commands (for reference only):
@@ -119,4 +141,5 @@ This file provides instructions and tips for agents working in this repository. 
 - New active app is under `cards/` (SvelteKit). Use `npm run dev` or `npm run dev:cards` to start it.
 
 ## Security
+
 - Do not commit secrets. Ensure `.env` is local. Validate CORS and allowed hosts in `vite.config.js` when configuring proxies.

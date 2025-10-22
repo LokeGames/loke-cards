@@ -2,10 +2,13 @@
 export default {
   darkMode: 'class',
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx,vue}",
-    "./cards/src/**/*.{svelte,js,ts}",
-    "./shared/src/**/*.{svelte,js,ts}",
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx,vue}',
+    './cards/src/**/*.{svelte,js,ts}',
+    './apps/cards/src/**/*.{svelte,js,ts}',
+    './apps/front/src/**/*.{svelte,js,ts}',
+    './apps/graph/src/**/*.{svelte,js,ts}',
+    './shared/src/**/*.{svelte,js,ts}',
   ],
   theme: {
     extend: {},

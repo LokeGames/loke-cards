@@ -1,5 +1,5 @@
 <script lang="ts">
-  import GraphView from '@apps-graph/src/components/GraphView.svelte';
+  import GraphView from '@apps-graph/components/GraphView.svelte';
   export let params: { id: string };
 </script>
 

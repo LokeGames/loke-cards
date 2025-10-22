@@ -19,6 +19,8 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "litegraph.js": "^0.7.18"
+    "litegraph.js": "^0.7.18",
+    "comlink": "^4.4.2",
+    "@loke/worker-client": "workspace:*"
   }
 }

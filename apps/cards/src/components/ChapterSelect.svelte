@@ -24,8 +24,8 @@
   }
 </script>
 
-<label class="block text-sm font-medium">{label}</label>
-<select class="mt-1 w-full rounded border border-gray-300 px-2 py-1 bg-white dark:bg-gray-900"
+<label class="block text-sm font-medium" for="chapter-select">{label}</label>
+<select id="chapter-select" class="mt-1 w-full rounded border border-gray-300 px-2 py-1 bg-white dark:bg-gray-900"
   bind:value
   on:change={onChange}
   aria-label={label}
@@ -38,4 +38,3 @@
     <option value="" disabled>(no chapters)</option>
   {/if}
 </select>
-

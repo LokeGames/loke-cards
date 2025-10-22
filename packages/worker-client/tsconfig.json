@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "target": "ES2020",
+    "paths": {
+      "@schemas": ["../schemas/src"],
+      "@loke/workers-data/*": ["../../workers/data/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

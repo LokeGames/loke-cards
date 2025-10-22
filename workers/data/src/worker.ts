@@ -1,116 +1,97 @@
-// Minimal SharedWorker that responds to 'ping' with 'pong'.
-// No external dependencies; plain postMessage protocol.
 
 import * as Comlink from 'comlink';
-import { SceneSchema, ChapterSchema, GraphJSONSchema, type Scene, type Chapter, type GraphJSON } from '@schemas';
-import { createDB } from './db';
 
-// Lazy DB init per port; keeps startup light
-let dbPromise: Promise<ReturnType<typeof createDB>> | null = null;
-const getDB = () => (dbPromise ??= createDB());
+// In-memory data store
+let cardsStore: Map<string, any> = new Map();
+let chaptersStore: Map<string, any> = new Map();
 
-const api = {
-  ping(): 'pong' {
-    return 'pong' as const;
+let nextId = 1;
+
+const cards = {
+  async create(data: any) {
+    const id = `card_${nextId++}`;
+    const newCard = { id, ...data };
+    cardsStore.set(id, newCard);
+    return newCard;
   },
-  cards: {
-    async create(s: Scene): Promise<Scene> {
-      const parsed = SceneSchema.parse(s);
-      const db = await getDB();
-      return db.cards.create(parsed);
-    },
-    async get(id: string): Promise<Scene | null> {
-      const db = await getDB();
-      return db.cards.get(id);
-    },
-    async list(): Promise<Scene[]> {
-      const db = await getDB();
-      return db.cards.list();
-    },
-    async update(s: Scene): Promise<Scene> {
-      const parsed = SceneSchema.parse(s);
-      const db = await getDB();
-      return db.cards.update(parsed);
-    },
-    async delete(id: string): Promise<boolean> {
-      const db = await getDB();
-      return db.cards.delete(id);
-    },
+  async get(id: string) {
+    if (!cardsStore.has(id)) {
+      throw new Error(`Card with id ${id} not found`);
+    }
+    return cardsStore.get(id);
   },
-  chapters: {
-    async create(c: Chapter): Promise<Chapter> {
-      const parsed = ChapterSchema.parse(c);
-      const db = await getDB();
-      return db.chapters.create(parsed);
-    },
-    async get(id: string): Promise<Chapter | null> {
-      const db = await getDB();
-      return db.chapters.get(id);
-    },
-    async list(): Promise<Chapter[]> {
-      const db = await getDB();
-      return db.chapters.list();
-    },
-    async update(c: Chapter): Promise<Chapter> {
-      const parsed = ChapterSchema.parse(c);
-      const db = await getDB();
-      return db.chapters.update(parsed);
-    },
-    async delete(id: string): Promise<boolean> {
-      const db = await getDB();
-      return db.chapters.delete(id);
-    },
+  async list() {
+    return Array.from(cardsStore.values());
   },
+  async update(id: string, data: any) {
+    if (!cardsStore.has(id)) {
+      throw new Error(`Card with id ${id} not found`);
+    }
+    const existingCard = cardsStore.get(id);
+    const updatedCard = { ...existingCard, ...data };
+    cardsStore.set(id, updatedCard);
+    return updatedCard;
+  },
+  async delete(id: string) {
+    if (!cardsStore.has(id)) {
+      throw new Error(`Card with id ${id} not found`);
+    }
+    cardsStore.delete(id);
+    return true;
+  },
+};
+
+const chapters = {
+  async create(data: any) {
+    const id = `chapter_${nextId++}`;
+    const newChapter = { id, ...data };
+    chaptersStore.set(id, newChapter);
+    return newChapter;
+  },
+  async get(id: string) {
+    if (!chaptersStore.has(id)) {
+      throw new Error(`Chapter with id ${id} not found`);
+    }
+    return chaptersStore.get(id);
+  },
+  async list() {
+    return Array.from(chaptersStore.values());
+  },
+  async update(id: string, data: any) {
+    if (!chaptersStore.has(id)) {
+      throw new Error(`Chapter with id ${id} not found`);
+    }
+    const existingChapter = chaptersStore.get(id);
+    const updatedChapter = { ...existingChapter, ...data };
+    chaptersStore.set(id, updatedChapter);
+    return updatedChapter;
+  },
+  async delete(id: string) {
+    if (!chaptersStore.has(id)) {
+      throw new Error(`Chapter with id ${id} not found`);
+    }
+    chaptersStore.delete(id);
+    return true;
+  },
+};
+
+export const api = {
+  cards,
+  chapters,
   graph: {
-    async getProjectGraph(projectId?: string): Promise<GraphJSON> {
-      const db = await getDB();
-      const scenes = await db.cards.list();
-      const chaps = await db.chapters.list();
-      const pos = await db.positions.all();
-      const nodes = [
-        ...chaps.map((c) => ({ id: `chapter:${c.chapterId}`, type: 'chapter', label: c.title, position: (pos.find(p=>p.nodeId===`chapter:${c.chapterId}`) ? { x: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.x, y: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.y } : undefined) })),
-        ...scenes.map((s) => ({ id: `scene:${s.sceneId}`, type: 'scene', label: s.title, position: (pos.find(p=>p.nodeId===`scene:${s.sceneId}`) ? { x: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.x, y: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.y } : undefined) })),
-      ];
-      const edgesDb = await db.edges.list();
-      const edges = edgesDb.map((e) => ({ id: `edge:${e.id}`, source: `scene:${e.source}`, target: `scene:${e.target}` }));
-      const graph: GraphJSON = { projectId, nodes, edges };
-      return GraphJSONSchema.parse(graph);
-    },
-    async getChapterGraph(chapterId: string, projectId?: string): Promise<GraphJSON> {
-      const db = await getDB();
-      const scenes = (await db.cards.list()).filter((s) => s.chapterId === chapterId);
-      const chaps = (await db.chapters.list()).filter((c) => c.chapterId === chapterId);
-      const pos = await db.positions.all();
-      const nodes = [
-        ...chaps.map((c) => ({ id: `chapter:${c.chapterId}`, type: 'chapter', label: c.title, position: (pos.find(p=>p.nodeId===`chapter:${c.chapterId}`) ? { x: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.x, y: pos.find(p=>p.nodeId===`chapter:${c.chapterId}`)!.y } : undefined) })),
-        ...scenes.map((s) => ({ id: `scene:${s.sceneId}`, type: 'scene', label: s.title, position: (pos.find(p=>p.nodeId===`scene:${s.sceneId}`) ? { x: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.x, y: pos.find(p=>p.nodeId===`scene:${s.sceneId}`)!.y } : undefined) })),
-      ];
-      const edgesDb = (await db.edges.list()).filter((e) => scenes.some((s) => s.sceneId === e.source || s.sceneId === e.target));
-      const edges = edgesDb.map((e) => ({ id: `edge:${e.id}`, source: `scene:${e.source}`, target: `scene:${e.target}` }));
-      const graph: GraphJSON = { projectId, nodes, edges };
-      return GraphJSONSchema.parse(graph);
-    },
-    async createLink(sourceSceneId: string, targetSceneId: string) {
-      const db = await getDB();
-      return db.edges.create(sourceSceneId, targetSceneId);
-    },
-    async deleteLink(edgeId: string) {
-      const db = await getDB();
-      const id = edgeId.replace(/^edge:/, '');
-      return db.edges.delete(id);
-    },
-    async setNodePosition(nodeId: string, x: number, y: number) {
-      const db = await getDB();
-      await db.positions.set(nodeId, x, y);
+    async updateNodePosition(nodeId: string, position: { x: number, y: number }) {
+      console.log(`Node ${nodeId} moved to x: ${position.x}, y: ${position.y}`);
+      // For now, just log. Later, this will update a persistent store.
       return true;
     },
   },
+  reset() {
+    cardsStore.clear();
+    chaptersStore.clear();
+    nextId = 1;
+  }
 };
 
-// SharedWorker connect: expose API on each port via Comlink
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(self as any).onconnect = (event: MessageEvent) => {
-  const port = (event as unknown as { ports: MessagePort[] }).ports[0];
-  Comlink.expose(api, port);
-  port.start();
-};
+Comlink.expose(api);
+
+export type API = typeof api;

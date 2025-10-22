@@ -1,4 +1,5 @@
 <script lang="ts">
+  import '../app.css';
   import AppHeader from '@shared/lib/components/AppHeader.svelte';
   import AppSidebar from '@shared/lib/components/AppSidebar.svelte';
   import AppToasts from '@shared/lib/components/AppToasts.svelte';
@@ -14,4 +15,3 @@
   </div>
   <AppToasts />
 </div>
-

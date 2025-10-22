@@ -75,17 +75,18 @@ The entire process will follow a Test-Driven Development (TDD) paradigm.
 *   [ ] **Setup Worker & RPC:**
     *   [x] Set up a basic `SharedWorker`.
     *   [x] Define the initial RPC API structure with Comlink and expose it from the worker.
-    *   [x] Define data contracts in `/packages/schemas` using Zod.
+    *   [ ] Define data contracts in `/packages/schemas` using Zod.
 *   [ ] **Database Integration (TDD):**
+    -[x] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] Write tests for basic CRUD (`cards.create/get/list/update/delete`, `chapters.create/get/list/update/delete`).
     *   [x] Implement `wa-sqlite` (ESM + WASM) behind a DB interface with graceful fallback to memory.
     *   [x] Implement in-memory stubs for CRUD to pass tests.
-    *   [ ] Continue with `get`, `list`, `update`, `delete` for scenes and chapters, writing tests first for each.
+    *   [x] Continue with `get`, `list`, `update`, `delete` for scenes and chapters, writing tests first for each.
 
 ### Phase 3: The PWA Shell (`/apps/front`)
 
-*   [ ] **Build the Shell UI (TDD):**
-    *   [x] Implement the layout according to the **"UI/UX Design & Layout Specification"** above.
+    *   [ ] **Build the Shell UI (TDD):**
+    -[x] add test results to TEST-PROOF.md with timestanp for evaluation later    *   [x] Implement the layout according to the **"UI/UX Design & Layout Specification"** above.
     *   [x] Create the main `+layout.svelte` with the `AppHeader` and `AppSidebar` components.
     *   [x] Implement the theme toggle and ensure Tailwind CSS dark mode works and persists.
 *   [ ] **Worker Integration:**
@@ -102,34 +103,41 @@ This phase ports the Vue components from the original `cards-vue` application to
 *   **Sub-Phase 4.1: Port Core UI Components**
     *   [x] **Port `AppLayout.vue` -> `+layout.svelte`:**
         *   Create the root layout for the `cards` app.
-        *   [x] *TDD:* Test that the layout renders its slot and contains the main UI shell components.
+        -[x] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `AppHeader.vue` -> `CardsHeader.svelte`:**
         *   Port child components (`StatusPill`, `NetworkToggle`, etc.) first.
         *   Connect UI elements to the data worker (e.g., sync status).
-        *   [x] *TDD:* Test that breadcrumbs are correct and UI buttons dispatch correct events/calls.
+        -[x] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `AppSidebar.vue` -> `CardsSidebar.svelte`:**
         *   Implement the drawer menu concept.
         *   Connect navigation links to the SvelteKit router.
         *   [x] *TDD:* Test visibility toggle and correct link rendering.
+        -[x] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `AppModal.vue` -> `AppModal.svelte`:**
         *   Create as a generic, reusable modal in a new `/packages/ui` library.
         *   [x] *TDD:* Test open/close state and event dispatching.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
 
 *   **Sub-Phase 4.2: Port Editor Form Components**
     *   [x] **Port `SceneIdInput.vue`:**
         *   [x] *TDD:* Test C identifier validation logic.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `ChapterSelect.vue`:**
         *   Refactor to fetch chapters from the data worker: `await data.chapters.list()`.
         *   [x] *TDD:* Test that chapters are listed correctly.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `SceneTextEditor.vue`:**
         *   [x] *TDD:* Test character counter and limits.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `ChoicesList.vue` & `StateChangesList.vue`:**
         *   Port the dynamic list management logic.
         *   [x] *TDD:* Test adding/removing items from the lists.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port `CodePreview.vue`:**
         *   Refactor C code generation to be a pure function that takes scene data as input.
         *   The data will be fetched from the worker by the parent editor component.
         *   [x] *TDD:* Test that given a scene object, the correct C code is generated.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
         *   [x] Implemented as `generateC()` in `/apps/cards/src/lib/codegen.ts` with `CodePreview.svelte` component and unit tests.
 
 *   **Sub-Phase 4.3: Port Views and Integrate**
@@ -139,9 +147,11 @@ This phase ports the Vue components from the original `cards-vue` application to
         *   `loadScene()` will call `await data.scenes.get(id)`.
         *   `saveScene()` will call `await data.scenes.update(sceneObject)`.
         *   [x] *TDD:* E2E: create + save + verify in list (`/apps/front/tests-e2e/cards-editor.spec.ts`).
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Port List Views (`SceneListView.vue`, `ChapterListView.vue`):**
         *   Refactor to fetch all data from the worker.
         *   [x] *TDD:* Verify created scene appears in list (`/apps/front/src/routes/cards/scenes`).
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Integrate with Shell:**
         *   Ensure the completed `/cards` app correctly lazy-loads within the `/front` shell.
         *   Verify that all data flows correctly from the worker to the UI and back.
@@ -152,18 +162,22 @@ This phase ports the graph visualization to a new Svelte-based micro-app, replac
 
 *   **Sub-Phase 5.1: Core Architecture & Setup**
     *   [x] **Setup LiteGraph.js:**
-        *   [x] Install `litegraph.js` in the `/apps/graph` workspace.
-        *   [x] Create a Svelte component to host the `LGraphCanvas` (GraphCanvas.svelte) with dynamic import and test harness.
-        *   [x] Initialize the canvas in `onMount` with a background grid (CSS grid baseline) and default zoom.
-        *   [x] *TDD:* Unit test for GraphCanvas rendering and init stub (mocked).
+    *   [x] Install `litegraph.js` in the `/apps/graph` workspace.
+    *   [x] Create a Svelte component to host the `LGraphCanvas` (GraphCanvas.svelte) with dynamic import and test harness.
+    *   [x] Initialize the canvas in `onMount` with a background grid (CSS grid baseline) and default zoom.
+    *   [x] *TDD:* Unit test for GraphCanvas rendering and init stub (mocked).
+    -[x] add test results to TEST-PROOF.md with timestanp for evaluation later
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Data Model & Worker Integration:**
         *   [x] Define the `GraphJSON` data structures in `/packages/schemas`.
         *   [x] Implement the `data.graph.getProjectGraph()` method in the data worker.
         *   [x] Implement a read-only loader in the `/apps/graph` UI.
         *   [x] *TDD:* Test that the loader correctly fetches and displays graph data from the worker.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [x] **Implement Core Node Types:**
         *   [x] Create `LGraphNode` classes for `SceneNode` and `ChapterNode`.
         *   [x] *TDD:* Vitest unit tests verify creation, titles, and IO slots.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
         *   [x] Register the custom nodes with LiteGraph.js.
 
 *   **Sub-Phase 5.2: Global Graph View**
@@ -171,32 +185,41 @@ This phase ports the graph visualization to a new Svelte-based micro-app, replac
         *   [x] Render counts from worker data (nodes; edges pending link derivation).
         *   [x] Render all links/edges between scenes.
         *   [x] *TDD:* Playwright test verifies node count appears after creating a scene.
+        -[x] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [ ] **Implement Basic Interactions:**
         *   [ ] Enable pan and zoom on the canvas.
         *   [ ] Enable dragging/moving of scene and chapter nodes.
         *   [ ] On drag-stop, persist the new `position` to the database via the data worker.
         *   [ ] *TDD:* Write Playwright tests for pan, zoom, and drag-and-drop, verifying that positions are updated in the worker.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [ ] **Implement Navigation:**
         *   [ ] On double-click of a `ChapterNode`, navigate to the focused Chapter Graph view.
         *   [ ] *TDD:* Write a Playwright test to verify double-click navigation.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [ ] **Implement UI Controls:**
         *   [ ] Add a minimap, zoom controls, and fit-to-view controls.
         *   [ ] *TDD:* Write Playwright tests to verify the functionality of each UI control.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
 
 *   **Sub-Phase 5.3: Chapter Graph View (Focused)**
     *   [x] **Implement Chapter Graph Rendering (baseline):**
         *   [x] Create a new route/view that accepts a chapter ID.
         *   [x] Display counts for scenes in the selected chapter (links pending).
         *   [x] *TDD:* Playwright test verifies node count appears for chapter view.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [ ] **Implement Editing Interactions:**
         *   [ ] **Link Creation:** Enable creating new links between scenes by dragging between slots.
         *   [ ] *TDD:* Write a Playwright test for creating a link and verifying its persistence in the worker.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
         *   [ ] **Node/Link Deletion:** Enable deleting nodes and links via keyboard or context menu.
         *   [ ] *TDD:* Write a Playwright test for deleting a node/link and verifying its removal from the worker.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
         *   [ ] **Node Editor:** On click, open a properties panel to edit scene details.
         *   [ ] *TDD:* Write a test to verify that opening the editor and saving changes updates the node's data in the worker.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
         *   [ ] **Context Menu:** Implement a right-click context menu to create new scenes.
         *   [ ] *TDD:* Write a test for creating a new scene via the context menu and verifying its existence in the worker.
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
 
 *   **Sub-Phase 5.4: Data Sync & Finalization**
     *   [ ] **Project Syncing:**
@@ -204,6 +227,7 @@ This phase ports the graph visualization to a new Svelte-based micro-app, replac
         *   [ ] On project change, reload the graph with data for the new project ID from the worker.
     *   [ ] **Testing & Verification:**
         *   [ ] Write E2E tests (Playwright) for the key user stories:
+        -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
             *   Global graph renders correctly.
             *   Navigation to chapter view works.
             *   Creating/deleting a scene and a link in the chapter view persists after a reload.
@@ -218,6 +242,7 @@ This phase ports the graph visualization to a new Svelte-based micro-app, replac
     *   [ ] Define a network-first or stale-while-revalidate strategy for data.
 *   [ ] **E2E Testing (Playwright):**
     *   [ ] Write end-to-end tests that cover user flows across both `cards` and `graph` apps.
+    -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
     *   [ ] Create tests specifically for offline functionality, verifying that the app works without a network connection.
 *   [ ] **Cleanup:**
     *   [ ] Remove the old `TODO-FRONT.md` and `TODO-CARDS.md` files, as this file is now the master plan.
@@ -257,6 +282,7 @@ This phase addresses important non-functional requirements that apply across the
     *   [ ] Test with screen readers (e.g., VoiceOver, NVDA).
     *   [ ] Ensure all components meet WCAG 2.1 AA standards for color contrast and ARIA attributes.
     *   [ ] Add automated accessibility checks to the E2E test suite using `axe-playwright`.
+    -[ ] add test results to TEST-PROOF.md with timestanp for evaluation later
 *   [ ] **UI State Management:**
     *   [ ] Formalize the state management strategy within UI apps.
     *   [ ] Use Svelte stores for ephemeral UI state (e.g., form inputs, modal visibility).

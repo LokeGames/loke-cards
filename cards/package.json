@@ -12,7 +12,8 @@
     "test:unit:watch": "vitest"
   },
   "dependencies": {
-    "@loke/shared": "*"
+    "@loke/shared": "workspace:*",
+    "comlink": "^4.4.2"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",

@@ -3,10 +3,14 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
-  plugins: [svelte({ hot: false })],
+  plugins: [svelte({ compilerOptions: { generate: 'dom' } })],
   resolve: {
     alias: {
-      '@shared': fileURLToPath(new URL('../../shared/src', import.meta.url)),
+      '@shared': (() => {
+        const resolvedPath = fileURLToPath(new URL('../../shared/src', import.meta.url));
+        console.log('Resolved @shared alias to:', resolvedPath);
+        return resolvedPath;
+      })(),
       '@ui': fileURLToPath(new URL('../../packages/ui/src', import.meta.url)),
       '@workers-data': fileURLToPath(new URL('../../workers/data/src', import.meta.url)),
     },

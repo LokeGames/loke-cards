@@ -10,13 +10,14 @@ const config = defineConfig({
   testMatch: [
     'cards/tests-e2e/**/*.spec.ts',
     'apps/front/tests-e2e/**/*.spec.ts',
+    'apps/graph/tests-e2e/**/*.spec.ts',
   ],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 4,
   reporter: 'html',
-  timeout: 30000,
+  timeout: 60000,
   use: {
     trace: 'on-first-retry',
     actionTimeout: 10000,

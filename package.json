@@ -16,7 +16,10 @@
     "test": "playwright test",
     "test:unit": "pnpm --filter @loke/* test:unit",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "start:frontend": "pnpm --filter @loke/front dev",
+    "start:backend": "cd server && make && ./server",
+    "start": "bash scripts/dev-full.sh"
   },
   "workspaces": [
     "cards",
@@ -37,7 +40,7 @@
     "@playwright/test": "^1.56.0",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",
-    "@vitejs/plugin-basic-ssl": "^2.1.0",
+
     "autoprefixer": "^10.4.21",
     "eslint": "^9.37.0",
     "eslint-plugin-svelte": "^2.46.0",
@@ -47,7 +50,7 @@
     "sharp": "^0.34.4",
     "tailwindcss": "^3.4.18",
     "typescript": "^5.9.3",
-    "vite": "^7.1.10",
+    "vite": "^5.0.0",
     "vite-plugin-pwa": "^1.1.0",
     "vue-tsc": "^3.1.1",
     "workbox-window": "^7.3.0"

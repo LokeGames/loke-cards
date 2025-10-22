@@ -1,5 +1,5 @@
 <script>
-  import { toasts, removeToast } from '../stores/toast.store.js';
+  import { toasts, removeToast } from '@shared/lib/stores/toast.store.ts';
 </script>
 
 <div class="fixed z-50 bottom-4 right-4 space-y-2">

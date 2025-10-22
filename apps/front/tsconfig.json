@@ -1,7 +1,6 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   }
 }
-

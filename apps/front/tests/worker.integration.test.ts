@@ -1,4 +1,10 @@
 import { vi, test, expect, beforeEach } from 'vitest';
+
+vi.mock('comlink', () => {
+  const wrap = vi.fn(() => ({ ping: () => 'pong' }));
+  return { wrap, expose: vi.fn() };
+});
+
 import * as Comlink from 'comlink';
 
 beforeEach(() => {
@@ -10,7 +16,7 @@ beforeEach(() => {
 });
 
 test('connects to SharedWorker on init', async () => {
-  const wrapSpy = vi.spyOn(Comlink, 'wrap').mockImplementation(() => ({ ping: () => 'pong' } as any));
+  const wrapSpy = Comlink.wrap as unknown as ReturnType<typeof vi.fn>;
   const { dataApi, initDataApi } = await import('../src/lib/dataStore');
   let value: any = null;
   const unsub = dataApi.subscribe((v) => (value = v));
@@ -19,4 +25,3 @@ test('connects to SharedWorker on init', async () => {
   expect(value).not.toBeNull();
   unsub();
 });
-

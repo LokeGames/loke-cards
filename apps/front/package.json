@@ -23,6 +23,8 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "@loke/shared": "workspace:*"
+    "@loke/shared": "workspace:*",
+    "@loke/worker-client": "workspace:*",
+    "comlink": "^4.4.2"
   }
 }

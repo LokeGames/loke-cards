@@ -1,12 +1,16 @@
 import { defineConfig } from 'vitest/config';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { fileURLToPath } from 'node:url';
+import { svelteUnitPlugin } from '../../config/vitest/svelte-unit-plugin.js';
 
 export default defineConfig({
-  plugins: [svelte({ hot: false })],
+  plugins: [svelteUnitPlugin()],
   resolve: {
+    conditions: ['browser'],
     alias: {
       '@shared': fileURLToPath(new URL('../../shared/src', import.meta.url)),
+      comlink: fileURLToPath(
+        new URL('../../workers/data/node_modules/comlink/dist/esm/comlink.mjs', import.meta.url)
+      ),
     },
     dedupe: ['svelte'],
   },
@@ -17,7 +21,11 @@ export default defineConfig({
     globals: true,
     include: ['tests/**/*.test.{js,ts}'],
     deps: {
-      inline: [/svelte/, /@sveltejs/],
+      optimizer: {
+        web: {
+          include: ['svelte', '@sveltejs/kit', '@sveltejs/vite-plugin-svelte'],
+        },
+      },
     },
   },
 });

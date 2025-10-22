@@ -4,9 +4,17 @@
   "private": true,
   "type": "module",
   "description": "SharedWorker data layer - scaffold placeholder",
-  "scripts": {},
+  "scripts": {
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest"
+  },
   "dependencies": {
     "comlink": "^4.4.2",
     "wa-sqlite": "^1.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0",
+    "jsdom": "^24.0.0"
   }
 }

@@ -14,6 +14,7 @@
     <li><NavLink to="/">Dashboard</NavLink></li>
     <li><NavLink to="/scenes">Scenes</NavLink></li>
     <li><NavLink to="/chapters">Chapters</NavLink></li>
+    <li><NavLink to="/graph">Graph</NavLink></li>
     <li><NavLink to="/toc">Story Map</NavLink></li>
     <li><NavLink to="/code">C code</NavLink></li>
     <li><NavLink to="/settings">Settings</NavLink></li>

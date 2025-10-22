@@ -68,8 +68,8 @@
 
 <div class="space-y-4">
   <div>
-    <label class="block text-sm font-medium">Title</label>
-    <input class="mt-1 w-full rounded border border-gray-300 px-2 py-1" bind:value={title} aria-label="Title" />
+    <label class="block text-sm font-medium" for="scene-title">Title</label>
+    <input id="scene-title" class="mt-1 w-full rounded border border-gray-300 px-2 py-1" bind:value={title} aria-label="Title" />
   </div>
   <SceneIdInput bind:value={sceneId} label="Scene ID" />
   <ChapterSelect bind:value={chapterId} />
@@ -83,4 +83,3 @@
     <div data-testid="save-status">{status}</div>
   {/if}
 </div>
-

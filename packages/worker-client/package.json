@@ -1,0 +1,16 @@
+{
+  "name": "@loke/worker-client",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "comlink": "^4.4.1",
+    "typescript": "^5.5.3",
+    "vitest": "^1.6.0"
+  }
+}

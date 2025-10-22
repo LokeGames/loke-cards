@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import * as Comlink from 'comlink';
-  import GraphCanvas from './GraphCanvas.svelte';
+  import GraphCanvas from '../lib/GraphCanvas.svelte';
   import type { GraphJSON } from '@schemas';
   import { registerNodes } from '../nodes/register';
   let graph: GraphJSON | null = null;

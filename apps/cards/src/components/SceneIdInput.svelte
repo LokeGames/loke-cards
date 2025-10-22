@@ -12,8 +12,8 @@
   }
 </script>
 
-<label class="block text-sm font-medium">{label}</label>
-<input class="mt-1 w-full rounded border px-2 py-1"
+<label class="block text-sm font-medium" for="scene-id-input">{label}</label>
+<input id="scene-id-input" class="mt-1 w-full rounded border px-2 py-1"
   class:border-red-500={!valid}
   class:border-gray-300={valid}
   bind:value
@@ -28,4 +28,3 @@
     Invalid ID. Use letters, digits, and underscores; start with letter or underscore.
   {/if}
 </p>
-

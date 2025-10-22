@@ -82,6 +82,7 @@ export async function createDB(): Promise<DB> {
 
 // Lightweight SQLite backend using wa-sqlite; falls back gracefully if init fails
 import SQLiteESMFactory from 'wa-sqlite/dist/wa-sqlite.mjs';
+import wasmUrl from 'wa-sqlite/dist/wa-sqlite.wasm?url';
 import * as SQLite from 'wa-sqlite';
 
 class SQLiteDB implements DB {
@@ -89,7 +90,9 @@ class SQLiteDB implements DB {
   private db: number;
 
   static async create(): Promise<SQLiteDB> {
-    const module = await SQLiteESMFactory();
+    const module = await SQLiteESMFactory({
+      locateFile: () => wasmUrl,
+    });
     const sqlite3 = SQLite.Factory(module);
     // In-memory DB satisfies TODO requirement to use wa-sqlite without persistence concerns yet
     const db = await sqlite3.open_v2('file:loke-cards?mode=memory&cache=shared');
