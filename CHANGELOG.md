@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added - 2025-10-22
 
+- **pnpm Setup & Workspace Configuration**: Installed pnpm v10.19.0 as package manager and configured monorepo workspace
+- **Fixed Workspace Dependencies**: Created missing `@loke/shared` package with basic types and utilities
+- **Updated Project Structure**: Fixed `pnpm-workspace.yaml` to properly include all workspace packages (`apps/*`, `packages/*`, `workers/*`)
+- **Package Dependencies**: Successfully installed 690 packages across 9 workspace projects
+- **Development Scripts**: Updated README.md with comprehensive pnpm-based development commands
+
+### Added - 2025-10-22
+
 - Phase 2 Dashboard Implementation: Complete dashboard with Quick Actions, Project Stats, Recent Chapters, and Recent Scenes components
 - Dashboard integrated into main route (`/`) replacing placeholder content
 - Components use existing data worker API and follow established patterns

@@ -8,17 +8,96 @@ Loke Cards provides simple form-based "cards" for writing scenes and chapters di
 
 ## Quick Start (Svelte)
 
+Install pnpm (if not already installed):
+
 ```bash
-# Install dependencies (root workspaces)
-npm install
-
-# Start Svelte app (SvelteKit on 5173)
-npm run dev
-
-# Build/Preview Svelte app
-npm run build
-npm run preview
+npm install -g pnpm
 ```
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Start development:
+
+```bash
+pnpm dev
+```
+
+Build and preview:
+
+```bash
+pnpm build
+pnpm preview
+```
+
+### Available Scripts
+
+**Development:**
+
+```bash
+pnpm dev
+```
+
+Full stack (frontend + backend)
+
+```bash
+pnpm dev:front
+```
+
+Frontend only (http://127.0.0.1:5183)
+
+```bash
+pnpm dev:cards
+```
+
+Cards app only (http://127.0.0.1:5173)
+
+```bash
+pnpm dev:backend
+```
+
+Backend only
+
+**Build & Test:**
+
+```bash
+pnpm build
+```
+
+Production build
+
+```bash
+pnpm preview
+```
+
+Preview production build
+
+```bash
+pnpm test
+```
+
+E2E tests
+
+```bash
+pnpm test:unit
+```
+
+Unit tests
+
+```bash
+pnpm lint
+```
+
+ESLint
+
+```bash
+pnpm check:types
+```
+
+TypeScript type checking
 
 ## Production URL
 
@@ -27,31 +106,52 @@ npm run preview
 Default dev server (Svelte): **http://127.0.0.1:5173**.
 
 ### Running legacy Vue apps (optional)
-- Cards (Vue): `npm install -C cards-vue && npm run dev -C cards-vue`
-- Graph (Vue): `npx vite --config graph-vue/vite.config.js`
+
+Cards (Vue):
+
+```bash
+npm install -C cards-vue && npm run dev -C cards-vue
+```
+
+Graph (Vue):
+
+```bash
+npx vite --config graph-vue/vite.config.js
+```
+
 Legacy apps are not part of the active toolchain and are kept read‑only during the port.
 
 ## Project Structure
 
 ```
 loke-cards/
-├── src/
-│   ├── components/      # UI components
-│   ├── lib/             # Utilities and libraries
-│   ├── styles/          # CSS files
-│   └── main.js          # Application entry point
-├── public/
-│   ├── icons/           # PWA icons
-│   └── assets/          # Static assets
-├── doc/
-│   ├── CHANGELOG.md     # Project changelog
-│   └── TEST-PROOF.md    # Test documentation
-├── tests/               # Test files
-├── index.html           # Main HTML file
-├── vite.config.js       # Vite configuration
-├── tailwind.config.js   # Tailwind CSS configuration
-└── package.json         # Project dependencies
+├── apps/                # Active Svelte applications
+│   ├── cards/           # Cards micro-app (Svelte library)
+│   ├── front/           # PWA shell (SvelteKit)
+│   ├── graph/           # Graph micro-app (LiteGraph)
+│   └── shared/          # Shared utilities and types
+├── packages/            # Shared packages
+│   ├── schemas/         # Zod schemas
+│   ├── ui/              # UI components
+│   └── worker-client/   # Worker client utilities
+├── workers/             # Web workers
+│   └── data/            # Data worker
+├── server/              # C++ backend server
+├── doc/                 # Documentation
+├── scripts/             # Development scripts
+└── tests/               # E2E tests
 ```
+
+### Active Applications
+
+- **`apps/front/`** - Main SvelteKit PWA shell (http://127.0.0.1:5183)
+- **`apps/cards/`** - Cards functionality as Svelte component library
+- **`apps/graph/`** - Graph visualization with LiteGraph.js
+- **`apps/shared/`** - Shared TypeScript utilities and types
+
+### Legacy (Being Removed)
+
+- `apps-vue/` - Legacy Vue applications (read-only during migration)
 
 ## Technology Stack
 
@@ -65,6 +165,7 @@ loke-cards/
 ## Features (Planned)
 
 ### MVP (Phase 1)
+
 - ✅ Project setup and infrastructure
 - ⏳ Scene Card Editor with form fields
 - ⏳ Real-time C code preview
@@ -74,6 +175,7 @@ loke-cards/
 - ⏳ PWA offline support
 
 ### Future Enhancements (Phase 2+)
+
 - Visual scene graph
 - Syntax highlighting
 - Scene templates
@@ -106,21 +208,26 @@ This project follows **TDD (Test-Driven Development)**:
 
 Option A — with dev server already running (recommended):
 
-```
-# Terminal 1: run app + backend (fixed 8081)
-npm run dev:full:watch
+Terminal 1 - run app + backend:
 
-# Terminal 2: run the single test
+```bash
+npm run dev:full:watch
+```
+
+Terminal 2 - run the single test:
+
+```bash
 npm test tests/navigation-stability.spec.js
 ```
 
 Option B — let Playwright manage the server:
 
-```
+```bash
 PW_WEB_SERVER=1 PW_BASE_URL=http://127.0.0.1:8081   npm test tests/navigation-stability.spec.js
 ```
 
 Notes:
+
 - The test repeats Scenes ⇄ Dashboard transitions to catch intermittent issues.
 - Proxy noise (when backend is offline) is ignored by this test.
 - Ensure the dev server is running on the same port as Playwright’s baseURL.
@@ -146,10 +253,19 @@ void scene_forest_entrance(GameState* state) {
 See **LOKE-FORMAT-REFERENCE.md** for complete format documentation.
 
 ### Compile generated C locally (optional)
+
 The dev backend can export generated scenes as `.c` files to `server/output/` via:
 
 ```bash
 curl -X POST http://127.0.0.1:3000/api/build
+```
+
+To compile these `.c` files (only to object files), point `LOKE_ENGINE_INC` to your Loke Engine headers and run:
+
+```bash
+cd server
+export LOKE_ENGINE_INC=/opt/homebrew/include
+make build-scenes
 ```
 
 To compile these `.c` files (only to object files), point `LOKE_ENGINE_INC` to your Loke Engine headers and run:
@@ -191,11 +307,15 @@ VITE_PROJECT_NAME=my-adventure  # Project name (optional)
 
 Designed for **LXC containers** on **Tailscale network**:
 
-```bash
-# Build container
-docker build -t loke-cards:latest .
+Build container:
 
-# Run container
+```bash
+docker build -t loke-cards:latest .
+```
+
+Run container:
+
+```bash
 docker run -d \
   -p 8080:8080 \
   -e VITE_LOKE_ENGINE_API=http://loke-engine:3000 \
@@ -206,15 +326,32 @@ docker run -d \
 Each project gets its own loke-cards instance paired with its own loke-engine instance.
 
 ### Systemd (optional)
+
 An example unit file is provided at `server/systemd/loke-cards-backend.service`.
 
 Steps (adapt paths as needed):
+
 1. Copy files to server: `/opt/loke-cards/`
-2. Build backend: `cd /opt/loke-cards/server && make`
-3. Install unit: `sudo cp /opt/loke-cards/server/systemd/loke-cards-backend.service /etc/systemd/system/`
-4. Reload units: `sudo systemctl daemon-reload`
-5. Enable + start: `sudo systemctl enable --now loke-cards-backend`
-6. Check logs: `journalctl -u loke-cards-backend -f`
+2. Build backend:
+   ```bash
+   cd /opt/loke-cards/server && make
+   ```
+3. Install unit:
+   ```bash
+   sudo cp /opt/loke-cards/server/systemd/loke-cards-backend.service /etc/systemd/system/
+   ```
+4. Reload units:
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+5. Enable + start:
+   ```bash
+   sudo systemctl enable --now loke-cards-backend
+   ```
+6. Check logs:
+   ```bash
+   journalctl -u loke-cards-backend -f
+   ```
 
 Set `CORS_ALLOW_ORIGIN` in the unit file to match your frontend origin.
 
