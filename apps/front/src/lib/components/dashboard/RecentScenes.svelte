@@ -55,8 +55,9 @@
   {:else}
     <div class="space-y-3">
       {#each scenes as scene}
-        <div 
-          class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+        <button
+          type="button"
+          class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors text-left"
           on:click={() => goToScene(scene)}
         >
           <div class="flex items-center justify-between">
@@ -71,7 +72,7 @@
               {formatDate(scene.updatedAt || scene.createdAt)}
             </div>
           </div>
-        </div>
+        </button>
       {/each}
     </div>
   {/if}

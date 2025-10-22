@@ -3,6 +3,27 @@
 		"src/routes/+layout.ts",
 		"src/routes/+layout.ts"
 	],
+	"/cards": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/chapters": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/chapter/new": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/editor": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/scenes": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/scene/new": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/toc": [
+		"src/routes/+layout.ts"
+	],
 	"/settings": [
 		"src/routes/+layout.ts"
 	]

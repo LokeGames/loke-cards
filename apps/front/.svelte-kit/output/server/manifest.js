@@ -10,12 +10,19 @@ return {
 	assets: new Set(["manifest.json"]),
 	mimeTypes: {".json":"application/json"},
 	_: {
-		client: {start:"_app/immutable/entry/start.C7opE3Xp.js",app:"_app/immutable/entry/app.iKn24vVM.js",imports:["_app/immutable/entry/start.C7opE3Xp.js","_app/immutable/chunks/B0tt7mr_.js","_app/immutable/chunks/BXFeFmkJ.js","_app/immutable/chunks/Br-N696v.js","_app/immutable/entry/app.iKn24vVM.js","_app/immutable/chunks/D9o7MBRo.js","_app/immutable/chunks/BXFeFmkJ.js","_app/immutable/chunks/DsnmJJEf.js","_app/immutable/chunks/CiKQ9KvB.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
+		client: {start:"_app/immutable/entry/start.BTOVoZ-C.js",app:"_app/immutable/entry/app.DJtcCSe0.js",imports:["_app/immutable/entry/start.BTOVoZ-C.js","_app/immutable/chunks/Bs76tJvP.js","_app/immutable/chunks/pdyo7SJz.js","_app/immutable/chunks/DiLIMQ14.js","_app/immutable/chunks/DwqFSiyj.js","_app/immutable/entry/app.DJtcCSe0.js","_app/immutable/chunks/PPVm8Dsz.js","_app/immutable/chunks/DiLIMQ14.js","_app/immutable/chunks/pdyo7SJz.js","_app/immutable/chunks/DsnmJJEf.js","_app/immutable/chunks/nymsHo9p.js","_app/immutable/chunks/Cys0exkC.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
 			__memo(() => import('./nodes/2.js')),
-			__memo(() => import('./nodes/3.js'))
+			__memo(() => import('./nodes/3.js')),
+			__memo(() => import('./nodes/4.js')),
+			__memo(() => import('./nodes/5.js')),
+			__memo(() => import('./nodes/6.js')),
+			__memo(() => import('./nodes/7.js')),
+			__memo(() => import('./nodes/8.js')),
+			__memo(() => import('./nodes/9.js')),
+			__memo(() => import('./nodes/10.js'))
 		],
 		remotes: {
 			
@@ -29,10 +36,59 @@ return {
 				endpoint: null
 			},
 			{
+				id: "/cards",
+				pattern: /^\/cards\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 3 },
+				endpoint: null
+			},
+			{
+				id: "/cards/chapters",
+				pattern: /^\/cards\/chapters\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 5 },
+				endpoint: null
+			},
+			{
+				id: "/cards/chapter/new",
+				pattern: /^\/cards\/chapter\/new\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 4 },
+				endpoint: null
+			},
+			{
+				id: "/cards/editor",
+				pattern: /^\/cards\/editor\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 6 },
+				endpoint: null
+			},
+			{
+				id: "/cards/scenes",
+				pattern: /^\/cards\/scenes\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 8 },
+				endpoint: null
+			},
+			{
+				id: "/cards/scene/new",
+				pattern: /^\/cards\/scene\/new\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 7 },
+				endpoint: null
+			},
+			{
+				id: "/cards/toc",
+				pattern: /^\/cards\/toc\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 9 },
+				endpoint: null
+			},
+			{
 				id: "/settings",
 				pattern: /^\/settings\/?$/,
 				params: [],
-				page: { layouts: [0,], errors: [1,], leaf: 3 },
+				page: { layouts: [0,], errors: [1,], leaf: 10 },
 				endpoint: null
 			}
 		],

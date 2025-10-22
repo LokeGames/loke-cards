@@ -27,15 +27,24 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/settings";
+		RouteId(): "/" | "/cards" | "/cards/chapters" | "/cards/chapter" | "/cards/chapter/new" | "/cards/editor" | "/cards/scenes" | "/cards/scene" | "/cards/scene/new" | "/cards/toc" | "/settings";
 		RouteParams(): {
 			
 		};
 		LayoutParams(): {
 			"/": Record<string, never>;
+			"/cards": Record<string, never>;
+			"/cards/chapters": Record<string, never>;
+			"/cards/chapter": Record<string, never>;
+			"/cards/chapter/new": Record<string, never>;
+			"/cards/editor": Record<string, never>;
+			"/cards/scenes": Record<string, never>;
+			"/cards/scene": Record<string, never>;
+			"/cards/scene/new": Record<string, never>;
+			"/cards/toc": Record<string, never>;
 			"/settings": Record<string, never>
 		};
-		Pathname(): "/" | "/settings" | "/settings/";
+		Pathname(): "/" | "/cards" | "/cards/" | "/cards/chapters" | "/cards/chapters/" | "/cards/chapter" | "/cards/chapter/" | "/cards/chapter/new" | "/cards/chapter/new/" | "/cards/editor" | "/cards/editor/" | "/cards/scenes" | "/cards/scenes/" | "/cards/scene" | "/cards/scene/" | "/cards/scene/new" | "/cards/scene/new/" | "/cards/toc" | "/cards/toc/" | "/settings" | "/settings/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/manifest.json" | string & {};
 	}
