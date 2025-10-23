@@ -1,8 +1,8 @@
 <script lang="ts">
   import '../app.css';
-  import AppHeader from '@ui/components/AppHeader.svelte';
-  import AppSidebar from '@ui/components/AppSidebar.svelte';
-  import AppToasts from '@ui/components/AppToasts.svelte';
+  import AppHeader from '@loke/ui/components/AppHeader.svelte';
+  import AppSidebar from '@loke/ui/components/AppSidebar.svelte';
+  import AppToasts from '@loke/ui/components/AppToasts.svelte';
 </script>
 
 <div class="h-screen w-screen flex bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 overflow-hidden">
