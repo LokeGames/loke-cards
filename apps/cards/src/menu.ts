@@ -1,14 +1,12 @@
-import type { ComponentType } from "svelte";
-import type { Icon as IconType } from "@lucide/svelte";
-
-import type { ComponentType } from "svelte";
-import type { Icon as IconType } from "@lucide/svelte";
-import { FileText, File, BookOpen, Edit, Plus, List } from "@lucide/svelte";
+import FileText from "@loke/ui/icons/FileText.svelte";
+import File from "@loke/ui/icons/File.svelte";
+import BookOpen from "@loke/ui/icons/BookOpen.svelte";
+import List from "@loke/ui/icons/List.svelte";
 
 export interface MenuItem {
   label: string;
   href: string;
-  icon?: ComponentType<IconType>;
+  icon?: any; // Lucide Svelte component
 }
 
 export const cardsMenu: MenuItem[] = [
@@ -26,21 +24,6 @@ export const cardsMenu: MenuItem[] = [
     label: "Chapters",
     href: "/cards/chapters",
     icon: BookOpen,
-  },
-  {
-    label: "Scene Editor",
-    href: "/cards/editor",
-    icon: Edit,
-  },
-  {
-    label: "New Scene",
-    href: "/cards/scene/new",
-    icon: Plus,
-  },
-  {
-    label: "New Chapter",
-    href: "/cards/chapter/new",
-    icon: Plus,
   },
   {
     label: "Table of Contents",

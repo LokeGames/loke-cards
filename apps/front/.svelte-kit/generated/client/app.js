@@ -20,12 +20,12 @@ export const server_loads = [];
 export const dictionary = {
 		"/": [2],
 		"/cards": [3],
-		"/cards/chapters": [6],
-		"/cards/chapter/edit": [4],
-		"/cards/chapter/new": [5],
-		"/cards/editor": [7],
-		"/cards/scenes": [9],
-		"/cards/scene/new": [8],
+		"/cards/chapters": [4],
+		"/cards/chapters/edit/[id]": [5],
+		"/cards/chapters/new": [6],
+		"/cards/scenes": [7],
+		"/cards/scenes/edit/[id]": [8],
+		"/cards/scenes/new": [9],
 		"/cards/toc": [10],
 		"/settings": [11]
 	};

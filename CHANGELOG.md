@@ -7,9 +7,183 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - 2025-10-23 - Reusable Form Components
+
+#### Added
+
+- ✅ **Close (X) button on edit pages** - Added close button in top-right corner
+  - Chapter edit page: X button returns to `/cards/chapters`
+  - Scene edit page: X button returns to `/cards/scenes`
+  - Uses Lucide X icon with hover effect
+  - Improves navigation UX - quick way to cancel and return to list
+  - Files: `apps/front/src/routes/cards/chapters/edit/[id]/+page.svelte:75-84`
+  - Files: `apps/front/src/routes/cards/scenes/edit/[id]/+page.svelte:11-22`
+
+- ✅ **Reusable ChapterForm component** - Created unified form for chapter create/edit
+  - Single source of truth for chapter form UI (`apps/cards/src/components/ChapterForm.svelte`)
+  - Supports both create and edit modes via `isEditMode` prop
+  - Chapter ID field becomes read-only in edit mode
+  - Emits `submit` and `cancel` events for flexible integration
+  - Eliminates code duplication between new and edit pages
+  - Exported from `@loke/apps-cards` package
+
+#### Changed
+
+- ✅ **Updated chapter pages to use reusable form**
+  - `/cards/chapters/new/+page.svelte` - Now uses `ChapterForm` component
+  - `/cards/chapters/edit/[id]/+page.svelte` - Now uses `ChapterForm` component
+  - Pages handle only data loading and business logic (validation, API calls)
+  - Form UI and structure fully encapsulated in reusable component
+  - Consistent form behavior across create/edit operations
+
+- ✅ **Updated Table of Contents page to follow unified paradigm**
+  - Added `afterNavigate()` hook for automatic data refresh
+  - Migrated from emojis to Lucide icons (BookOpen, FileText, AlertCircle, List, Plus)
+  - Updated all links to use RESTful routing (`/cards/chapters/edit/[id]`, `/cards/scenes/edit/[id]`)
+  - Fixed chapter grouping to use `chapter.id` instead of `chapter.chapterId`
+  - Consistent icon usage with other list views
+  - File: `apps/front/src/routes/cards/toc/+page.svelte`
+
+- ✅ **Cleaned up sidebar menu** - Removed redundant menu items
+  - Removed "Scene Editor" (scenes are edited from Scenes list)
+  - Removed "New Scene" (created from Scenes list with + button)
+  - Removed "New Chapter" (created from Chapters list with + button)
+  - Cleaner menu with only main navigation: Cards, Scenes, Chapters, Table of Contents
+  - File: `apps/cards/src/menu.ts`
+
+#### Documentation
+
+- ✅ **Added Database Architecture section to README.md**
+  - Documents unified `db` singleton pattern for all data access
+  - Provides code examples for creating new list views
+  - Documents RESTful routing conventions (`/resource/action/[id]`)
+  - Explains `afterNavigate()` hook for list refresh
+  - Lists all available database methods (chapters, scenes)
+  - Shows common pitfalls to avoid (wrappers, query params, stores)
+  - Critical reference for all future view development
+
+### Fixed - 2025-10-23 - Database Integration & Navigation
+
+#### Fixed
+
+- ✅ **Chapters list view showing wrong fields** - Fixed field mapping
+  - Changed from `chapter.title || chapter.chapterId` to `chapter.name || chapter.title || chapter.id`
+  - Changed from `chapter.chapterId` to `chapter.id` for ID display
+  - Now correctly displays chapter name and ID from backend
+  - File: `apps/front/src/routes/cards/chapters/+page.svelte:70-73`
+
+- ✅ **List views not refreshing** - Added `afterNavigate()` hook to reload data after navigation
+  - Problem: SvelteKit client-side navigation cached old data when returning from edit pages
+  - Solution: Extracted load logic into `loadChapters()`/`loadScenes()` functions called from both `onMount()` and `afterNavigate()`
+  - Affected files: `apps/front/src/routes/cards/chapters/+page.svelte`, `apps/front/src/routes/cards/scenes/+page.svelte`
+  - Now lists automatically refresh when navigating back from create/edit pages
+
+- ✅ **Chapter edit page missing** - Created chapter edit functionality
+  - Added `/cards/chapter/edit/+page.svelte` with ID, name, and description fields
+  - Chapter ID displayed as read-only (cannot be changed after creation)
+  - Redirects to chapters list after successful save
+
+- ✅ **Chapter dropdown empty in scene editor** - Fixed ChapterSelect component
+  - Updated to use `db.getAllChapters()` instead of old `getChapters()` from dataClient
+  - Fixed field mapping: using `c.id` and `c.name || c.title || c.id` to display chapter names
+  - File: `apps/cards/src/components/ChapterSelect.svelte`
+
+- ✅ **API response format inconsistency** - Added dual-format support in API client
+  - Problem: Backend returns both `{id, data: "json"}` format and direct JSON depending on endpoint
+  - Solution: Added format detection in `getChapter()` and `getScene()` methods
+  - Checks if `response.data` is string → parse with `parseDataField()`, otherwise use directly
+  - File: `apps/shared/src/api-client.ts:155-171`
+
+- ✅ **Chapter creation validation** - Added auto-prefix and C identifier validation
+  - Backend requires chapter IDs to start with "chapter" and follow C naming rules
+  - Frontend now auto-prefixes with "chapter_" if user doesn't include it
+  - Validates format: only letters, numbers, and underscores allowed
+  - File: `apps/front/src/routes/cards/chapter/new/+page.svelte:25-37`
+
+#### Changed
+
+- ✅ **Replaced emoji icons with Lucide** - Migrated from emoji to proper SVG icons
+  - Installed `lucide-svelte` package in frontend
+  - Replaced ➕ with `<Plus>` icon component
+  - Replaced 📚 with `<BookOpen>` icon (64px for empty states)
+  - Replaced 📄 with `<FileText>` icon (64px for empty states)
+  - Updated buttons to use `inline-flex items-center gap-2` for proper icon alignment
+  - Affected files: chapters and scenes list views
+
+#### Refactored
+
+- ✅ **Unified data access layer** - Removed redundant wrappers, use `db` singleton directly
+  - Removed `apps/cards/src/lib/dataClient.ts` - was just pass-through to `db`
+  - Removed `apps/front/src/lib/dataStore.ts` - unnecessary Svelte store wrapper
+  - All components now import `db` directly from `@loke/shared/database`
+  - Simplified `apps/front/src/routes/+layout.ts` - no init needed
+  - Cleaner architecture with single source of truth
+
+- ✅ **Standardized routing structure** - Migrated to RESTful route conventions
+  - **Old routes** (inconsistent):
+    - `/cards/editor?id=X` → Scene edit (query param)
+    - `/cards/scene/new` → Scene create
+    - `/cards/chapter/new` → Chapter create
+    - `/cards/chapter/edit?id=X` → Chapter edit (query param)
+  - **New routes** (RESTful):
+    - `/cards/scenes/edit/[id]` → Scene edit (URL param)
+    - `/cards/scenes/new` → Scene create
+    - `/cards/chapters/new` → Chapter create
+    - `/cards/chapters/edit/[id]` → Chapter edit (URL param)
+  - Benefits:
+    - Consistent REST pattern across all resources
+    - Clean URLs without query parameters
+    - Better SvelteKit integration with `$page.params.id`
+    - Improved SEO and bookmarkability
+  - Updated all internal links in list views to use new routes
+
+### Added - 2025-10-23 - Custom SVG Icon System
+
+#### Added
+
+- ✅ **Custom SVG icon system** - Replaced external icon libraries with local SVG components
+  - Created `packages/ui/src/icons/` directory with 7 Lucide-based SVG icons
+  - Icons: FileText, File, BookOpen, PenTool, Plus, List, LayoutDashboard, Settings
+  - Each icon wrapped as Svelte component with `{...$$props}` for flexibility
+  - Removed dependency on external icon packages (@lucide/svelte, lucide-svelte, lucide)
+
+#### Fixed
+
+- ✅ **Icon import crashes** - Fixed "Unknown file extension .svelte" and module resolution errors
+  - Problem: External icon libraries had Svelte 5 compatibility issues
+  - Solution: Downloaded SVG icons directly from Lucide and created local Svelte components
+  - Updated imports in `apps/cards/src/menu.ts` and `packages/ui/src/components/AppSidebar.svelte`
+  - All menu items now render correctly with SVG icons instead of emojis
+
+#### Icon Usage Policy
+
+- ✅ **Established icon policy** - Use custom SVG icons, not ASCII or emoji
+  - All new UI components should use icons from `packages/ui/src/icons/`
+  - Icons are fully customizable with Tailwind classes (size, color, stroke-width)
+  - Consistent 24x24 viewBox with stroke-based design matching Tailwind aesthetic
+  - Easy to extend: download new SVG from Lucide and create .svelte component
+
+#### Files Added
+
+- `packages/ui/src/icons/FileText.svelte` - Document icon
+- `packages/ui/src/icons/File.svelte` - File icon
+- `packages/ui/src/icons/BookOpen.svelte` - Book icon
+- `packages/ui/src/icons/PenTool.svelte` - Edit/pen icon
+- `packages/ui/src/icons/Plus.svelte` - Add/create icon
+- `packages/ui/src/icons/List.svelte` - List/bullet icon
+- `packages/ui/src/icons/LayoutDashboard.svelte` - Dashboard icon
+- `packages/ui/src/icons/Settings.svelte` - Settings gear icon
+
+#### Testing
+
+- ✅ **Menu functionality verified** - All menu items render with correct icons
+- ✅ **No build errors** - Custom icons compile without external dependencies
+- ✅ **Responsive design** - Icons scale properly with Tailwind classes
+
 ### Added - 2025-10-23 - Production Build Setup
 
 #### Added
+
 - ✅ **SvelteKit production build configuration**
   - Installed `@sveltejs/adapter-node` v5.4.0 for Node.js deployment
   - Configured `apps/front/svelte.config.js` with adapter
@@ -18,6 +192,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Server bundle: 145 KB entry point with SSR support
 
 #### Build Commands
+
 - ✅ **`pnpm run build`** - Creates optimized production build
   - Generates SSR server bundle
   - Generates static client assets
@@ -25,17 +200,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ **`pnpm run preview`** - Preview production build locally
 
 #### Build Output
+
 - `.svelte-kit/output/client/` - Static assets for CDN deployment
 - `.svelte-kit/output/server/` - Node.js server bundle
 - `.svelte-kit/output/server/index.js` - Main entry point (145 KB)
 
 #### Testing
+
 - ✅ **Build verification**: Production build succeeds without errors or warnings
 - ✅ **Svelte 5 compatibility**: Built with latest Svelte 5.0.0 and SvelteKit 2.0.0
 
 ### Fixed - 2025-10-22 - Post-Refactoring Cleanup
 
 #### Fixed
+
 - ✅ **SSR localStorage compatibility**
   - Added `typeof window` checks in `apps/shared/src/database.ts`
   - Database now safely handles server-side rendering without errors
@@ -52,6 +230,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed a11y warnings from Svelte compiler
 
 #### Testing
+
 - ✅ **Build verification**: Production build succeeds without errors
 - ✅ **Workspace resolution**: All workspace packages resolve correctly
 - ✅ **SSR compatibility**: No localStorage errors during server-side rendering
@@ -61,6 +240,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **MAJOR CLEANUP**: Removed over-engineered complexity from Svelte port
 
 #### Removed
+
 - ❌ **Removed `workers/` directory entirely**
   - Deleted `workers/data/` with Comlink-based Web Worker implementation
   - Web Workers were overkill for simple CRUD operations on localStorage
@@ -124,18 +304,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Architecture Improvements
 
 **Before (Over-engineered):**
+
 ```
 Browser → Comlink → SharedWorker → In-memory Maps → (no persistence)
          (27 imports)  (worker.ts)
 ```
 
 **After (Simple & Direct):**
+
 ```
 Browser → Database class → localStorage
          (direct calls)    (persistent)
 ```
 
 **Benefits:**
+
 - 🚀 Faster - No worker message passing overhead
 - 🧹 Simpler - 27 fewer Comlink imports
 - 📦 Smaller - 2 fewer packages in monorepo

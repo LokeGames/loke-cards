@@ -9,19 +9,19 @@
 	"/cards/chapters": [
 		"src/routes/+layout.ts"
 	],
-	"/cards/chapter/edit": [
+	"/cards/chapters/edit/[id]": [
 		"src/routes/+layout.ts"
 	],
-	"/cards/chapter/new": [
-		"src/routes/+layout.ts"
-	],
-	"/cards/editor": [
+	"/cards/chapters/new": [
 		"src/routes/+layout.ts"
 	],
 	"/cards/scenes": [
 		"src/routes/+layout.ts"
 	],
-	"/cards/scene/new": [
+	"/cards/scenes/edit/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/scenes/new": [
 		"src/routes/+layout.ts"
 	],
 	"/cards/toc": [

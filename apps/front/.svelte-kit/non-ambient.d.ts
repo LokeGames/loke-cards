@@ -27,25 +27,31 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/cards" | "/cards/chapters" | "/cards/chapter" | "/cards/chapter/edit" | "/cards/chapter/new" | "/cards/editor" | "/cards/scenes" | "/cards/scene" | "/cards/scene/new" | "/cards/toc" | "/settings";
+		RouteId(): "/" | "/cards" | "/cards/chapters" | "/cards/chapters/edit" | "/cards/chapters/edit/[id]" | "/cards/chapters/new" | "/cards/chapter" | "/cards/chapter/edit" | "/cards/chapter/new" | "/cards/scenes" | "/cards/scenes/edit" | "/cards/scenes/edit/[id]" | "/cards/scenes/new" | "/cards/scene" | "/cards/scene/new" | "/cards/toc" | "/settings";
 		RouteParams(): {
-			
+			"/cards/chapters/edit/[id]": { id: string };
+			"/cards/scenes/edit/[id]": { id: string }
 		};
 		LayoutParams(): {
-			"/": Record<string, never>;
-			"/cards": Record<string, never>;
-			"/cards/chapters": Record<string, never>;
-			"/cards/chapter": Record<string, never>;
+			"/": { id?: string };
+			"/cards": { id?: string };
+			"/cards/chapters": { id?: string };
+			"/cards/chapters/edit": { id?: string };
+			"/cards/chapters/edit/[id]": { id: string };
+			"/cards/chapters/new": Record<string, never>;
+			"/cards/chapter": { id?: string };
 			"/cards/chapter/edit": Record<string, never>;
 			"/cards/chapter/new": Record<string, never>;
-			"/cards/editor": Record<string, never>;
-			"/cards/scenes": Record<string, never>;
-			"/cards/scene": Record<string, never>;
+			"/cards/scenes": { id?: string };
+			"/cards/scenes/edit": { id?: string };
+			"/cards/scenes/edit/[id]": { id: string };
+			"/cards/scenes/new": Record<string, never>;
+			"/cards/scene": { id?: string };
 			"/cards/scene/new": Record<string, never>;
 			"/cards/toc": Record<string, never>;
 			"/settings": Record<string, never>
 		};
-		Pathname(): "/" | "/cards" | "/cards/" | "/cards/chapters" | "/cards/chapters/" | "/cards/chapter" | "/cards/chapter/" | "/cards/chapter/edit" | "/cards/chapter/edit/" | "/cards/chapter/new" | "/cards/chapter/new/" | "/cards/editor" | "/cards/editor/" | "/cards/scenes" | "/cards/scenes/" | "/cards/scene" | "/cards/scene/" | "/cards/scene/new" | "/cards/scene/new/" | "/cards/toc" | "/cards/toc/" | "/settings" | "/settings/";
+		Pathname(): "/" | "/cards" | "/cards/" | "/cards/chapters" | "/cards/chapters/" | "/cards/chapters/edit" | "/cards/chapters/edit/" | `/cards/chapters/edit/${string}` & {} | `/cards/chapters/edit/${string}/` & {} | "/cards/chapters/new" | "/cards/chapters/new/" | "/cards/chapter" | "/cards/chapter/" | "/cards/chapter/edit" | "/cards/chapter/edit/" | "/cards/chapter/new" | "/cards/chapter/new/" | "/cards/scenes" | "/cards/scenes/" | "/cards/scenes/edit" | "/cards/scenes/edit/" | `/cards/scenes/edit/${string}` & {} | `/cards/scenes/edit/${string}/` & {} | "/cards/scenes/new" | "/cards/scenes/new/" | "/cards/scene" | "/cards/scene/" | "/cards/scene/new" | "/cards/scene/new/" | "/cards/toc" | "/cards/toc/" | "/settings" | "/settings/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/manifest.json" | string & {};
 	}

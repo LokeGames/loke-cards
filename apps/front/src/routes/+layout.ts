@@ -1,8 +1,7 @@
-import { initDataApi } from '$lib/dataStore';
+// Database is initialized as singleton in @loke/shared/database
+// No need for separate initialization
 
 export const load = () => {
-  // Initialize worker connection on app start
-  if (typeof window !== 'undefined') initDataApi();
   return {};
 };
 
