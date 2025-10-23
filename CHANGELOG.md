@@ -162,6 +162,99 @@ If upgrading from a localStorage-only version:
 
 ## [Unreleased]
 
+### Added - 2025-10-23 - Multi-Project Architecture (Backend Phase 1)
+
+#### Backend: Project Management System (Pointer Method)
+
+- ✅ **Multi-project support** - Complete backend infrastructure for managing multiple isolated projects
+  - **Architecture**: Pointer-based approach - global `current_project` variable directs database path
+  - **Zero breaking changes**: All existing API endpoints work unchanged (business as usual)
+  - **Project structure**: Each project gets isolated directories:
+    ```
+    projects/
+    ├── project-name/
+    │   ├── data/project-name.db    # SQLite database
+    │   ├── output/                  # Generated C files
+    │   └── assets/                  # Future: images, sounds
+    ```
+
+- ✅ **Project Management Functions** (`server/main.cpp`)
+  - `sanitize_project_name()` - Clean project names (lowercase, alphanumeric, hyphens)
+  - `get_project_dir()` - Get project root directory path
+  - `get_project_db_path()` - Get database file path for project
+  - `get_project_output_path()` - Get output directory for generated C files
+  - `get_project_assets_path()` - Get assets directory (future use)
+  - `create_project_dirs()` - Create project directory structure (data/, output/, assets/)
+  - `project_exists()` - Check if project exists
+  - `list_projects()` - List all projects in projects/ directory
+  - `count_records(table)` - Count rows in database table
+
+- ✅ **New API Endpoints** (4 new endpoints for project management)
+  - `GET /api/projects` - List all projects with stats (sceneCount, chapterCount, stateCount)
+  - `POST /api/projects` - Create new project with sanitized name
+  - `POST /api/projects/switch` - Switch current project pointer
+  - `GET /api/projects/current` - Get current project info and stats
+  - All endpoints return JSON with project metadata
+
+- ✅ **Database Management**
+  - `open_db_for_project(project_name)` - Open project-specific database
+  - Automatically closes existing connection before opening new one
+  - Creates project directories if they don't exist
+  - Same database schema as v0.1.0 (chapters, scenes, states tables)
+  - Each project has isolated SQLite database
+
+- ✅ **Automatic Migration** (v0.1.0 → v0.2.0)
+  - `migrate_from_v0_1_0()` - Auto-detect and migrate old database
+  - Copies `dev.db` to `projects/default/data/default.db`
+  - Moves existing output files to `projects/default/output/`
+  - Creates backup: `dev.db.v0.1.0.backup`
+  - Runs automatically on first startup after upgrade
+  - Zero manual intervention required
+
+- ✅ **Code Generation Updates**
+  - `POST /api/build` now uses `get_project_output_path(current_project)`
+  - Generated C files go to current project's output directory
+  - `GET /api/build/artifacts` lists files from current project only
+  - Each project has isolated build output
+
+- ✅ **Startup Behavior**
+  - Checks for old `dev.db` and migrates if found
+  - Creates `projects/` directory if missing
+  - Creates `default` project if no projects exist
+  - Opens `default` project database on startup
+  - Logs all project operations to console
+
+#### Testing & Verification
+
+- ✅ **Compilation**: Server compiles without errors (only unused function warnings)
+- ✅ **Migration**: v0.1.0 database successfully migrated to v0.2.0 structure
+- ✅ **Directory Creation**: Verified `projects/default/data/`, `output/`, `assets/` created
+- ✅ **API Endpoints**:
+  - `GET /api/projects/current` → Returns default project with stats
+  - `GET /api/projects` → Lists all projects
+  - `POST /api/projects` → Created "test-project" successfully
+  - `POST /api/projects/switch` → Switched between projects
+- ✅ **Database Files**: Verified `default.db` and `test-project.db` created
+- ✅ **Project Isolation**: Each project has independent database
+
+#### Files Modified
+
+- `server/main.cpp` - Added 344 lines, removed 9 lines
+  - Project management functions (lines 23-153)
+  - Updated database opening (lines 155-226)
+  - New API endpoints (lines 440-574)
+  - Updated build paths (lines 854, 944-946)
+  - Migration logic and startup sequence (lines 397-418)
+
+#### Next Steps (Frontend Phase 2)
+
+- [ ] Add `Project` interface to `apps/shared/src/types.ts`
+- [ ] Add project API client methods to `apps/shared/src/api-client.ts`
+- [ ] Create project store in `apps/shared/src/stores/project.ts`
+- [ ] Create `ProjectPicker.svelte` component
+- [ ] Update `AppHeader` with ProjectPicker
+- [ ] Optional: Create project management page
+
 ### Added - 2025-10-23 - State Management System
 
 #### Added
