@@ -91,10 +91,16 @@ class ApiClient {
 
   async getScene(id: string): Promise<Scene | null> {
     try {
-      const response = await this.request<{ id: string; data: string }>(
+      const response = await this.request<any>(
         `/api/scenes/${id}`,
       );
-      return this.parseDataField<Scene>(response);
+
+      // Handle both formats: {id, data: "json"} and direct JSON
+      if (response.data && typeof response.data === 'string') {
+        return this.parseDataField<Scene>(response);
+      } else {
+        return response as Scene;
+      }
     } catch (error) {
       console.error(`Scene not found: ${id}`);
       return null;
@@ -154,10 +160,16 @@ class ApiClient {
 
   async getChapter(id: string): Promise<Chapter | null> {
     try {
-      const response = await this.request<{ id: string; data: string }>(
+      const response = await this.request<any>(
         `/api/chapters/${id}`,
       );
-      return this.parseDataField<Chapter>(response);
+
+      // Handle both formats: {id, data: "json"} and direct JSON
+      if (response.data && typeof response.data === 'string') {
+        return this.parseDataField<Chapter>(response);
+      } else {
+        return response as Chapter;
+      }
     } catch (error) {
       console.error(`Chapter not found: ${id}`);
       return null;

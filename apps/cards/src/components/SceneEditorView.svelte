@@ -20,8 +20,8 @@
     if (!sceneId) return;
     const existing = await db.getScene(sceneId);
     if (existing) {
-      chapterId = existing.chapterId;
-      title = existing.title;
+      chapterId = existing.chapterId || existing.chapter || '';
+      title = existing.title || '';
       sceneText = existing.sceneText || '';
     }
   });

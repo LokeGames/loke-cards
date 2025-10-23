@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { createEventDispatcher } from 'svelte';
-  import { getChapters } from '../lib/dataClient';
+  import { db } from '@loke/shared/database';
   import type { Chapter } from '@schemas';
 
   export let value: string = '';
@@ -12,8 +12,9 @@
 
   onMount(async () => {
     try {
-      chapters = await getChapters();
+      chapters = await db.getAllChapters();
     } catch (e) {
+      console.error('Failed to load chapters:', e);
       chapters = [];
     }
   });
@@ -32,7 +33,7 @@
 >
   <option value="" disabled selected={value==='' }>{placeholder}</option>
   {#each chapters as c}
-    <option value={c.chapterId}>{c.title}</option>
+    <option value={c.id}>{c.name || c.title || c.id}</option>
   {/each}
   {#if chapters.length === 0}
     <option value="" disabled>(no chapters)</option>

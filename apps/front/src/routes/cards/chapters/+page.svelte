@@ -72,7 +72,7 @@
               <button
                 type="button"
                 on:click={() => {
-                  if (confirm(`Delete chapter "${chapter.title || chapter.chapterId}"?`)) {
+                  if (confirm(`Delete chapter "${chapter.name || chapter.title || chapter.id}"?`)) {
                     db.deleteChapter(chapter.id).then(() => {
                       chapters = chapters.filter(c => c.id !== chapter.id);
                     });

@@ -22,14 +22,27 @@
       return;
     }
 
+    // Validate chapter ID format
+    let finalChapterId = chapterId.trim();
+
+    // Auto-prefix with "chapter" if not present
+    if (!finalChapterId.startsWith('chapter')) {
+      finalChapterId = 'chapter_' + finalChapterId;
+    }
+
+    // Validate C identifier rules (alphanumeric + underscore only)
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(finalChapterId)) {
+      error = 'Chapter ID must contain only letters, numbers, and underscores';
+      return;
+    }
+
     saving = true;
     try {
       await db.createChapter({
-        chapterId: chapterId.trim(),
-        title: title.trim(),
+        id: finalChapterId,
+        name: title.trim(),
         description: description.trim(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        projectId: 'default',
       });
 
       // Redirect to chapters list
@@ -56,12 +69,12 @@
           type="text"
           id="chapterId"
           bind:value={chapterId}
-          placeholder="e.g., chapter01"
+          placeholder="e.g., 01 or intro (will become chapter_01)"
           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           required
         />
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Unique identifier for this chapter
+          Will be prefixed with "chapter_" if not starting with "chapter". Use only letters, numbers, and underscores.
         </p>
       </div>
 

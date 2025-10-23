@@ -9,6 +9,9 @@
 	"/cards/chapters": [
 		"src/routes/+layout.ts"
 	],
+	"/cards/chapter/edit": [
+		"src/routes/+layout.ts"
+	],
 	"/cards/chapter/new": [
 		"src/routes/+layout.ts"
 	],
