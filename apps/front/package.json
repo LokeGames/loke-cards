@@ -13,6 +13,7 @@
     "test:unit:watch": "vitest"
   },
   "devDependencies": {
+    "@sveltejs/adapter-node": "^5.4.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@testing-library/jest-dom": "^6.4.2",

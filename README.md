@@ -26,10 +26,15 @@ Start development:
 pnpm dev
 ```
 
-Build and preview:
+Build for production:
 
 ```bash
 pnpm build
+```
+
+Preview production build locally:
+
+```bash
 pnpm preview
 ```
 
@@ -67,13 +72,13 @@ Backend only
 pnpm build
 ```
 
-Production build
+Production build (outputs to `apps/front/.svelte-kit/output/`)
 
 ```bash
 pnpm preview
 ```
 
-Preview production build
+Preview production build locally (starts Node.js server)
 
 ```bash
 pnpm test
@@ -353,7 +358,35 @@ VITE_PROJECT_NAME=my-adventure  # Project name (optional)
 
 ## Deployment
 
-Designed for **LXC containers** on **Tailscale network**:
+Designed for **LXC containers** on **Tailscale network**.
+
+### Production Build
+
+The app uses **@sveltejs/adapter-node** for Node.js deployment:
+
+```bash
+pnpm build
+```
+
+This creates:
+- `.svelte-kit/output/server/` - Node.js server bundle (SSR)
+- `.svelte-kit/output/client/` - Static assets
+- `.svelte-kit/output/server/index.js` - Entry point (145 KB)
+
+### Run Production Server
+
+```bash
+cd apps/front
+node .svelte-kit/output/server/index.js
+```
+
+Or use the preview command:
+
+```bash
+pnpm preview
+```
+
+### Docker Deployment
 
 Build container:
 

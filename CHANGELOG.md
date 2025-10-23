@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - 2025-10-23 - Production Build Setup
+
+#### Added
+- ✅ **SvelteKit production build configuration**
+  - Installed `@sveltejs/adapter-node` v5.4.0 for Node.js deployment
+  - Configured `apps/front/svelte.config.js` with adapter
+  - Production build outputs to `.svelte-kit/output/`
+  - Client bundle: ~147 KB (gzipped: ~60 KB)
+  - Server bundle: 145 KB entry point with SSR support
+
+#### Build Commands
+- ✅ **`pnpm run build`** - Creates optimized production build
+  - Generates SSR server bundle
+  - Generates static client assets
+  - Includes code splitting and tree shaking
+- ✅ **`pnpm run preview`** - Preview production build locally
+
+#### Build Output
+- `.svelte-kit/output/client/` - Static assets for CDN deployment
+- `.svelte-kit/output/server/` - Node.js server bundle
+- `.svelte-kit/output/server/index.js` - Main entry point (145 KB)
+
+#### Testing
+- ✅ **Build verification**: Production build succeeds without errors or warnings
+- ✅ **Svelte 5 compatibility**: Built with latest Svelte 5.0.0 and SvelteKit 2.0.0
+
 ### Fixed - 2025-10-22 - Post-Refactoring Cleanup
 
 #### Fixed
