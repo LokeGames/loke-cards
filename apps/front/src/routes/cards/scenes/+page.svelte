@@ -1,12 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
   import { db } from '@loke/shared/database';
   import type { Scene } from '@loke/shared';
+  import { Plus, FileText } from 'lucide-svelte';
 
   let scenes: Scene[] = [];
   let loading = true;
 
-  onMount(async () => {
+  async function loadScenes() {
+    loading = true;
     try {
       scenes = await db.getAllScenes();
     } catch (error) {
@@ -14,6 +17,15 @@
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    loadScenes();
+  });
+
+  // Reload data after navigation (e.g., coming back from edit page)
+  afterNavigate(() => {
+    loadScenes();
   });
 
   function formatDate(dateStr?: string): string {
@@ -25,8 +37,9 @@
 <div class="p-6">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Scenes</h1>
-    <a href="/cards/scene/new" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-      ➕ New Scene
+    <a href="/cards/scenes/new" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+      <Plus size={20} />
+      New Scene
     </a>
   </div>
 
@@ -37,10 +50,13 @@
     </div>
   {:else if scenes.length === 0}
     <div class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-      <span class="text-6xl">📄</span>
+      <div class="flex justify-center mb-4">
+        <FileText size={64} class="text-gray-400" />
+      </div>
       <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No scenes yet</h3>
       <p class="mt-2 text-gray-600 dark:text-gray-400">Get started by creating your first scene</p>
-      <a href="/cards/scene/new" class="mt-4 inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+      <a href="/cards/scenes/new" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+        <Plus size={20} />
         Create Scene
       </a>
     </div>
@@ -69,7 +85,7 @@
             </div>
             <div class="flex gap-2 ml-4">
               <a
-                href={`/cards/editor?id=${scene.id}`}
+                href={`/cards/scenes/edit/${scene.id}`}
                 class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
               >
                 Edit

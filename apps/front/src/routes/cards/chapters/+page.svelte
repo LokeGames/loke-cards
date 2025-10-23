@@ -1,12 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
   import { db } from '@loke/shared/database';
   import type { Chapter } from '@loke/shared';
+  import { Plus, BookOpen } from 'lucide-svelte';
 
   let chapters: Chapter[] = [];
   let loading = true;
 
-  onMount(async () => {
+  async function loadChapters() {
+    loading = true;
     try {
       chapters = await db.getAllChapters();
     } catch (error) {
@@ -14,6 +17,15 @@
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    loadChapters();
+  });
+
+  // Reload data after navigation (e.g., coming back from edit page)
+  afterNavigate(() => {
+    loadChapters();
   });
 
   function formatDate(dateStr?: string): string {
@@ -25,8 +37,9 @@
 <div class="p-6">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Chapters</h1>
-    <a href="/cards/chapter/new" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-      ➕ New Chapter
+    <a href="/cards/chapters/new" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+      <Plus size={20} />
+      New Chapter
     </a>
   </div>
 
@@ -37,10 +50,13 @@
     </div>
   {:else if chapters.length === 0}
     <div class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-      <span class="text-6xl">📚</span>
+      <div class="flex justify-center mb-4">
+        <BookOpen size={64} class="text-gray-400" />
+      </div>
       <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No chapters yet</h3>
       <p class="mt-2 text-gray-600 dark:text-gray-400">Get started by creating your first chapter</p>
-      <a href="/cards/chapter/new" class="mt-4 inline-block px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+      <a href="/cards/chapters/new" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+        <Plus size={20} />
         Create Chapter
       </a>
     </div>
@@ -51,10 +67,10 @@
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                {chapter.title || chapter.chapterId}
+                {chapter.name || chapter.title || chapter.id}
               </h3>
               <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                ID: <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{chapter.chapterId}</code>
+                ID: <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{chapter.id}</code>
               </p>
               {#if chapter.description}
                 <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
@@ -64,7 +80,7 @@
             </div>
             <div class="flex gap-2 ml-4">
               <a
-                href={`/cards/chapter/edit?id=${chapter.id}`}
+                href={`/cards/chapters/edit/${chapter.id}`}
                 class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
               >
                 Edit

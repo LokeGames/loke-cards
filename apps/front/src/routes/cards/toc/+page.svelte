@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
   import { db } from '@loke/shared/database';
   import type { Scene, Chapter } from '@loke/shared';
+  import { Plus, BookOpen, FileText, AlertCircle, List } from 'lucide-svelte';
 
   let chapters: Chapter[] = [];
   let scenes: Scene[] = [];
@@ -17,7 +19,8 @@
     return acc;
   }, {} as Record<string, Scene[]>);
 
-  onMount(async () => {
+  async function loadData() {
+    loading = true;
     try {
       [chapters, scenes] = await Promise.all([
         db.getAllChapters(),
@@ -28,6 +31,15 @@
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    loadData();
+  });
+
+  // Reload data after navigation
+  afterNavigate(() => {
+    loadData();
   });
 </script>
 
@@ -35,11 +47,13 @@
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Table of Contents</h1>
     <div class="flex gap-2">
-      <a href="/cards/chapter/new" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
-        ➕ Chapter
+      <a href="/cards/chapters/new" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
+        <Plus size={16} />
+        Chapter
       </a>
-      <a href="/cards/scene/new" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
-        ➕ Scene
+      <a href="/cards/scenes/new" class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
+        <Plus size={16} />
+        Scene
       </a>
     </div>
   </div>
@@ -51,7 +65,9 @@
     </div>
   {:else if chapters.length === 0 && scenes.length === 0}
     <div class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-      <span class="text-6xl">📋</span>
+      <div class="flex justify-center mb-4">
+        <List size={64} class="text-gray-400" />
+      </div>
       <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No content yet</h3>
       <p class="mt-2 text-gray-600 dark:text-gray-400">Start by creating chapters and scenes</p>
     </div>
@@ -63,12 +79,15 @@
           <!-- Chapter Header -->
           <div class="bg-gray-50 dark:bg-gray-700 p-4 border-b border-gray-200 dark:border-gray-600">
             <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                  📚 {chapter.title}
-                </h2>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <BookOpen size={20} class="text-gray-600 dark:text-gray-400" />
+                  <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    {chapter.name || chapter.title}
+                  </h2>
+                </div>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {chapter.chapterId}
+                  {chapter.id}
                 </p>
                 {#if chapter.description}
                   <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
@@ -77,7 +96,7 @@
                 {/if}
               </div>
               <a
-                href={`/cards/chapter/edit?id=${chapter.id}`}
+                href={`/cards/chapters/edit/${chapter.id}`}
                 class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
               >
                 Edit
@@ -87,11 +106,11 @@
 
           <!-- Scenes in this chapter -->
           <div class="p-4">
-            {#if scenesByChapter[chapter.chapterId]?.length > 0}
+            {#if scenesByChapter[chapter.id]?.length > 0}
               <div class="space-y-2">
-                {#each scenesByChapter[chapter.chapterId] as scene, idx}
+                {#each scenesByChapter[chapter.id] as scene, idx}
                   <a
-                    href={`/cards/editor?id=${scene.id}`}
+                    href={`/cards/scenes/edit/${scene.id}`}
                     class="block p-3 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                   >
                     <div class="flex items-start justify-between">
@@ -99,15 +118,18 @@
                         <span class="text-gray-500 dark:text-gray-400 font-mono text-sm">
                           {idx + 1}.
                         </span>
-                        <div>
-                          <h3 class="font-medium text-gray-900 dark:text-white">
-                            📄 {scene.title || scene.sceneId}
-                          </h3>
-                          {#if scene.sceneText}
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">
-                              {scene.sceneText.substring(0, 100)}...
-                            </p>
-                          {/if}
+                        <div class="flex items-start gap-2">
+                          <FileText size={16} class="text-gray-600 dark:text-gray-400 mt-0.5" />
+                          <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">
+                              {scene.title || scene.sceneId}
+                            </h3>
+                            {#if scene.sceneText}
+                              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">
+                                {scene.sceneText.substring(0, 100)}...
+                              </p>
+                            {/if}
+                          </div>
                         </div>
                       </div>
                       <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -130,9 +152,12 @@
       {#if scenesByChapter.uncategorized?.length > 0}
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 border-b border-yellow-200 dark:border-yellow-800">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-              ⚠️ Uncategorized Scenes
-            </h2>
+            <div class="flex items-center gap-2">
+              <AlertCircle size={20} class="text-yellow-600 dark:text-yellow-400" />
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Uncategorized Scenes
+              </h2>
+            </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
               These scenes are not assigned to any chapter
             </p>
@@ -140,12 +165,15 @@
           <div class="p-4 space-y-2">
             {#each scenesByChapter.uncategorized as scene}
               <a
-                href={`/cards/editor?id=${scene.id}`}
+                href={`/cards/scenes/edit/${scene.id}`}
                 class="block p-3 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
-                <h3 class="font-medium text-gray-900 dark:text-white">
-                  📄 {scene.title || scene.sceneId}
-                </h3>
+                <div class="flex items-center gap-2">
+                  <FileText size={16} class="text-gray-600 dark:text-gray-400" />
+                  <h3 class="font-medium text-gray-900 dark:text-white">
+                    {scene.title || scene.sceneId}
+                  </h3>
+                </div>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{scene.sceneId}</p>
               </a>
             {/each}

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import QuickActions from './QuickActions.svelte';
   import ProjectStats from './ProjectStats.svelte';
   import RecentChapters from './RecentChapters.svelte';
   import RecentScenes from './RecentScenes.svelte';
@@ -11,8 +10,7 @@
     <p class="text-gray-600 dark:text-gray-400 mt-2">Welcome back! Here's an overview of your project.</p>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-    <QuickActions />
+  <div class="mb-6">
     <ProjectStats />
   </div>
 
