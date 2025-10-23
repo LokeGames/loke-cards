@@ -24,6 +24,15 @@
 	"/cards/scenes/new": [
 		"src/routes/+layout.ts"
 	],
+	"/cards/states": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/states/edit/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/states/new": [
+		"src/routes/+layout.ts"
+	],
 	"/cards/toc": [
 		"src/routes/+layout.ts"
 	],

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import SceneSelect from './SceneSelect.svelte';
+
   export type Choice = { id: string; text: string; next?: string };
   export let items: Choice[] = [];
   const dispatch = createEventDispatcher<{ change: { items: Choice[] } }>();
@@ -24,7 +26,7 @@
     {#each items as c (c.id)}
       <li class="flex items-center gap-2 mb-1" data-testid="choice-row">
         <input class="flex-1 rounded border border-gray-300 px-2 py-1" placeholder="Choice text" bind:value={c.text} />
-        <input class="w-40 rounded border border-gray-300 px-2 py-1" placeholder="Next scene id" bind:value={c.next} />
+        <SceneSelect bind:value={c.next} label="" placeholder="Next scene…" size="small" />
         <button class="px-2 py-1 rounded bg-red-600 text-white" on:click={() => remove(c.id)} aria-label="Remove choice">×</button>
       </li>
     {/each}

@@ -12,16 +12,18 @@
   }
 </script>
 
-<label class="block text-sm font-medium" for="scene-id-input">{label}</label>
-<input id="scene-id-input" class="mt-1 w-full rounded border px-2 py-1"
+<label class="block text-sm font-medium text-gray-900 dark:text-white" for="scene-id-input">{label}</label>
+<input id="scene-id-input" class="mt-1 w-full rounded border px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
   class:border-red-500={!valid}
+  class:dark:border-red-400={!valid}
   class:border-gray-300={valid}
+  class:dark:border-gray-600={valid}
   bind:value
   on:input={onInput}
   aria-invalid={!valid}
   aria-describedby="sceneid-help"
   />
-<p id="sceneid-help" class="text-xs mt-1" class:text-red-600={!valid} class:text-gray-500={valid}>
+<p id="sceneid-help" class="text-xs mt-1" class:text-red-600={!valid} class:dark:text-red-400={!valid} class:text-gray-500={valid} class:dark:text-gray-400={valid}>
   {#if valid}
     Must be a valid C identifier.
   {:else}

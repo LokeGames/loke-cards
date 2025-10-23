@@ -25,12 +25,17 @@ static int open_db(const std::string &path) {
     if (rc != SQLITE_OK) return rc;
     const char* ddl_chapters = "CREATE TABLE IF NOT EXISTS chapters (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
     const char* ddl_scenes   = "CREATE TABLE IF NOT EXISTS scenes (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
+    const char* ddl_states   = "CREATE TABLE IF NOT EXISTS states (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
     char* errmsg = nullptr;
     if (sqlite3_exec(db, ddl_chapters, nullptr, nullptr, &errmsg) != SQLITE_OK) {
         std::cerr << "DB error: " << errmsg << std::endl;
         sqlite3_free(errmsg);
     }
     if (sqlite3_exec(db, ddl_scenes, nullptr, nullptr, &errmsg) != SQLITE_OK) {
+        std::cerr << "DB error: " << errmsg << std::endl;
+        sqlite3_free(errmsg);
+    }
+    if (sqlite3_exec(db, ddl_states, nullptr, nullptr, &errmsg) != SQLITE_OK) {
         std::cerr << "DB error: " << errmsg << std::endl;
         sqlite3_free(errmsg);
     }
@@ -424,6 +429,77 @@ int main(void) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
         if (sqlite3_prepare_v2(db, "DELETE FROM scenes WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            sqlite3_finalize(stmt);
+            res.status = 500;
+            res.set_content("{\"message\":\"DB write failed\"}", "application/json");
+            return;
+        }
+        sqlite3_finalize(stmt);
+        res.set_content("{\"ok\":true}", "application/json");
+    });
+
+    // === States API ===
+    svr.Get("/api/states", [](const httplib::Request &, httplib::Response &res) {
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM states ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        std::string result = json_array_from_rows(stmt);
+        sqlite3_finalize(stmt);
+        res.set_content(result, "application/json");
+    });
+
+    svr.Get(R"(/api/states/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "SELECT data FROM states WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"DB read failed\"}", "application/json");
+            return;
+        }
+        sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            const unsigned char* data = sqlite3_column_text(stmt, 0);
+            std::string result = data ? reinterpret_cast<const char*>(data) : "null";
+            sqlite3_finalize(stmt);
+            res.set_content(result, "application/json");
+        } else {
+            sqlite3_finalize(stmt);
+            res.status = 404;
+            res.set_content("{\"message\":\"State not found\"}", "application/json");
+        }
+    });
+
+    svr.Post("/api/states", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = json_get_string_field(req.body, "id");
+        if (id.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Missing id in request body\"}", "application/json");
+            return;
+        }
+        upsert_row("states", id, req.body, res);
+    });
+
+    svr.Put(R"(/api/states/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        upsert_row("states", id, req.body, res);
+    });
+
+    svr.Delete(R"(/api/states/(.+))", [](const httplib::Request &req, httplib::Response &res) {
+        std::string id = req.matches[1];
+        std::lock_guard<std::mutex> lock(db_mutex);
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db, "DELETE FROM states WHERE id=?", -1, &stmt, nullptr) != SQLITE_OK) {
             res.status = 500;
             res.set_content("{\"message\":\"DB write failed\"}", "application/json");
             return;

@@ -6,6 +6,15 @@
   import { ChapterForm } from '@loke/apps-cards';
   import { X } from 'lucide-svelte';
 
+  function handleClose() {
+    // Go back in history, or fallback to chapters list
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      goto('/cards/chapters');
+    }
+  }
+
   let chapterId = '';
   let name = '';
   let description = '';
@@ -74,13 +83,14 @@
 <div class="p-6 max-w-2xl mx-auto">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Edit Chapter</h1>
-    <a
-      href="/cards/chapters"
+    <button
+      on:click={handleClose}
       class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-      title="Close and return to chapters list"
+      title="Close and return to previous page"
+      type="button"
     >
       <X size={24} class="text-gray-600 dark:text-gray-400" />
-    </a>
+    </button>
   </div>
 
   {#if loading}

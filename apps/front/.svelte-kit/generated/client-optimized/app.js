@@ -11,7 +11,11 @@ export const nodes = [
 	() => import('./nodes/7'),
 	() => import('./nodes/8'),
 	() => import('./nodes/9'),
-	() => import('./nodes/10')
+	() => import('./nodes/10'),
+	() => import('./nodes/11'),
+	() => import('./nodes/12'),
+	() => import('./nodes/13'),
+	() => import('./nodes/14')
 ];
 
 export const server_loads = [];
@@ -19,13 +23,17 @@ export const server_loads = [];
 export const dictionary = {
 		"/": [2],
 		"/cards": [3],
-		"/cards/chapters": [5],
-		"/cards/chapter/new": [4],
-		"/cards/editor": [6],
-		"/cards/scenes": [8],
-		"/cards/scene/new": [7],
-		"/cards/toc": [9],
-		"/settings": [10]
+		"/cards/chapters": [4],
+		"/cards/chapters/edit/[id]": [5],
+		"/cards/chapters/new": [6],
+		"/cards/scenes": [7],
+		"/cards/scenes/edit/[id]": [8],
+		"/cards/scenes/new": [9],
+		"/cards/states": [10],
+		"/cards/states/edit/[id]": [11],
+		"/cards/states/new": [12],
+		"/cards/toc": [13],
+		"/settings": [14]
 	};
 
 export const hooks = {

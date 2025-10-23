@@ -1,7 +1,7 @@
-import { w as bind_props, x as stringify, y as ensure_array_like, z as attr_class, F as slot } from "../../chunks/index2.js";
+import { V as bind_props, W as stringify, X as sanitize_props, Y as attributes, Z as ensure_array_like, _ as attr_class, $ as slot } from "../../chunks/index2.js";
 import { e as escape_html } from "../../chunks/escaping.js";
 import { a as attr } from "../../chunks/attributes.js";
-import { k as fallback } from "../../chunks/utils2.js";
+import { f as fallback } from "../../chunks/utils2.js";
 function AppHeader($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let title = fallback($$props["title"], "");
@@ -45,18 +45,76 @@ function AppHeader($$renderer, $$props) {
     bind_props($$props, { title });
   });
 }
+function LayoutDashboard($$renderer, $$props) {
+  const $$sanitized_props = sanitize_props($$props);
+  $$renderer.push(`<svg${attributes(
+    {
+      xmlns: "http://www.w3.org/2000/svg",
+      width: "24",
+      height: "24",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      class: "lucide lucide-layout-dashboard",
+      ...$$sanitized_props
+    },
+    void 0,
+    void 0,
+    void 0,
+    3
+  )}><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>`);
+}
+function Settings($$renderer, $$props) {
+  const $$sanitized_props = sanitize_props($$props);
+  $$renderer.push(`<svg${attributes(
+    {
+      xmlns: "http://www.w3.org/2000/svg",
+      width: "24",
+      height: "24",
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      class: "lucide lucide-settings",
+      ...$$sanitized_props
+    },
+    void 0,
+    void 0,
+    void 0,
+    3
+  )}><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg>`);
+}
 function AppSidebar($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let cardsMenuItems = [];
     let graphMenuItems = [];
-    $$renderer2.push(`<aside class="w-64 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4"><nav class="space-y-6"><div><h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Main</h3> <div class="space-y-1"><a href="/" class="block px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">📊 Dashboard</a> <a href="/settings" class="block px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">⚙️ Settings</a></div></div> `);
+    $$renderer2.push(`<aside class="w-64 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4"><nav class="space-y-6"><div><h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Main</h3> <div class="space-y-1"><a href="/" class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">`);
+    LayoutDashboard($$renderer2, { class: "w-4 h-4" });
+    $$renderer2.push(`<!----> Dashboard</a> <a href="/settings" class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">`);
+    Settings($$renderer2, { class: "w-4 h-4" });
+    $$renderer2.push(`<!----> Settings</a></div></div> `);
     if (cardsMenuItems.length > 0) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div><h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Cards</h3> <div class="space-y-1"><!--[-->`);
       const each_array = ensure_array_like(cardsMenuItems);
       for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
         let item = each_array[$$index];
-        $$renderer2.push(`<a${attr("href", item.href)} class="block px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">${escape_html(item.icon)} ${escape_html(item.label)}</a>`);
+        $$renderer2.push(`<a${attr("href", item.href)} class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">`);
+        if (item.icon) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<!---->`);
+          item.icon?.($$renderer2, { class: "w-4 h-4" });
+          $$renderer2.push(`<!---->`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+          $$renderer2.push(`<span class="w-4 h-4"></span>`);
+        }
+        $$renderer2.push(`<!--]--> ${escape_html(item.label)}</a>`);
       }
       $$renderer2.push(`<!--]--></div></div>`);
     } else {
@@ -69,7 +127,17 @@ function AppSidebar($$renderer, $$props) {
       const each_array_1 = ensure_array_like(graphMenuItems);
       for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
         let item = each_array_1[$$index_1];
-        $$renderer2.push(`<a${attr("href", item.href)} class="block px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">${escape_html(item.icon)} ${escape_html(item.label)}</a>`);
+        $$renderer2.push(`<a${attr("href", item.href)} class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">`);
+        if (item.icon) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<!---->`);
+          item.icon?.($$renderer2, { class: "w-4 h-4" });
+          $$renderer2.push(`<!---->`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+          $$renderer2.push(`<span class="w-4 h-4"></span>`);
+        }
+        $$renderer2.push(`<!--]--> ${escape_html(item.label)}</a>`);
       }
       $$renderer2.push(`<!--]--></div></div>`);
     } else {

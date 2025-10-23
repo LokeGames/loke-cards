@@ -1,4 +1,4 @@
-import type { Scene, Choice, Chapter } from "./types";
+import type { Scene, Choice, Chapter, StateVariable } from "./types";
 import { apiClient } from "./api-client";
 
 /**
@@ -13,6 +13,7 @@ import { apiClient } from "./api-client";
 class Database {
   private scenes: Map<string, Scene> = new Map();
   private chapters: Map<string, Chapter> = new Map();
+  private states: Map<string, StateVariable> = new Map();
   private readonly STORAGE_KEY = "loke-cards-data";
   private isOnline: boolean = true;
 
@@ -238,6 +239,7 @@ class Database {
       const data = {
         scenes: Array.from(this.scenes.entries()),
         chapters: Array.from(this.chapters.entries()),
+        states: Array.from(this.states.entries()),
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
@@ -253,9 +255,118 @@ class Database {
         const data = JSON.parse(stored);
         this.scenes = new Map(data.scenes || []);
         this.chapters = new Map(data.chapters || []);
+        this.states = new Map(data.states || []);
       }
     } catch (error) {
       console.error("Failed to load from localStorage:", error);
+    }
+  }
+
+  // === State Variable Operations ===
+
+  async createState(state: Omit<StateVariable, "id" | "createdAt" | "updatedAt">): Promise<StateVariable> {
+    try {
+      // Try API first
+      const created = await apiClient.createState(state);
+      this.states.set(created.id, created);
+      this.saveToStorage();
+      return created;
+    } catch (error) {
+      // Fallback to local
+      console.warn("API create failed, using local storage", error);
+      const now = Date.now();
+      const id = state.name.toLowerCase().replace(/\s+/g, '_');
+      const newState: StateVariable = {
+        ...state,
+        id,
+        createdAt: now,
+        updatedAt: now,
+      };
+      this.states.set(id, newState);
+      this.saveToStorage();
+      return newState;
+    }
+  }
+
+  async getState(id: string): Promise<StateVariable | null> {
+    try {
+      // Try API first
+      const stateVar = await apiClient.getState(id);
+      if (stateVar) {
+        this.states.set(id, stateVar);
+        this.saveToStorage();
+      }
+      return stateVar;
+    } catch (error) {
+      // Fallback to local
+      console.warn("API get failed, using local storage", error);
+      return this.states.get(id) || null;
+    }
+  }
+
+  async getAllStates(): Promise<StateVariable[]> {
+    try {
+      // Try API first
+      const states = await apiClient.getAllStates();
+      this.states.clear();
+      states.forEach((stateVar) => this.states.set(stateVar.id, stateVar));
+      this.saveToStorage();
+      return states;
+    } catch (error) {
+      // Fallback to local
+      console.warn("API get all failed, using local storage", error);
+      return Array.from(this.states.values());
+    }
+  }
+
+  async updateState(
+    id: string,
+    updates: Partial<Omit<StateVariable, "id" | "name" | "createdAt">>,
+  ): Promise<StateVariable | null> {
+    try {
+      // Try API first
+      const updated = await apiClient.updateState(id, updates);
+      this.states.set(id, updated);
+      this.saveToStorage();
+      return updated;
+    } catch (error) {
+      // Fallback to local
+      console.warn("API update failed, using local storage", error);
+      const state = this.states.get(id);
+      if (!state) return null;
+
+      const updatedState = {
+        ...state,
+        ...updates,
+        id: state.id, // Immutable
+        name: state.name, // Immutable
+        createdAt: state.createdAt, // Immutable
+        updatedAt: Date.now(),
+      };
+
+      this.states.set(id, updatedState);
+      this.saveToStorage();
+      return updatedState;
+    }
+  }
+
+  async deleteState(id: string): Promise<boolean> {
+    try {
+      // Try API first
+      const success = await apiClient.deleteState(id);
+      if (success) {
+        this.states.delete(id);
+        this.saveToStorage();
+      }
+      return success;
+    } catch (error) {
+      // Fallback to local
+      console.warn("API delete failed, using local storage", error);
+      const deleted = this.states.delete(id);
+      if (deleted) {
+        this.saveToStorage();
+      }
+      return deleted;
     }
   }
 
@@ -265,6 +376,7 @@ class Database {
   async clear(): Promise<void> {
     this.scenes.clear();
     this.chapters.clear();
+    this.states.clear();
     if (typeof window !== "undefined") {
       localStorage.removeItem(this.STORAGE_KEY);
     }
@@ -275,16 +387,19 @@ class Database {
    */
   async syncFromApi(): Promise<void> {
     try {
-      const [scenes, chapters] = await Promise.all([
+      const [scenes, chapters, states] = await Promise.all([
         apiClient.getAllScenes(),
         apiClient.getAllChapters(),
+        apiClient.getAllStates(),
       ]);
 
       this.scenes.clear();
       this.chapters.clear();
+      this.states.clear();
 
       scenes.forEach((scene) => this.scenes.set(scene.id, scene));
       chapters.forEach((chapter) => this.chapters.set(chapter.id, chapter));
+      states.forEach((stateVar) => this.states.set(stateVar.id, stateVar));
 
       this.saveToStorage();
       console.log("Synced from API successfully");
@@ -306,4 +421,4 @@ class Database {
 export const db = new Database();
 
 // Export types for external use
-export type { Scene, Choice, Chapter };
+export type { Scene, Choice, Chapter, StateVariable };

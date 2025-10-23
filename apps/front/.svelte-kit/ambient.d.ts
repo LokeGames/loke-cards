@@ -26,12 +26,16 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const GJS_DEBUG_TOPICS: string;
 	export const LESSOPEN: string;
 	export const USER: string;
+	export const CLAUDE_CODE_ENTRYPOINT: string;
 	export const LC_TIME: string;
 	export const npm_config_user_agent: string;
+	export const GIT_EDITOR: string;
 	export const XDG_SESSION_TYPE: string;
 	export const npm_node_execpath: string;
+	export const CLUTTER_DISABLE_MIPMAPPED_TEXT: string;
 	export const SHLVL: string;
 	export const LD_LIBRARY_PATH: string;
 	export const HOME: string;
@@ -41,7 +45,6 @@ declare module '$env/static/private' {
 	export const NVM_BIN: string;
 	export const ZED_TERM: string;
 	export const npm_package_json: string;
-	export const VITE_DEV_PORT: string;
 	export const NVM_INC: string;
 	export const QT_STYLE_OVERRIDE: string;
 	export const GIO_LAUNCHED_DESKTOP_FILE: string;
@@ -62,7 +65,6 @@ declare module '$env/static/private' {
 	export const LOGNAME: string;
 	export const pnpm_config_verify_deps_before_run: string;
 	export const WINDOWID: string;
-	export const DESKTOP_AUTOSTART_ID: string;
 	export const JOURNAL_STREAM: string;
 	export const _: string;
 	export const MEMORY_PRESSURE_WATCH: string;
@@ -70,20 +72,23 @@ declare module '$env/static/private' {
 	export const npm_config_registry: string;
 	export const USERNAME: string;
 	export const TERM: string;
+	export const OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: string;
 	export const GNOME_DESKTOP_SESSION_ID: string;
 	export const ZED_FORCE_CLI_MODE: string;
 	export const npm_config_node_gyp: string;
 	export const PATH: string;
 	export const SESSION_MANAGER: string;
-	export const NODE: string;
 	export const INVOCATION_ID: string;
+	export const NODE: string;
 	export const npm_package_name: string;
+	export const COREPACK_ENABLE_AUTO_PIN: string;
 	export const XDG_MENU_PREFIX: string;
 	export const LC_ADDRESS: string;
 	export const GNOME_SETUP_DISPLAY: string;
 	export const XDG_RUNTIME_DIR: string;
 	export const npm_config_frozen_lockfile: string;
 	export const DISPLAY: string;
+	export const NoDefaultCurrentDirectoryInExePath: string;
 	export const LANG: string;
 	export const XDG_CURRENT_DESKTOP: string;
 	export const LC_TELEPHONE: string;
@@ -103,7 +108,9 @@ declare module '$env/static/private' {
 	export const QT_ACCESSIBILITY: string;
 	export const GDMSESSION: string;
 	export const LESSCLOSE: string;
+	export const CLAUDECODE: string;
 	export const LC_MEASUREMENT: string;
+	export const GJS_DEBUG_OUTPUT: string;
 	export const LC_IDENTIFICATION: string;
 	export const QT_IM_MODULE: string;
 	export const ALACRITTY_WINDOW_ID: string;
@@ -113,8 +120,8 @@ declare module '$env/static/private' {
 	export const NVM_CD_FLAGS: string;
 	export const XDG_DATA_DIRS: string;
 	export const npm_config_recursive: string;
-	export const PNPM_SCRIPT_SRC_DIR: string;
 	export const LC_NUMERIC: string;
+	export const PNPM_SCRIPT_SRC_DIR: string;
 	export const npm_config__jsr_registry: string;
 	export const npm_command: string;
 	export const LC_PAPER: string;
@@ -150,12 +157,16 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		GJS_DEBUG_TOPICS: string;
 		LESSOPEN: string;
 		USER: string;
+		CLAUDE_CODE_ENTRYPOINT: string;
 		LC_TIME: string;
 		npm_config_user_agent: string;
+		GIT_EDITOR: string;
 		XDG_SESSION_TYPE: string;
 		npm_node_execpath: string;
+		CLUTTER_DISABLE_MIPMAPPED_TEXT: string;
 		SHLVL: string;
 		LD_LIBRARY_PATH: string;
 		HOME: string;
@@ -165,7 +176,6 @@ declare module '$env/dynamic/private' {
 		NVM_BIN: string;
 		ZED_TERM: string;
 		npm_package_json: string;
-		VITE_DEV_PORT: string;
 		NVM_INC: string;
 		QT_STYLE_OVERRIDE: string;
 		GIO_LAUNCHED_DESKTOP_FILE: string;
@@ -186,7 +196,6 @@ declare module '$env/dynamic/private' {
 		LOGNAME: string;
 		pnpm_config_verify_deps_before_run: string;
 		WINDOWID: string;
-		DESKTOP_AUTOSTART_ID: string;
 		JOURNAL_STREAM: string;
 		_: string;
 		MEMORY_PRESSURE_WATCH: string;
@@ -194,20 +203,23 @@ declare module '$env/dynamic/private' {
 		npm_config_registry: string;
 		USERNAME: string;
 		TERM: string;
+		OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: string;
 		GNOME_DESKTOP_SESSION_ID: string;
 		ZED_FORCE_CLI_MODE: string;
 		npm_config_node_gyp: string;
 		PATH: string;
 		SESSION_MANAGER: string;
-		NODE: string;
 		INVOCATION_ID: string;
+		NODE: string;
 		npm_package_name: string;
+		COREPACK_ENABLE_AUTO_PIN: string;
 		XDG_MENU_PREFIX: string;
 		LC_ADDRESS: string;
 		GNOME_SETUP_DISPLAY: string;
 		XDG_RUNTIME_DIR: string;
 		npm_config_frozen_lockfile: string;
 		DISPLAY: string;
+		NoDefaultCurrentDirectoryInExePath: string;
 		LANG: string;
 		XDG_CURRENT_DESKTOP: string;
 		LC_TELEPHONE: string;
@@ -227,7 +239,9 @@ declare module '$env/dynamic/private' {
 		QT_ACCESSIBILITY: string;
 		GDMSESSION: string;
 		LESSCLOSE: string;
+		CLAUDECODE: string;
 		LC_MEASUREMENT: string;
+		GJS_DEBUG_OUTPUT: string;
 		LC_IDENTIFICATION: string;
 		QT_IM_MODULE: string;
 		ALACRITTY_WINDOW_ID: string;
@@ -237,8 +251,8 @@ declare module '$env/dynamic/private' {
 		NVM_CD_FLAGS: string;
 		XDG_DATA_DIRS: string;
 		npm_config_recursive: string;
-		PNPM_SCRIPT_SRC_DIR: string;
 		LC_NUMERIC: string;
+		PNPM_SCRIPT_SRC_DIR: string;
 		npm_config__jsr_registry: string;
 		npm_command: string;
 		LC_PAPER: string;

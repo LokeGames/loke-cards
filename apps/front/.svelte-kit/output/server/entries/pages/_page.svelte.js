@@ -1,15 +1,10 @@
+import "../../chunks/database.js";
+import { Z as ensure_array_like } from "../../chunks/index2.js";
 import "@sveltejs/kit/internal";
 import "../../chunks/exports.js";
 import "../../chunks/utils.js";
 import "@sveltejs/kit/internal/server";
 import "../../chunks/state.svelte.js";
-import "../../chunks/database.js";
-import { y as ensure_array_like } from "../../chunks/index2.js";
-function QuickActions($$renderer, $$props) {
-  $$renderer.component(($$renderer2) => {
-    $$renderer2.push(`<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6"><h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2> <div class="space-y-3"><button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">New Scene</button> <button class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition-colors">New Chapter</button></div></div>`);
-  });
-}
 function ProjectStats($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     $$renderer2.push(`<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6"><h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Project Stats</h2> `);
@@ -53,9 +48,7 @@ function RecentScenes($$renderer, $$props) {
   });
 }
 function Dashboard($$renderer) {
-  $$renderer.push(`<div class="p-6 space-y-6"><div class="mb-8"><h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1> <p class="text-gray-600 dark:text-gray-400 mt-2">Welcome back! Here's an overview of your project.</p></div> <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">`);
-  QuickActions($$renderer);
-  $$renderer.push(`<!----> `);
+  $$renderer.push(`<div class="p-6 space-y-6"><div class="mb-8"><h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1> <p class="text-gray-600 dark:text-gray-400 mt-2">Welcome back! Here's an overview of your project.</p></div> <div class="mb-6">`);
   ProjectStats($$renderer);
   $$renderer.push(`<!----></div> <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">`);
   RecentChapters($$renderer);

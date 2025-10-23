@@ -1,4 +1,4 @@
-import type { Scene, Chapter } from "./types";
+import type { Scene, Chapter, StateVariable } from "./types";
 
 /**
  * API Client for communicating with loke-cards backend server (SQLite)
@@ -15,6 +15,11 @@ import type { Scene, Chapter } from "./types";
  * - POST /api/chapters - Create chapter
  * - PUT /api/chapters/:id - Update chapter
  * - DELETE /api/chapters/:id - Delete chapter
+ * - GET /api/states - List all states
+ * - GET /api/states/:id - Get state by ID
+ * - POST /api/states - Create state
+ * - PUT /api/states/:id - Update state
+ * - DELETE /api/states/:id - Delete state
  */
 
 class ApiClient {
@@ -220,6 +225,87 @@ class ApiClient {
     }
   }
 
+  // === State Operations ===
+
+  async getAllStates(): Promise<StateVariable[]> {
+    const response = await this.request<Array<{ id: string; data: string }>>(
+      "/api/states",
+    );
+    return response.map((item) => this.parseDataField<StateVariable>(item));
+  }
+
+  async getState(id: string): Promise<StateVariable | null> {
+    try {
+      const response = await this.request<any>(
+        `/api/states/${id}`,
+      );
+
+      // Handle both formats: {id, data: "json"} and direct JSON
+      if (response.data && typeof response.data === 'string') {
+        return this.parseDataField<StateVariable>(response);
+      } else {
+        return response as StateVariable;
+      }
+    } catch (error) {
+      console.error(`State not found: ${id}`);
+      return null;
+    }
+  }
+
+  async createState(state: Omit<StateVariable, "id" | "createdAt" | "updatedAt">): Promise<StateVariable> {
+    const now = Date.now();
+    const id = state.name.toLowerCase().replace(/\s+/g, '_');
+    const stateWithId = {
+      ...state,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const response = await this.request<{ id: string; data: string }>(
+      "/api/states",
+      {
+        method: "POST",
+        body: JSON.stringify(stateWithId),
+      },
+    );
+
+    return this.parseDataField<StateVariable>(response);
+  }
+
+  async updateState(
+    id: string,
+    updates: Partial<Omit<StateVariable, "id" | "name" | "createdAt">>,
+  ): Promise<StateVariable> {
+    const updatedState = {
+      ...updates,
+      id,
+      updatedAt: Date.now(),
+    };
+
+    const response = await this.request<{ id: string; data: string }>(
+      `/api/states/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(updatedState),
+      },
+    );
+
+    return this.parseDataField<StateVariable>(response);
+  }
+
+  async deleteState(id: string): Promise<boolean> {
+    try {
+      await this.request(`/api/states/${id}`, {
+        method: "DELETE",
+      });
+      return true;
+    } catch (error) {
+      console.error(`Failed to delete state: ${id}`, error);
+      return false;
+    }
+  }
+
   // === Utility ===
 
   private generateId(): string {
@@ -231,4 +317,4 @@ class ApiClient {
 export const apiClient = new ApiClient();
 
 // Export for external use
-export type { Scene, Chapter };
+export type { Scene, Chapter, StateVariable };

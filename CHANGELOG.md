@@ -5,7 +5,247 @@ All notable changes to Loke Cards will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2025-10-23
+
+### MVP Release - Single Project Database Architecture
+
+This is the first MVP release of Loke Cards, a Progressive Web App for authoring interactive fiction content in loke-engine format. The focus of this release is a single-project architecture where one SQLite database file represents one project.
+
+**Key Principle**: One database = One project
+
+### Added
+
+#### Core Features
+
+- **Scene Management**
+  - Create, read, update, delete scenes
+  - Scene editor with form-based UI
+  - Scene text editor with validation
+  - Choices system with scene linking
+  - State changes integration
+  - Real-time code preview
+  - SQLite database persistence
+
+- **Chapter Management**
+  - Create, read, update, delete chapters
+  - Chapter organization system
+  - Chapter-based scene grouping
+  - Reusable ChapterForm component
+
+- **State Variable System**
+  - Type-safe state management (number, boolean, string)
+  - Immutable state names for consistency
+  - Scope control (global/chapter-specific)
+  - Type-based operations:
+    - Number: Set, Add, Subtract
+    - Boolean: Set, Toggle
+    - String: Set
+  - StateSelect component with smart operation UI
+  - SQLite database persistence
+
+- **Navigation & Views**
+  - Table of Contents view with chapter/scene hierarchy
+  - Dashboard with project stats
+  - Recent chapters and scenes widgets
+  - Sidebar menu with main sections
+  - Browser history navigation (back button support)
+
+#### Backend (C++ SQLite Server)
+
+- **Database Tables**
+  - `chapters` - Chapter storage
+  - `scenes` - Scene storage
+  - `states` - State variable storage
+
+- **REST API Endpoints**
+  - `/api/health` - Health check
+  - `/api/chapters` - CRUD operations for chapters
+  - `/api/scenes` - CRUD operations for scenes
+  - `/api/states` - CRUD operations for states
+  - `/api/build` - Code generation endpoint
+
+- **Features**
+  - SQLite database as project file (`dev.db`)
+  - JSON storage format in database
+  - CORS support for frontend
+  - Auto-create tables on startup
+
+#### Frontend (SvelteKit + TypeScript)
+
+- **Architecture**
+  - API-first with localStorage fallback
+  - Offline support
+  - Automatic sync between frontend and backend
+  - Singleton database client (`db`)
+
+- **UI Components**
+  - ChapterForm - Reusable chapter form
+  - StateForm - Reusable state variable form
+  - SceneSelect - Scene dropdown selector
+  - StateSelect - State variable selector with operations
+  - ChapterSelect - Chapter dropdown selector
+  - ChoicesList - Manage scene choices
+  - StateChangesList - Manage state modifications
+  - SceneIdInput - Validated C identifier input
+  - SceneTextEditor - Multi-line text editor
+
+- **Views**
+  - `/cards` - Cards overview
+  - `/cards/scenes` - Scenes list
+  - `/cards/scenes/new` - Create scene
+  - `/cards/scenes/edit/[id]` - Edit scene
+  - `/cards/chapters` - Chapters list
+  - `/cards/chapters/new` - Create chapter
+  - `/cards/chapters/edit/[id]` - Edit chapter
+  - `/cards/states` - States list
+  - `/cards/states/new` - Create state
+  - `/cards/states/edit/[id]` - Edit state
+  - `/cards/toc` - Table of contents
+
+#### UX/UI Improvements
+
+- **Dark/Light Mode**
+  - Full dark mode support
+  - Consistent color scheme
+  - Proper contrast in both modes
+
+- **Navigation**
+  - X button on edit pages returns to previous page
+  - Browser back button support
+  - Clean sidebar menu (removed redundant items)
+  - Breadcrumb navigation
+
+- **Visual Design**
+  - Lucide icons throughout (replaced emojis)
+  - Color-coded badges for state types/scopes
+  - Responsive layout
+  - Loading states and skeletons
+  - Empty states with helpful messages
+
+### Changed
+
+- **Database Strategy**: Switched from localStorage-only to SQLite backend with localStorage fallback
+- **Menu Structure**: Simplified sidebar menu, removed redundant editor links
+- **Cards Overview**: Updated to show 4 main sections (Scenes, Chapters, States, TOC)
+- **Field Mapping**: Standardized on `id`, `name` fields across all entities
+
+### Fixed
+
+- **State Persistence**: States now correctly save to SQLite database
+- **Scene Choices**: Choices now properly save and load
+- **Scene State Changes**: State changes now properly save and load
+- **Dark Mode Colors**: Fixed input field colors in dark mode
+- **Navigation**: Fixed back navigation from TOC to return to previous page
+- **Chapter/Scene Lists**: Fixed field mappings to show correct data
+
+### Technical Details
+
+- **Backend**: C++ server with httplib and SQLite3
+- **Frontend**: SvelteKit 2.0, Svelte 5 (runes), TypeScript
+- **Database**: SQLite 3 with JSON blob storage
+- **API**: RESTful HTTP API with JSON
+- **Build**: Vite, pnpm workspace monorepo
+
+### Known Limitations
+
+- Single project only (one database = one project)
+- No multi-project support
+- No authentication (designed for Tailscale network)
+- No real-time collaboration
+- Basic validation only
+
+### Migration Notes
+
+If upgrading from a localStorage-only version:
+- States created before this release will need to be recreated
+- Scenes and chapters should migrate automatically via API
+
 ## [Unreleased]
+
+### Added - 2025-10-23 - State Management System
+
+#### Added
+
+- ✅ **State Management System** - Complete predefined state variable system
+  - **Purpose**: Enforce type-safe state management across all scenes with predefined variables
+  - **Core Features**:
+    - Immutable state names to maintain consistency across scene references
+    - Type-based operations (number: +/-, boolean: toggle, string: set)
+    - Scope control: global states (available everywhere) or chapter-specific states
+    - Support for game globals (health, gold) and inventory items
+
+  - **StateVariable Type** (`apps/shared/src/types.ts:79-89`):
+    - `id`: Auto-generated from name (e.g., "Health" → "health")
+    - `name`: Immutable display name
+    - `type`: 'number' | 'boolean' | 'string'
+    - `scope`: 'global' | 'chapter'
+    - `chapterId`: Only for chapter-scoped states
+    - `defaultValue`: Initial value for new games
+    - `description`: Optional documentation
+    - `createdAt` / `updatedAt`: Timestamps
+
+  - **Database Methods** (`apps/shared/src/database.ts:265-315`):
+    - `createState()`: Create new state variable with auto-generated ID
+    - `getState(id)`: Retrieve state by ID
+    - `getAllStates()`: List all state variables
+    - `updateState(id, updates)`: Update state (enforces name/ID immutability)
+    - `deleteState(id)`: Remove state variable
+    - States persisted in localStorage alongside scenes/chapters
+
+  - **States Menu & List View** (`apps/front/src/routes/cards/states/+page.svelte`):
+    - New "States" menu item with Settings icon
+    - List view showing all state variables with color-coded type/scope badges
+    - Type badges: blue (number), purple (boolean), green (string)
+    - Scope badges: orange (global), cyan (chapter)
+    - Create, edit, delete operations
+    - Warning on delete about potential scene breakage
+
+  - **StateForm Component** (`apps/cards/src/components/StateForm.svelte`):
+    - Unified form for create/edit state variables
+    - Name field immutable in edit mode
+    - Type selector with operation hints
+    - Scope selector (global/chapter) with conditional chapter dropdown
+    - Type-appropriate default value inputs:
+      - Number: `<input type="number">`
+      - Boolean: Radio buttons (True/False)
+      - String: `<input type="text">`
+    - Description field for documentation
+
+  - **StateSelect Component** (`apps/cards/src/components/StateSelect.svelte`):
+    - Smart dropdown for selecting state variables in scenes
+    - Shows state name and type: "Health (number)"
+    - Operation selector changes based on type:
+      - Number: Set to / Add / Subtract
+      - Boolean: Set to / Toggle
+      - String: Set to
+    - Value input adapts to type and operation:
+      - Toggle operation: No value input needed
+      - Number: `<input type="number">`
+      - Boolean: True/False dropdown
+      - String: Text input
+
+  - **Updated StateChangesList** (`apps/cards/src/components/StateChangesList.svelte`):
+    - Replaced free-form key/value inputs with StateSelect component
+    - Type definition changed from `{key, value}` to `{stateId, operation, value}`
+    - Now enforces type-safe state modifications
+    - Users can only select predefined states with valid operations
+
+  - **Routes Created**:
+    - `/cards/states` - List all state variables
+    - `/cards/states/new` - Create new state variable
+    - `/cards/states/edit/[id]` - Edit existing state variable
+
+  - **Files Modified/Created**:
+    - New: `apps/shared/src/types.ts` (StateVariable interface)
+    - Modified: `apps/shared/src/database.ts` (state CRUD methods)
+    - New: `apps/cards/src/components/StateForm.svelte`
+    - New: `apps/cards/src/components/StateSelect.svelte`
+    - Modified: `apps/cards/src/components/StateChangesList.svelte`
+    - New: `apps/front/src/routes/cards/states/+page.svelte`
+    - New: `apps/front/src/routes/cards/states/new/+page.svelte`
+    - New: `apps/front/src/routes/cards/states/edit/[id]/+page.svelte`
+    - Modified: `apps/cards/src/menu.ts` (added States menu item)
+    - Modified: `apps/cards/src/index.ts` (exported StateForm, StateSelect)
 
 ### Added - 2025-10-23 - Reusable Form Components
 
@@ -18,6 +258,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improves navigation UX - quick way to cancel and return to list
   - Files: `apps/front/src/routes/cards/chapters/edit/[id]/+page.svelte:75-84`
   - Files: `apps/front/src/routes/cards/scenes/edit/[id]/+page.svelte:11-22`
+
+- ✅ **Scene dropdown in Choices** - Added proper scene selection in scene editor
+  - Created new `SceneSelect` component (similar to `ChapterSelect`)
+  - Loads all available scenes from database with `db.getAllScenes()`
+  - Dropdown shows scene title or ID for easy selection
+  - Replaced text input with dropdown in `ChoicesList` component
+  - Users can now easily select next scene for each choice
+  - Files: `apps/cards/src/components/SceneSelect.svelte` (new)
+  - Files: `apps/cards/src/components/ChoicesList.svelte:29`
 
 - ✅ **Reusable ChapterForm component** - Created unified form for chapter create/edit
   - Single source of truth for chapter form UI (`apps/cards/src/components/ChapterForm.svelte`)
@@ -65,6 +314,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed - 2025-10-23 - Database Integration & Navigation
 
 #### Fixed
+
+- ✅ **Dashboard components broken** - Fixed routes and field mappings
+  - Removed QuickActions component (redundant with list view + buttons)
+  - Fixed RecentChapters: Updated routes to `/cards/chapters` and field names to `chapter.name` and `chapter.id`
+  - Fixed RecentScenes: Updated route to `/cards/scenes/edit/[id]` for direct edit access
+  - Both recent components now click through to edit pages correctly
+  - ProjectStats already using correct `db` methods
+  - Files: `apps/front/src/lib/components/dashboard/*.svelte`
 
 - ✅ **Chapters list view showing wrong fields** - Fixed field mapping
   - Changed from `chapter.title || chapter.chapterId` to `chapter.name || chapter.title || chapter.id`

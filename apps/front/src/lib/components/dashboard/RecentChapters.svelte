@@ -22,7 +22,7 @@
   });
 
   function goToChapter(chapter: Chapter) {
-    goto(`/chapters`);
+    goto(`/cards/chapters/edit/${chapter.id}`);
   }
 
   function formatDate(timestamp: number): string {
@@ -33,14 +33,14 @@
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
   <div class="flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Chapters</h2>
-    <button 
+    <button
       class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-      on:click={() => goto('/chapters')}
+      on:click={() => goto('/cards/chapters')}
     >
       View All
     </button>
   </div>
-  
+
   {#if loading}
     <div class="space-y-3">
       {#each Array(3) as _}
@@ -62,8 +62,8 @@
         >
           <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0">
-              <h3 class="font-medium text-gray-900 dark:text-white truncate">{chapter.title}</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">ID: {chapter.chapterId}</p>
+              <h3 class="font-medium text-gray-900 dark:text-white truncate">{chapter.name || chapter.title || chapter.id}</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">ID: {chapter.id}</p>
             </div>
             <div class="text-xs text-gray-500 dark:text-gray-400 ml-2">
               {formatDate(chapter.updatedAt || chapter.createdAt)}

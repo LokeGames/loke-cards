@@ -22,7 +22,7 @@
   });
 
   function goToScene(scene: Scene) {
-    goto(`/cards/scenes`);
+    goto(`/cards/scenes/edit/${scene.id}`);
   }
 
   function formatDate(timestamp: number): string {

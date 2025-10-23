@@ -2,6 +2,7 @@ import FileText from "@loke/ui/icons/FileText.svelte";
 import File from "@loke/ui/icons/File.svelte";
 import BookOpen from "@loke/ui/icons/BookOpen.svelte";
 import List from "@loke/ui/icons/List.svelte";
+import Settings from "@loke/ui/icons/Settings.svelte";
 
 export interface MenuItem {
   label: string;
@@ -24,6 +25,11 @@ export const cardsMenu: MenuItem[] = [
     label: "Chapters",
     href: "/cards/chapters",
     icon: BookOpen,
+  },
+  {
+    label: "States",
+    href: "/cards/states",
+    icon: Settings,
   },
   {
     label: "Table of Contents",

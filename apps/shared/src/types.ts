@@ -71,3 +71,19 @@ export interface Project {
   sceneCount?: number;           // Number of scenes
   chapterCount?: number;         // Number of chapters
 }
+
+/**
+ * StateVariable - Predefined state variable definition
+ * Used to enforce type-safe state management across scenes
+ */
+export interface StateVariable {
+  id: string;                    // Unique identifier (health, gold, hasKey)
+  name: string;                  // Immutable display name (Health, Gold, Has Key)
+  type: 'number' | 'boolean' | 'string';  // Data type
+  scope: 'global' | 'chapter';   // Scope: global or chapter-specific
+  chapterId?: string;            // Chapter ID (only for chapter-scoped states)
+  defaultValue: string | number | boolean;  // Default/initial value
+  description?: string;          // Description of what this state represents
+  createdAt: number;             // Creation timestamp
+  updatedAt: number;             // Last update timestamp
+}
