@@ -1,0 +1,222 @@
+import type { Scene, Chapter } from "./types";
+
+/**
+ * API Client for communicating with loke-cards backend server (SQLite)
+ *
+ * Backend endpoints:
+ * - GET /api/health - Health check
+ * - GET /api/scenes - List all scenes
+ * - GET /api/scenes/:id - Get scene by ID
+ * - POST /api/scenes - Create scene
+ * - PUT /api/scenes/:id - Update scene
+ * - DELETE /api/scenes/:id - Delete scene
+ * - GET /api/chapters - List all chapters
+ * - GET /api/chapters/:id - Get chapter by ID
+ * - POST /api/chapters - Create chapter
+ * - PUT /api/chapters/:id - Update chapter
+ * - DELETE /api/chapters/:id - Delete chapter
+ */
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor() {
+    // Default to localhost, can be overridden by environment variable
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  }
+
+  /**
+   * Set custom API base URL (useful for settings)
+   */
+  setBaseUrl(url: string) {
+    this.baseUrl = url;
+  }
+
+  /**
+   * Generic fetch wrapper with error handling
+   */
+  private async request<T>(
+    endpoint: string,
+    options?: RequestInit,
+  ): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...options?.headers,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`API Error: ${response.status} ${error}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API request failed: ${endpoint}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Parse backend data field (backend stores JSON in "data" field)
+   */
+  private parseDataField<T>(item: { id: string; data: string }): T {
+    try {
+      return JSON.parse(item.data) as T;
+    } catch (error) {
+      console.error("Failed to parse data field:", item);
+      throw error;
+    }
+  }
+
+  // === Health Check ===
+
+  async health(): Promise<{ status: string }> {
+    return this.request<{ status: string }>("/api/health");
+  }
+
+  // === Scene Operations ===
+
+  async getAllScenes(): Promise<Scene[]> {
+    const response = await this.request<Array<{ id: string; data: string }>>(
+      "/api/scenes",
+    );
+    return response.map((item) => this.parseDataField<Scene>(item));
+  }
+
+  async getScene(id: string): Promise<Scene | null> {
+    try {
+      const response = await this.request<{ id: string; data: string }>(
+        `/api/scenes/${id}`,
+      );
+      return this.parseDataField<Scene>(response);
+    } catch (error) {
+      console.error(`Scene not found: ${id}`);
+      return null;
+    }
+  }
+
+  async createScene(scene: Omit<Scene, "id">): Promise<Scene> {
+    // Backend expects id in the body and uses POST /api/scenes
+    const sceneWithId = {
+      ...scene,
+      id: scene.sceneId || this.generateId(),
+    };
+
+    const response = await this.request<{ id: string; data: string }>(
+      "/api/scenes",
+      {
+        method: "POST",
+        body: JSON.stringify(sceneWithId),
+      },
+    );
+
+    return this.parseDataField<Scene>(response);
+  }
+
+  async updateScene(id: string, updates: Partial<Scene>): Promise<Scene> {
+    const response = await this.request<{ id: string; data: string }>(
+      `/api/scenes/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ ...updates, id }),
+      },
+    );
+
+    return this.parseDataField<Scene>(response);
+  }
+
+  async deleteScene(id: string): Promise<boolean> {
+    try {
+      await this.request(`/api/scenes/${id}`, {
+        method: "DELETE",
+      });
+      return true;
+    } catch (error) {
+      console.error(`Failed to delete scene: ${id}`, error);
+      return false;
+    }
+  }
+
+  // === Chapter Operations ===
+
+  async getAllChapters(): Promise<Chapter[]> {
+    const response = await this.request<Array<{ id: string; data: string }>>(
+      "/api/chapters",
+    );
+    return response.map((item) => this.parseDataField<Chapter>(item));
+  }
+
+  async getChapter(id: string): Promise<Chapter | null> {
+    try {
+      const response = await this.request<{ id: string; data: string }>(
+        `/api/chapters/${id}`,
+      );
+      return this.parseDataField<Chapter>(response);
+    } catch (error) {
+      console.error(`Chapter not found: ${id}`);
+      return null;
+    }
+  }
+
+  async createChapter(chapter: Omit<Chapter, "id">): Promise<Chapter> {
+    const chapterWithId = {
+      ...chapter,
+      id: chapter.name || this.generateId(),
+    };
+
+    const response = await this.request<{ id: string; data: string }>(
+      "/api/chapters",
+      {
+        method: "POST",
+        body: JSON.stringify(chapterWithId),
+      },
+    );
+
+    return this.parseDataField<Chapter>(response);
+  }
+
+  async updateChapter(
+    id: string,
+    updates: Partial<Chapter>,
+  ): Promise<Chapter> {
+    const response = await this.request<{ id: string; data: string }>(
+      `/api/chapters/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ ...updates, id }),
+      },
+    );
+
+    return this.parseDataField<Chapter>(response);
+  }
+
+  async deleteChapter(id: string): Promise<boolean> {
+    try {
+      await this.request(`/api/chapters/${id}`, {
+        method: "DELETE",
+      });
+      return true;
+    } catch (error) {
+      console.error(`Failed to delete chapter: ${id}`, error);
+      return false;
+    }
+  }
+
+  // === Utility ===
+
+  private generateId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+}
+
+// Singleton instance
+export const apiClient = new ApiClient();
+
+// Export for external use
+export type { Scene, Chapter };
