@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/svelte';
-import { AppModal } from '@ui';
+import { AppModal } from '@loke/ui';
 
 test('modal dispatches confirm and cancel', async () => {
   const { component, getByText } = render(AppModal as any, { open: true, title: 'Confirm' });

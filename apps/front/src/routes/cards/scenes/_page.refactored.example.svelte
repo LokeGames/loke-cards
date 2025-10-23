@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { db } from '@loke/shared/database';
   import type { Scene } from '@loke/shared';
-  import { PageContainer, Button, LoadingState, EmptyState, Card } from '@ui';
+  import { PageContainer, Button, LoadingState, EmptyState, Card } from '@loke/ui';
 
   let scenes: Scene[] = [];
   let loading = true;
