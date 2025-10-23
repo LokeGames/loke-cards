@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@ui": fileURLToPath(new URL("../../packages/ui/src", import.meta.url)),
+      "@loke/ui": fileURLToPath(new URL("../../packages/ui/src", import.meta.url)),
       "@schemas": fileURLToPath(
         new URL("../../packages/schemas/src", import.meta.url),
       ),
