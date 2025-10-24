@@ -27,6 +27,7 @@
   let isLoadingProjects = $derived(getIsLoadingProjects());
   let error = $derived(getError());
 
+
   // Filtered projects based on search
   let filteredProjects = $derived(
     projects.filter(p =>
@@ -34,13 +35,14 @@
     )
   );
 
-  // Load projects only once on mount
-  onMount(async () => {
-    if (!hasLoaded) {
+  // Load projects when dropdown is opened (not automatically on mount)
+  // This prevents the "Loading..." state on startup
+  async function ensureProjectsLoaded() {
+    if (!hasLoaded && !isLoadingProjects) {
       await loadProjects();
       hasLoaded = true;
     }
-  });
+  }
 
   async function handleSwitch(projectId: string) {
     if (projectId === currentProject?.id) {
@@ -77,9 +79,16 @@
     }
   }
 
-  function toggleDropdown() {
-    isOpen = !isOpen;
+  async function toggleDropdown() {
     if (!isOpen) {
+      // Opening dropdown - load projects if not already loaded
+      await ensureProjectsLoaded();
+    }
+
+    isOpen = !isOpen;
+
+    if (!isOpen) {
+      // Closing dropdown - reset state
       searchQuery = '';
       isCreating = false;
       newProjectName = '';
