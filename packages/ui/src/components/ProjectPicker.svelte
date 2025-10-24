@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Folder from '../icons/Folder.svelte';
   import type { Project } from '@loke/shared/types';
   import {
     loadProjects,
@@ -18,6 +19,7 @@
   let isCreating = $state(false);
   let newProjectName = $state('');
   let isProcessing = $state(false);
+  let hasLoaded = $state(false);
 
   // Reactive getters from store (Svelte 5 runes)
   let currentProject = $derived(getCurrentProject());
@@ -32,8 +34,12 @@
     )
   );
 
-  onMount(() => {
-    loadProjects();
+  // Load projects only once on mount
+  onMount(async () => {
+    if (!hasLoaded) {
+      await loadProjects();
+      hasLoaded = true;
+    }
   });
 
   async function handleSwitch(projectId: string) {
@@ -117,7 +123,7 @@
     onclick={toggleDropdown}
     disabled={isLoadingProjects || isProcessing}
   >
-    <span class="project-icon">📁</span>
+    <Folder class="w-4 h-4 text-gray-600 dark:text-gray-400" />
     <span class="project-name text-gray-900 dark:text-gray-100">
       {#if isLoadingProjects}
         Loading...

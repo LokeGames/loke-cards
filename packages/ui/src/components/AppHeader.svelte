@@ -1,8 +1,15 @@
 <script lang="ts">
   import ProjectPicker from './ProjectPicker.svelte';
+  import { getCurrentProject } from '@loke/shared/stores/project.svelte';
 
   export let title: string = '';
   export let showProjectPicker: boolean = true;
+
+  // Get current project for title
+  let currentProject = $derived(getCurrentProject());
+  let displayTitle = $derived(
+    currentProject ? `${title}: ${currentProject.name}` : title
+  );
 
   let theme: 'light' | 'dark' | 'system' = 'system';
   
@@ -44,7 +51,7 @@
 <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
   <div class="flex items-center justify-between gap-4">
     <!-- Title -->
-    <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{title}</h1>
+    <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{displayTitle}</h1>
 
     <!-- Right side: Project Picker + Theme Toggle -->
     <div class="flex items-center gap-3">
