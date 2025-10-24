@@ -226,6 +226,37 @@ class ApiClient {
       return false;
     }
   }
+  // === Project Operations (v0.2.0) ===
+  /**
+   * List all projects with stats
+   */
+  async listProjects() {
+    return this.request("/api/projects");
+  }
+  /**
+   * Get current project info
+   */
+  async getCurrentProject() {
+    return this.request("/api/projects/current");
+  }
+  /**
+   * Create new project
+   */
+  async createProject(name) {
+    return this.request("/api/projects", {
+      method: "POST",
+      body: JSON.stringify({ name })
+    });
+  }
+  /**
+   * Switch to different project
+   */
+  async switchProject(projectId) {
+    return this.request("/api/projects/switch", {
+      method: "POST",
+      body: JSON.stringify({ project: projectId })
+    });
+  }
   // === Utility ===
   generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
