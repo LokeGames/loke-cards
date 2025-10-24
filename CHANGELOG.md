@@ -246,14 +246,74 @@ If upgrading from a localStorage-only version:
   - Updated build paths (lines 854, 944-946)
   - Migration logic and startup sequence (lines 397-418)
 
-#### Next Steps (Frontend Phase 2)
+#### Frontend Implementation Complete ✅
 
-- [ ] Add `Project` interface to `apps/shared/src/types.ts`
-- [ ] Add project API client methods to `apps/shared/src/api-client.ts`
-- [ ] Create project store in `apps/shared/src/stores/project.ts`
-- [ ] Create `ProjectPicker.svelte` component
-- [ ] Update `AppHeader` with ProjectPicker
-- [ ] Optional: Create project management page
+**Types & API Client** (`apps/shared/`)
+- ✅ Updated `Project` interface in `src/types.ts`
+  - Added `sceneCount`, `chapterCount`, `stateCount` fields to match backend
+  - Updated documentation for v0.2.0 multi-project support
+- ✅ Added project API methods to `src/api-client.ts`
+  - `listProjects()` - Get all projects with stats
+  - `getCurrentProject()` - Get current project info
+  - `createProject(name)` - Create new project with auto-sanitized ID
+  - `switchProject(projectId)` - Switch to different project
+- ✅ Exported `Project` type from api-client module
+
+**Project Store** (`apps/shared/src/stores/project.svelte.ts`)
+- ✅ Created Svelte 5 runes-based reactive store
+- ✅ State management:
+  - `currentProject` - Currently active project
+  - `projects` - List of all projects
+  - `isLoadingProjects` - Loading state
+  - `error` - Error messages
+- ✅ Actions:
+  - `loadProjects()` - Load all projects and current project
+  - `switchProject(projectId)` - Switch to different project (with page reload)
+  - `createNewProject(name)` - Create and switch to new project
+  - `refreshCurrentProject()` - Refresh current project stats
+  - `clearError()` - Clear error state
+- ✅ Exported from `@loke/shared/stores/project.svelte`
+
+**ProjectPicker Component** (`packages/ui/src/components/ProjectPicker.svelte`)
+- ✅ Dropdown selector UI for project switching
+- ✅ Features:
+  - Search/filter projects by name
+  - Display project statistics (scene/chapter/state counts)
+  - Inline project creation form
+  - Current project highlighted with checkmark (✓)
+  - Click-outside-to-close behavior
+  - Loading and error states
+  - Dark mode support
+- ✅ Uses Svelte 5 runes (`$state`, `$derived`)
+- ✅ Exported from `@loke/ui` components
+
+**AppHeader Integration** (`packages/ui/src/components/AppHeader.svelte`)
+- ✅ Added ProjectPicker between title and theme toggle
+- ✅ Optional `showProjectPicker` prop (default: `true`)
+- ✅ Responsive flex layout with proper spacing
+- ✅ Maintains existing theme toggle functionality
+
+**Layout Integration**
+- ✅ `apps/front/src/routes/+layout.svelte` - ProjectPicker enabled by default
+- ✅ `apps/cards/src/routes/+layout.svelte` - Updated to use AppHeader with ProjectPicker
+
+**Build & Testing**
+- ✅ Frontend builds successfully with Vite (`pnpm run build`)
+- ✅ All Svelte 5 runes syntax validated
+- ✅ Backend + Frontend tested together
+- ✅ Project creation, switching, and stats display working
+- ✅ TypeScript types validated
+
+**Files Modified (Frontend)**
+- `apps/shared/src/types.ts` - Updated Project interface
+- `apps/shared/src/api-client.ts` - Added 4 project API methods (+47 lines)
+- `apps/shared/package.json` - Exported project store
+- `apps/shared/src/stores/project.svelte.ts` - **NEW** (132 lines) - Project store
+- `packages/ui/src/components/ProjectPicker.svelte` - **NEW** (253 lines) - ProjectPicker component
+- `packages/ui/src/components/AppHeader.svelte` - Integrated ProjectPicker (+20 lines)
+- `packages/ui/src/components/index.ts` - Exported ProjectPicker
+- `apps/cards/src/routes/+layout.svelte` - Use AppHeader with ProjectPicker
+- `apps/front/src/routes/+layout.svelte` - Already using AppHeader (no changes needed)
 
 ### Added - 2025-10-23 - State Management System
 
