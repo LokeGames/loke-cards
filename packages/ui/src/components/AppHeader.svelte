@@ -2,8 +2,8 @@
   import ProjectPicker from './ProjectPicker.svelte';
   import { getCurrentProject } from '@loke/shared/stores/project.svelte';
 
-  export let title: string = '';
-  export let showProjectPicker: boolean = true;
+  // Props using Svelte 5 runes syntax
+  let { title = '', showProjectPicker = true }: { title?: string; showProjectPicker?: boolean } = $props();
 
   // Get current project for title
   let currentProject = $derived(getCurrentProject());
@@ -11,7 +11,7 @@
     currentProject ? `${title}: ${currentProject.name}` : title
   );
 
-  let theme: 'light' | 'dark' | 'system' = 'system';
+  let theme = $state<'light' | 'dark' | 'system'>('system');
   
   // Initialize theme from localStorage or system preference
   if (typeof window !== 'undefined') {
@@ -64,7 +64,7 @@
       <button
         type="button"
         class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-        on:click={toggleTheme}
+        onclick={toggleTheme}
         title="Toggle theme (current: {theme})"
       >
         {#if theme === 'light'}
