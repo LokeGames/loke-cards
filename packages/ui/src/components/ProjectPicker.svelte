@@ -10,7 +10,7 @@
     getIsLoadingProjects,
     getError,
     clearError
-  } from '@loke/shared/stores/project';
+  } from '@loke/shared/stores/project.svelte';
 
   // State
   let isOpen = $state(false);
@@ -19,15 +19,17 @@
   let newProjectName = $state('');
   let isProcessing = $state(false);
 
-  // Reactive getters from store
-  $: currentProject = getCurrentProject();
-  $: projects = getProjects();
-  $: isLoadingProjects = getIsLoadingProjects();
-  $: error = getError();
+  // Reactive getters from store (Svelte 5 runes)
+  let currentProject = $derived(getCurrentProject());
+  let projects = $derived(getProjects());
+  let isLoadingProjects = $derived(getIsLoadingProjects());
+  let error = $derived(getError());
 
   // Filtered projects based on search
-  $: filteredProjects = projects.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  let filteredProjects = $derived(
+    projects.filter(p =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
 
   onMount(() => {
