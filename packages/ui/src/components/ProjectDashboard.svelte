@@ -26,9 +26,11 @@
   let recentProjects = $derived(projects.slice(0, 4));
   let allProjects = $derived(projects);
 
-  // Load projects on mount
+  // Load projects on mount if not already loaded
   onMount(async () => {
-    await loadProjects();
+    if (projects.length === 0 && !isLoadingProjects) {
+      await loadProjects();
+    }
   });
 
   async function handleOpenProject(projectId: string) {
