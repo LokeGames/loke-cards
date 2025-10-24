@@ -162,6 +162,159 @@ If upgrading from a localStorage-only version:
 
 ## [Unreleased]
 
+### Added - 2025-10-23 - Multi-Project Architecture (Backend Phase 1)
+
+#### Backend: Project Management System (Pointer Method)
+
+- ✅ **Multi-project support** - Complete backend infrastructure for managing multiple isolated projects
+  - **Architecture**: Pointer-based approach - global `current_project` variable directs database path
+  - **Zero breaking changes**: All existing API endpoints work unchanged (business as usual)
+  - **Project structure**: Each project gets isolated directories:
+    ```
+    projects/
+    ├── project-name/
+    │   ├── data/project-name.db    # SQLite database
+    │   ├── output/                  # Generated C files
+    │   └── assets/                  # Future: images, sounds
+    ```
+
+- ✅ **Project Management Functions** (`server/main.cpp`)
+  - `sanitize_project_name()` - Clean project names (lowercase, alphanumeric, hyphens)
+  - `get_project_dir()` - Get project root directory path
+  - `get_project_db_path()` - Get database file path for project
+  - `get_project_output_path()` - Get output directory for generated C files
+  - `get_project_assets_path()` - Get assets directory (future use)
+  - `create_project_dirs()` - Create project directory structure (data/, output/, assets/)
+  - `project_exists()` - Check if project exists
+  - `list_projects()` - List all projects in projects/ directory
+  - `count_records(table)` - Count rows in database table
+
+- ✅ **New API Endpoints** (4 new endpoints for project management)
+  - `GET /api/projects` - List all projects with stats (sceneCount, chapterCount, stateCount)
+  - `POST /api/projects` - Create new project with sanitized name
+  - `POST /api/projects/switch` - Switch current project pointer
+  - `GET /api/projects/current` - Get current project info and stats
+  - All endpoints return JSON with project metadata
+
+- ✅ **Database Management**
+  - `open_db_for_project(project_name)` - Open project-specific database
+  - Automatically closes existing connection before opening new one
+  - Creates project directories if they don't exist
+  - Same database schema as v0.1.0 (chapters, scenes, states tables)
+  - Each project has isolated SQLite database
+
+- ✅ **Automatic Migration** (v0.1.0 → v0.2.0)
+  - `migrate_from_v0_1_0()` - Auto-detect and migrate old database
+  - Copies `dev.db` to `projects/default/data/default.db`
+  - Moves existing output files to `projects/default/output/`
+  - Creates backup: `dev.db.v0.1.0.backup`
+  - Runs automatically on first startup after upgrade
+  - Zero manual intervention required
+
+- ✅ **Code Generation Updates**
+  - `POST /api/build` now uses `get_project_output_path(current_project)`
+  - Generated C files go to current project's output directory
+  - `GET /api/build/artifacts` lists files from current project only
+  - Each project has isolated build output
+
+- ✅ **Startup Behavior**
+  - Checks for old `dev.db` and migrates if found
+  - Creates `projects/` directory if missing
+  - Creates `default` project if no projects exist
+  - Opens `default` project database on startup
+  - Logs all project operations to console
+
+#### Testing & Verification
+
+- ✅ **Compilation**: Server compiles without errors (only unused function warnings)
+- ✅ **Migration**: v0.1.0 database successfully migrated to v0.2.0 structure
+- ✅ **Directory Creation**: Verified `projects/default/data/`, `output/`, `assets/` created
+- ✅ **API Endpoints**:
+  - `GET /api/projects/current` → Returns default project with stats
+  - `GET /api/projects` → Lists all projects
+  - `POST /api/projects` → Created "test-project" successfully
+  - `POST /api/projects/switch` → Switched between projects
+- ✅ **Database Files**: Verified `default.db` and `test-project.db` created
+- ✅ **Project Isolation**: Each project has independent database
+
+#### Files Modified
+
+- `server/main.cpp` - Added 344 lines, removed 9 lines
+  - Project management functions (lines 23-153)
+  - Updated database opening (lines 155-226)
+  - New API endpoints (lines 440-574)
+  - Updated build paths (lines 854, 944-946)
+  - Migration logic and startup sequence (lines 397-418)
+
+#### Frontend Implementation Complete ✅
+
+**Types & API Client** (`apps/shared/`)
+- ✅ Updated `Project` interface in `src/types.ts`
+  - Added `sceneCount`, `chapterCount`, `stateCount` fields to match backend
+  - Updated documentation for v0.2.0 multi-project support
+- ✅ Added project API methods to `src/api-client.ts`
+  - `listProjects()` - Get all projects with stats
+  - `getCurrentProject()` - Get current project info
+  - `createProject(name)` - Create new project with auto-sanitized ID
+  - `switchProject(projectId)` - Switch to different project
+- ✅ Exported `Project` type from api-client module
+
+**Project Store** (`apps/shared/src/stores/project.svelte.ts`)
+- ✅ Created Svelte 5 runes-based reactive store
+- ✅ State management:
+  - `currentProject` - Currently active project
+  - `projects` - List of all projects
+  - `isLoadingProjects` - Loading state
+  - `error` - Error messages
+- ✅ Actions:
+  - `loadProjects()` - Load all projects and current project
+  - `switchProject(projectId)` - Switch to different project (with page reload)
+  - `createNewProject(name)` - Create and switch to new project
+  - `refreshCurrentProject()` - Refresh current project stats
+  - `clearError()` - Clear error state
+- ✅ Exported from `@loke/shared/stores/project.svelte`
+
+**ProjectPicker Component** (`packages/ui/src/components/ProjectPicker.svelte`)
+- ✅ Dropdown selector UI for project switching
+- ✅ Features:
+  - Search/filter projects by name
+  - Display project statistics (scene/chapter/state counts)
+  - Inline project creation form
+  - Current project highlighted with checkmark (✓)
+  - Click-outside-to-close behavior
+  - Loading and error states
+  - Dark mode support
+- ✅ Uses Svelte 5 runes (`$state`, `$derived`)
+- ✅ Exported from `@loke/ui` components
+
+**AppHeader Integration** (`packages/ui/src/components/AppHeader.svelte`)
+- ✅ Added ProjectPicker between title and theme toggle
+- ✅ Optional `showProjectPicker` prop (default: `true`)
+- ✅ Responsive flex layout with proper spacing
+- ✅ Maintains existing theme toggle functionality
+
+**Layout Integration**
+- ✅ `apps/front/src/routes/+layout.svelte` - ProjectPicker enabled by default
+- ✅ `apps/cards/src/routes/+layout.svelte` - Updated to use AppHeader with ProjectPicker
+
+**Build & Testing**
+- ✅ Frontend builds successfully with Vite (`pnpm run build`)
+- ✅ All Svelte 5 runes syntax validated
+- ✅ Backend + Frontend tested together
+- ✅ Project creation, switching, and stats display working
+- ✅ TypeScript types validated
+
+**Files Modified (Frontend)**
+- `apps/shared/src/types.ts` - Updated Project interface
+- `apps/shared/src/api-client.ts` - Added 4 project API methods (+47 lines)
+- `apps/shared/package.json` - Exported project store
+- `apps/shared/src/stores/project.svelte.ts` - **NEW** (132 lines) - Project store
+- `packages/ui/src/components/ProjectPicker.svelte` - **NEW** (253 lines) - ProjectPicker component
+- `packages/ui/src/components/AppHeader.svelte` - Integrated ProjectPicker (+20 lines)
+- `packages/ui/src/components/index.ts` - Exported ProjectPicker
+- `apps/cards/src/routes/+layout.svelte` - Use AppHeader with ProjectPicker
+- `apps/front/src/routes/+layout.svelte` - Already using AppHeader (no changes needed)
+
 ### Added - 2025-10-23 - State Management System
 
 #### Added

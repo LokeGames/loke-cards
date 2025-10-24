@@ -1,4 +1,4 @@
-import type { Scene, Chapter, StateVariable } from "./types";
+import type { Scene, Chapter, StateVariable, Project } from "./types";
 
 /**
  * API Client for communicating with loke-cards backend server (SQLite)
@@ -20,6 +20,10 @@ import type { Scene, Chapter, StateVariable } from "./types";
  * - POST /api/states - Create state
  * - PUT /api/states/:id - Update state
  * - DELETE /api/states/:id - Delete state
+ * - GET /api/projects - List all projects
+ * - POST /api/projects - Create new project
+ * - GET /api/projects/current - Get current project
+ * - POST /api/projects/switch - Switch to different project
  */
 
 class ApiClient {
@@ -306,6 +310,42 @@ class ApiClient {
     }
   }
 
+  // === Project Operations (v0.2.0) ===
+
+  /**
+   * List all projects with stats
+   */
+  async listProjects(): Promise<Project[]> {
+    return this.request<Project[]>("/api/projects");
+  }
+
+  /**
+   * Get current project info
+   */
+  async getCurrentProject(): Promise<Project> {
+    return this.request<Project>("/api/projects/current");
+  }
+
+  /**
+   * Create new project
+   */
+  async createProject(name: string): Promise<Project> {
+    return this.request<Project>("/api/projects", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  /**
+   * Switch to different project
+   */
+  async switchProject(projectId: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>("/api/projects/switch", {
+      method: "POST",
+      body: JSON.stringify({ project: projectId }),
+    });
+  }
+
   // === Utility ===
 
   private generateId(): string {
@@ -317,4 +357,4 @@ class ApiClient {
 export const apiClient = new ApiClient();
 
 // Export for external use
-export type { Scene, Chapter, StateVariable };
+export type { Scene, Chapter, StateVariable, Project };

@@ -60,16 +60,18 @@ export interface Chapter {
 }
 
 /**
- * Project - Top-level container (for future multi-project support)
+ * Project - Top-level container for multi-project support (v0.2.0)
+ * Backend format: {id, name, sceneCount, chapterCount, stateCount}
  */
 export interface Project {
-  id: string;                    // Project identifier
+  id: string;                    // Project identifier (sanitized name)
   name: string;                  // Display name
-  description?: string;          // Project description
-  created?: string;              // ISO date string
-  modified?: string;             // ISO date string
-  sceneCount?: number;           // Number of scenes
-  chapterCount?: number;         // Number of chapters
+  sceneCount: number;            // Number of scenes in project
+  chapterCount: number;          // Number of chapters in project
+  stateCount: number;            // Number of state variables in project
+  description?: string;          // Project description (future)
+  created?: string;              // ISO date string (future)
+  modified?: string;             // ISO date string (future)
 }
 
 /**

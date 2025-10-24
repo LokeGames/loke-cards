@@ -10,7 +10,8 @@
     "./database": "./src/database.ts",
     "./api-client": "./src/api-client.ts",
     "./types": "./src/types.ts",
-    "./utils": "./src/utils.ts"
+    "./utils": "./src/utils.ts",
+    "./stores/project": "./src/stores/project.svelte.ts"
   },
   "scripts": {
     "test": "vitest run",

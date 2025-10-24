@@ -20,6 +20,189 @@
 static std::mutex db_mutex;
 static sqlite3* db = nullptr;
 
+// === Project Management (v0.2.0) ===
+static std::string current_project = "default";
+static std::mutex project_mutex;
+
+// Sanitize project name: lowercase alphanumeric + hyphens
+static std::string sanitize_project_name(const std::string& name) {
+    std::string result;
+    for (char c : name) {
+        if (std::isalnum(c)) {
+            result += std::tolower(c);
+        } else if (c == ' ' || c == '_') {
+            result += '-';
+        }
+    }
+    return result;
+}
+
+// Get project root directory
+static std::string get_project_dir(const std::string& project) {
+    return "projects/" + project;
+}
+
+// Get project database path
+static std::string get_project_db_path(const std::string& project) {
+    return get_project_dir(project) + "/data/" + project + ".db";
+}
+
+// Get project output directory
+static std::string get_project_output_path(const std::string& project) {
+    return get_project_dir(project) + "/output";
+}
+
+// Get project assets directory (future use)
+static std::string get_project_assets_path(const std::string& project) {
+    return get_project_dir(project) + "/assets";
+}
+
+// Create project directory structure
+static bool create_project_dirs(const std::string& project) {
+    std::string base = get_project_dir(project);
+    std::string data_dir = base + "/data";
+    std::string output_dir = base + "/output";
+    std::string assets_dir = base + "/assets";
+
+    // Create directories (ignore errors if already exist)
+    mkdir(base.c_str(), 0755);
+    mkdir(data_dir.c_str(), 0755);
+    mkdir(output_dir.c_str(), 0755);
+    mkdir(assets_dir.c_str(), 0755);
+
+    // Verify data directory exists
+    struct stat st;
+    return (stat(data_dir.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+}
+
+// Check if project exists
+static bool project_exists(const std::string& project) {
+    struct stat st;
+    std::string path = get_project_dir(project);
+    return (stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+}
+
+// List all projects
+static std::vector<std::string> list_projects() {
+    std::vector<std::string> projects;
+    DIR* dir = opendir("projects");
+    if (!dir) return projects;
+
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != nullptr) {
+        if (entry->d_type == DT_DIR &&
+            strcmp(entry->d_name, ".") != 0 &&
+            strcmp(entry->d_name, "..") != 0) {
+            projects.push_back(entry->d_name);
+        }
+    }
+    closedir(dir);
+    return projects;
+}
+
+// Count records in a table
+static int count_records(const std::string& table) {
+    std::lock_guard<std::mutex> lock(db_mutex);
+    sqlite3_stmt* stmt = nullptr;
+    std::string sql = "SELECT COUNT(*) FROM " + table;
+
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        return 0;
+    }
+
+    int count = 0;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        count = sqlite3_column_int(stmt, 0);
+    }
+    sqlite3_finalize(stmt);
+    return count;
+}
+
+// Migrate v0.1.0 dev.db to v0.2.0 project structure
+static void migrate_from_v0_1_0() {
+    struct stat st;
+
+    // Check if old dev.db exists
+    if (stat("dev.db", &st) != 0 || !S_ISREG(st.st_mode)) {
+        return; // No migration needed
+    }
+
+    std::cout << "Migrating v0.1.0 database to v0.2.0..." << std::endl;
+
+    // Create default project
+    create_project_dirs("default");
+
+    // Copy dev.db to default project
+    std::string dest = get_project_db_path("default");
+    std::ifstream src("dev.db", std::ios::binary);
+    std::ofstream dst(dest, std::ios::binary);
+    dst << src.rdbuf();
+    src.close();
+    dst.close();
+
+    // Move output files if they exist
+    if (stat("output", &st) == 0 && S_ISDIR(st.st_mode)) {
+        std::string cmd = "cp -r output/* " + get_project_output_path("default") + "/ 2>/dev/null";
+        system(cmd.c_str());
+    }
+
+    // Backup old database
+    std::rename("dev.db", "dev.db.v0.1.0.backup");
+
+    std::cout << "Migration complete! Old database backed up to dev.db.v0.1.0.backup" << std::endl;
+}
+
+// Open database for a specific project
+// Closes existing connection if open, creates tables if needed
+static int open_db_for_project(const std::string &project_name) {
+    std::lock_guard<std::mutex> lock(db_mutex);
+
+    // Close existing connection if open
+    if (db) {
+        sqlite3_close(db);
+        db = nullptr;
+    }
+
+    // Get path for this project
+    std::string db_path = get_project_db_path(project_name);
+
+    // Ensure project directories exist
+    if (!create_project_dirs(project_name)) {
+        std::cerr << "Failed to create project directories for: " << project_name << std::endl;
+        return SQLITE_ERROR;
+    }
+
+    // Open database
+    int rc = sqlite3_open(db_path.c_str(), &db);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to open database: " << db_path << std::endl;
+        return rc;
+    }
+
+    // Create tables (same schema as v0.1.0)
+    const char* ddl_chapters = "CREATE TABLE IF NOT EXISTS chapters (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
+    const char* ddl_scenes   = "CREATE TABLE IF NOT EXISTS scenes (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
+    const char* ddl_states   = "CREATE TABLE IF NOT EXISTS states (id TEXT PRIMARY KEY, data TEXT NOT NULL);";
+
+    char* errmsg = nullptr;
+    if (sqlite3_exec(db, ddl_chapters, nullptr, nullptr, &errmsg) != SQLITE_OK) {
+        std::cerr << "DB error: " << errmsg << std::endl;
+        sqlite3_free(errmsg);
+    }
+    if (sqlite3_exec(db, ddl_scenes, nullptr, nullptr, &errmsg) != SQLITE_OK) {
+        std::cerr << "DB error: " << errmsg << std::endl;
+        sqlite3_free(errmsg);
+    }
+    if (sqlite3_exec(db, ddl_states, nullptr, nullptr, &errmsg) != SQLITE_OK) {
+        std::cerr << "DB error: " << errmsg << std::endl;
+        sqlite3_free(errmsg);
+    }
+
+    std::cout << "Opened database for project: " << project_name << " (" << db_path << ")" << std::endl;
+    return SQLITE_OK;
+}
+
+// Legacy function for compatibility (deprecated)
 static int open_db(const std::string &path) {
     int rc = sqlite3_open(path.c_str(), &db);
     if (rc != SQLITE_OK) return rc;
@@ -212,9 +395,25 @@ static bool ensure_dir(const std::string &path) {
 }
 
 int main(void) {
-    // Open DB file in project dir; for dev simplicity use file "dev.db" in server folder
-    if (open_db("dev.db") != SQLITE_OK) {
-        std::cerr << "Failed to open SQLite database" << std::endl;
+    // === v0.2.0 Multi-Project Architecture ===
+
+    // Run migration if needed (v0.1.0 → v0.2.0)
+    migrate_from_v0_1_0();
+
+    // Ensure projects directory exists
+    mkdir("projects", 0755);
+
+    // Create default project if no projects exist
+    auto projects = list_projects();
+    if (projects.empty()) {
+        std::cout << "No projects found, creating default project..." << std::endl;
+        create_project_dirs("default");
+    }
+
+    // Open default project database
+    current_project = "default";
+    if (open_db_for_project(current_project) != SQLITE_OK) {
+        std::cerr << "Failed to open project database: " << current_project << std::endl;
         return 1;
     }
 
@@ -236,6 +435,142 @@ int main(void) {
     // Health
     svr.Get("/api/health", [](const httplib::Request &, httplib::Response &res) {
         res.set_content("{\"status\":\"ok\"}", "application/json");
+    });
+
+    // === Project Management API (v0.2.0) ===
+
+    // GET /api/projects - List all projects with stats
+    svr.Get("/api/projects", [&](const httplib::Request &, httplib::Response &res) {
+        auto projects = list_projects();
+
+        std::ostringstream json;
+        json << "[";
+        bool first = true;
+
+        // Save current project to restore later
+        std::string saved_project = current_project;
+
+        for (const auto& proj : projects) {
+            // Temporarily switch to get stats
+            open_db_for_project(proj);
+
+            int scenes = count_records("scenes");
+            int chapters = count_records("chapters");
+            int states = count_records("states");
+
+            if (!first) json << ",";
+            first = false;
+
+            json << "{"
+                 << "\"id\":\"" << proj << "\","
+                 << "\"name\":\"" << proj << "\","
+                 << "\"sceneCount\":" << scenes << ","
+                 << "\"chapterCount\":" << chapters << ","
+                 << "\"stateCount\":" << states
+                 << "}";
+        }
+        json << "]";
+
+        // Restore original project
+        open_db_for_project(saved_project);
+
+        res.set_content(json.str(), "application/json");
+    });
+
+    // POST /api/projects - Create new project
+    svr.Post("/api/projects", [&](const httplib::Request &req, httplib::Response &res) {
+        std::string name = json_get_string_field(req.body, "name");
+        if (name.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Project name required\"}", "application/json");
+            return;
+        }
+
+        std::string project_id = sanitize_project_name(name);
+        if (project_id.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Invalid project name\"}", "application/json");
+            return;
+        }
+
+        if (project_exists(project_id)) {
+            res.status = 409;
+            res.set_content("{\"message\":\"Project already exists\"}", "application/json");
+            return;
+        }
+
+        if (!create_project_dirs(project_id)) {
+            res.status = 500;
+            res.set_content("{\"message\":\"Failed to create project directories\"}", "application/json");
+            return;
+        }
+
+        // Switch to new project and create database
+        std::lock_guard<std::mutex> lock(project_mutex);
+        current_project = project_id;
+        if (open_db_for_project(project_id) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"Failed to create project database\"}", "application/json");
+            return;
+        }
+
+        std::ostringstream json;
+        json << "{"
+             << "\"id\":\"" << project_id << "\","
+             << "\"name\":\"" << name << "\","
+             << "\"sceneCount\":0,"
+             << "\"chapterCount\":0,"
+             << "\"stateCount\":0"
+             << "}";
+
+        res.set_content(json.str(), "application/json");
+    });
+
+    // POST /api/projects/switch - Switch current project pointer
+    svr.Post("/api/projects/switch", [&](const httplib::Request &req, httplib::Response &res) {
+        std::string project = json_get_string_field(req.body, "project");
+
+        if (project.empty()) {
+            res.status = 400;
+            res.set_content("{\"message\":\"Project name required\"}", "application/json");
+            return;
+        }
+
+        if (!project_exists(project)) {
+            res.status = 404;
+            res.set_content("{\"message\":\"Project not found\"}", "application/json");
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(project_mutex);
+        current_project = project;
+        if (open_db_for_project(current_project) != SQLITE_OK) {
+            res.status = 500;
+            res.set_content("{\"message\":\"Failed to open project database\"}", "application/json");
+            return;
+        }
+
+        std::ostringstream json;
+        json << "{\"message\":\"Switched to project: " << project << "\"}";
+        res.set_content(json.str(), "application/json");
+    });
+
+    // GET /api/projects/current - Get current project info
+    svr.Get("/api/projects/current", [&](const httplib::Request &, httplib::Response &res) {
+        int scenes = count_records("scenes");
+        int chapters = count_records("chapters");
+        int states = count_records("states");
+
+        std::ostringstream json;
+        json << "{"
+             << "\"id\":\"" << current_project << "\","
+             << "\"name\":\"" << current_project << "\","
+             << "\"sceneCount\":" << scenes << ","
+             << "\"chapterCount\":" << chapters << ","
+             << "\"stateCount\":" << states
+             << "}";
+
+        res.set_content(json.str(), "application/json");
     });
 
     // Chapters
@@ -516,7 +851,7 @@ int main(void) {
     });
 
     // Build/export: generate .c files from scenes JSON and chapter .h headers
-    svr.Post("/api/build", [](const httplib::Request &, httplib::Response &res) {
+    svr.Post("/api/build", [&](const httplib::Request &, httplib::Response &res) {
         std::lock_guard<std::mutex> lock(db_mutex);
         sqlite3_stmt* stmt = nullptr;
         if (sqlite3_prepare_v2(db, "SELECT json_object('id', id, 'data', data) FROM scenes ORDER BY id", -1, &stmt, nullptr) != SQLITE_OK) {
@@ -524,8 +859,8 @@ int main(void) {
             res.set_content("{\"message\":\"DB read failed\"}", "application/json");
             return;
         }
-        // Write into the backend working directory under ./output
-        std::string outdir = "output";
+        // Write into the current project's output directory
+        std::string outdir = get_project_output_path(current_project);
         if (!ensure_dir(outdir)) {
             sqlite3_finalize(stmt);
             res.status = 500;
@@ -605,9 +940,9 @@ int main(void) {
         res.set_content(resp.str(), "application/json");
     });
 
-    // List generated artifacts in ./output
-    svr.Get("/api/build/artifacts", [](const httplib::Request &, httplib::Response &res) {
-        std::string outdir = "output";
+    // List generated artifacts in current project's output directory
+    svr.Get("/api/build/artifacts", [&](const httplib::Request &, httplib::Response &res) {
+        std::string outdir = get_project_output_path(current_project);
         ensure_dir(outdir);
         std::ostringstream oss;
         oss << "[";

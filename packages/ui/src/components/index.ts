@@ -2,6 +2,7 @@
 export { default as AppHeader } from './AppHeader.svelte';
 export { default as AppSidebar } from './AppSidebar.svelte';
 export { default as ThemeToggle } from './ThemeToggle.svelte';
+export { default as ProjectPicker } from './ProjectPicker.svelte';
 
 // Cards
 export { default as Card } from './cards/Card.svelte';
