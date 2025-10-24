@@ -39,6 +39,20 @@ export async function loadProjects(): Promise<void> {
 }
 
 /**
+ * Load current project from backend (used on app startup)
+ */
+export async function loadCurrentProject(): Promise<void> {
+  try {
+    const current = await apiClient.getCurrentProject();
+    currentProject = current;
+  } catch (err) {
+    // No current project or error - stay on dashboard
+    console.log('No current project, showing dashboard');
+    currentProject = null;
+  }
+}
+
+/**
  * Switch to a different project
  */
 export async function switchProject(projectId: string): Promise<void> {
