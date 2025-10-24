@@ -2,10 +2,13 @@
   import { onMount } from 'svelte';
   import LayoutDashboard from '../icons/LayoutDashboard.svelte';
   import Settings from '../icons/Settings.svelte';
-  
-  let cardsMenuItems: Array<{ label: string; href: string; icon?: any }> = [];
-  let graphMenuItems: Array<{ label: string; href: string; icon?: any }> = [];
-  let loading = true;
+
+  // Props
+  let { disabled = false }: { disabled?: boolean } = $props();
+
+  let cardsMenuItems = $state<Array<{ label: string; href: string; icon?: any }>>([]);
+  let graphMenuItems = $state<Array<{ label: string; href: string; icon?: any }>>([]);
+  let loading = $state(true);
   
   onMount(async () => {
     try {
@@ -29,7 +32,7 @@
   });
 </script>
 
-<aside class="w-64 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4">
+<aside class="w-64 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 {disabled ? 'pointer-events-none opacity-50' : ''}">
   <nav class="space-y-6">
     <!-- Main Navigation -->
     <div>
@@ -58,7 +61,7 @@
           {#each cardsMenuItems as item}
             <a href={item.href} class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
               {#if item.icon}
-                <svelte:component this={item.icon} class="w-4 h-4" />
+                <item.icon class="w-4 h-4" />
               {:else}
                 <span class="w-4 h-4"></span>
               {/if}
@@ -79,7 +82,7 @@
           {#each graphMenuItems as item}
             <a href={item.href} class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
               {#if item.icon}
-                <svelte:component this={item.icon} class="w-4 h-4" />
+                <item.icon class="w-4 h-4" />
               {:else}
                 <span class="w-4 h-4"></span>
               {/if}

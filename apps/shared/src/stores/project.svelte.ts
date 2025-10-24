@@ -18,7 +18,7 @@ let error = $state<string | null>(null);
 // === Actions ===
 
 /**
- * Load all projects from backend
+ * Load all projects from backend (does NOT auto-select a project)
  */
 export async function loadProjects(): Promise<void> {
   isLoadingProjects = true;
@@ -28,9 +28,8 @@ export async function loadProjects(): Promise<void> {
     const list = await apiClient.listProjects();
     projects = list;
 
-    // Load current project
-    const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    // Do NOT auto-load current project - user must explicitly select one
+    // This keeps the UI in a "no project selected" state until user chooses
   } catch (err) {
     error = err instanceof Error ? err.message : 'Failed to load projects';
     console.error('Failed to load projects:', err);
