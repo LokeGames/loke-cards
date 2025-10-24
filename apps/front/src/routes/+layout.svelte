@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import '../app.css';
   import AppHeader from '@loke/ui/components/AppHeader.svelte';
   import AppSidebar from '@loke/ui/components/AppSidebar.svelte';
@@ -7,13 +8,23 @@
   import ProjectDashboard from '@loke/ui/components/ProjectDashboard.svelte';
   import { getCurrentProject, loadCurrentProject } from '@loke/shared/stores/project.svelte';
 
-  // Check if a project is selected
+  // Check if a project is selected - reactive to store changes
   let currentProject = $derived(getCurrentProject());
   let hasProject = $derived(currentProject !== null);
 
   // Load current project from backend on mount
   onMount(async () => {
     await loadCurrentProject();
+  });
+
+  // React to route changes - reload project state when navigating
+  $effect(() => {
+    // Access page.url to make this effect reactive to route changes
+    $page.url;
+
+    // Check project state when route changes
+    const current = getCurrentProject();
+    console.log('Route changed, current project:', current?.name || 'none');
   });
 </script>
 

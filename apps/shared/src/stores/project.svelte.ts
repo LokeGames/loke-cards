@@ -45,7 +45,7 @@ export async function loadCurrentProject(): Promise<void> {
   try {
     const current = await apiClient.getCurrentProject();
     currentProject = current;
-  } catch (err) {
+  } catch {
     // No current project or error - stay on dashboard
     console.log('No current project, showing dashboard');
     currentProject = null;
@@ -65,10 +65,8 @@ export async function switchProject(projectId: string): Promise<void> {
     const current = await apiClient.getCurrentProject();
     currentProject = current;
 
-    // Trigger page reload to refresh data
-    if (typeof window !== 'undefined') {
-      window.location.reload();
-    }
+    // Return and let the component handle navigation (SPA style)
+    // No page reload - just reactive state update
   } catch (err) {
     error = err instanceof Error ? err.message : 'Failed to switch project';
     console.error('Failed to switch project:', err);

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var $state: <T>(value: T) => T;
 }
 

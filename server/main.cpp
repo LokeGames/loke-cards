@@ -21,7 +21,7 @@ static std::mutex db_mutex;
 static sqlite3* db = nullptr;
 
 // === Project Management (v0.2.0) ===
-static std::string current_project = "default";
+static std::string current_project = ""; // Start with no project selected
 static std::mutex project_mutex;
 
 // Sanitize project name: lowercase alphanumeric + hyphens
@@ -410,12 +410,8 @@ int main(void) {
         create_project_dirs("default");
     }
 
-    // Open default project database
-    current_project = "default";
-    if (open_db_for_project(current_project) != SQLITE_OK) {
-        std::cerr << "Failed to open project database: " << current_project << std::endl;
-        return 1;
-    }
+    // No default project - user must select one from ProjectDashboard
+    // current_project starts empty, database opened when user selects project
 
     httplib::Server svr;
 
@@ -557,6 +553,12 @@ int main(void) {
 
     // GET /api/projects/current - Get current project info
     svr.Get("/api/projects/current", [&](const httplib::Request &, httplib::Response &res) {
+        if (current_project.empty()) {
+            res.status = 404;
+            res.set_content("{\"message\":\"No project selected\"}", "application/json");
+            return;
+        }
+
         int scenes = count_records("scenes");
         int chapters = count_records("chapters");
         int states = count_records("states");

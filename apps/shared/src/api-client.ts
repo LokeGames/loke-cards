@@ -110,7 +110,7 @@ class ApiClient {
       } else {
         return response as Scene;
       }
-    } catch (error) {
+    } catch {
       console.error(`Scene not found: ${id}`);
       return null;
     }
@@ -179,7 +179,7 @@ class ApiClient {
       } else {
         return response as Chapter;
       }
-    } catch (error) {
+    } catch {
       console.error(`Chapter not found: ${id}`);
       return null;
     }
@@ -250,7 +250,7 @@ class ApiClient {
       } else {
         return response as StateVariable;
       }
-    } catch (error) {
+    } catch {
       console.error(`State not found: ${id}`);
       return null;
     }

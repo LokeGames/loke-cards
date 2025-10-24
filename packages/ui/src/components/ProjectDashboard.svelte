@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import Folder from '../icons/Folder.svelte';
   import type { Project } from '@loke/shared/types';
   import {
@@ -37,7 +38,8 @@
     isProcessing = true;
     try {
       await switchProject(projectId);
-      // Page will reload after switch
+      // Navigate to cards view after selecting project
+      goto('/cards');
     } catch (err) {
       console.error('Failed to open project:', err);
     } finally {
@@ -53,7 +55,8 @@
       await createNewProject(newProjectName);
       newProjectName = '';
       isCreatingProject = false;
-      // Page will reload after creation
+      // Navigate to cards view after creating project
+      goto('/cards');
     } catch (err) {
       console.error('Failed to create project:', err);
     } finally {
@@ -217,10 +220,11 @@
       </h2>
 
       <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label for="project-name-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Project Name
         </label>
         <input
+          id="project-name-input"
           type="text"
           bind:value={newProjectName}
           placeholder="My Interactive Story"

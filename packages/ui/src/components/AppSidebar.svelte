@@ -40,9 +40,9 @@
         Main
       </h3>
       <div class="space-y-1">
-        <a href="/" class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
+        <a href="/projects" class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
           <LayoutDashboard class="w-4 h-4" />
-          Dashboard
+          Projects
         </a>
         <a href="/settings" class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
           <Settings class="w-4 h-4" />

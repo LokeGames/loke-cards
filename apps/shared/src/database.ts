@@ -30,7 +30,7 @@ class Database {
       await apiClient.health();
       this.isOnline = true;
       return true;
-    } catch (error) {
+    } catch {
       this.isOnline = false;
       console.warn("Backend unavailable, using offline mode");
       return false;
