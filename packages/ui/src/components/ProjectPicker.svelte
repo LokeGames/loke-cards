@@ -27,6 +27,11 @@
   let isLoadingProjects = $derived(getIsLoadingProjects());
   let error = $derived(getError());
 
+  // Debug effect to track isOpen state
+  $effect(() => {
+    console.log('[ProjectPicker] isOpen changed to:', isOpen);
+  });
+
 
   // Filtered projects based on search
   let filteredProjects = $derived(
