@@ -98,6 +98,24 @@ pnpm lint
 
 ESLint
 
+**Agentic Testing (AI-Driven Browser Tests):**
+
+```bash
+cd tests/agent && npx tsx test-project-picker.ts
+```
+
+Run AI-driven integration tests that observe browser DOM + console logs
+
+The agentic test framework allows the AI to:
+- Navigate and interact with the UI (click, fill, type)
+- Read DOM/ARIA tree and interactive elements
+- Capture browser console logs (errors, warnings, debug)
+- Take screenshots at each step
+- Make intelligent decisions about next actions
+- Generate detailed test reports with artifacts
+
+See `tests/agent/` for test scenarios and `doc/ai-ui-test.md` for implementation details.
+
 ```bash
 pnpm check:types
 ```

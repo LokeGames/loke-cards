@@ -83,17 +83,31 @@ static bool project_exists(const std::string& project) {
 }
 
 // List all projects
+// Only returns directories that have proper project structure (data/ and output/ subdirectories)
 static std::vector<std::string> list_projects() {
     std::vector<std::string> projects;
     DIR* dir = opendir("projects");
     if (!dir) return projects;
 
     struct dirent* entry;
+    struct stat st;
     while ((entry = readdir(dir)) != nullptr) {
         if (entry->d_type == DT_DIR &&
             strcmp(entry->d_name, ".") != 0 &&
             strcmp(entry->d_name, "..") != 0) {
-            projects.push_back(entry->d_name);
+
+            // Validate that this is a real project by checking for data/ and output/ subdirectories
+            std::string project_name = entry->d_name;
+            std::string data_dir = get_project_dir(project_name) + "/data";
+            std::string output_dir = get_project_dir(project_name) + "/output";
+
+            bool has_data = (stat(data_dir.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+            bool has_output = (stat(output_dir.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+
+            // Only include if both subdirectories exist (indicates proper project structure)
+            if (has_data && has_output) {
+                projects.push_back(project_name);
+            }
         }
     }
     closedir(dir);

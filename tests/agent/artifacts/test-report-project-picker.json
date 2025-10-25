@@ -1,0 +1,432 @@
+{
+  "testName": "ProjectPicker Basic Flow",
+  "startTime": "2025-10-25T20:08:20.395Z",
+  "endTime": "2025-10-25T20:08:22.203Z",
+  "duration": 1808,
+  "steps": [
+    {
+      "step": 1,
+      "action": "goto http://localhost:5183/",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-25T20:08:21.032Z"
+        }
+      },
+      "timestamp": "2025-10-25T20:08:21.032Z"
+    },
+    {
+      "step": 2,
+      "action": "screenshot: initial-load",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-25T20:08:21.119Z"
+        },
+        "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761422901033-01-initial-load.png"
+      },
+      "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761422901033-01-initial-load.png",
+      "timestamp": "2025-10-25T20:08:21.119Z"
+    },
+    {
+      "step": 3,
+      "action": "observe page",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-25T20:08:21.122Z"
+        }
+      },
+      "timestamp": "2025-10-25T20:08:21.122Z"
+    },
+    {
+      "step": 4,
+      "action": "click Projects link",
+      "result": {
+        "success": false,
+        "error": "locator.click: Error: strict mode violation: getByText('Projects') resolved to 4 elements:\n    1) <h3 class=\"text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2\">Browse Projects</h3> aka getByRole('heading', { name: 'Browse Projects' })\n    2) <p class=\"text-gray-600 dark:text-gray-400\">5 projects available</p> aka getByText('projects available')\n    3) <h2 class=\"text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6\">Recent Projects</h2> aka getByRole('heading', { name: 'Recent Projects' })\n    4) <h2 class=\"text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6\">All Projects</h2> aka getByRole('heading', { name: 'All Projects' })\n\nCall log:\n\u001b[2m  - waiting for getByText('Projects')\u001b[22m\n"
+      },
+      "timestamp": "2025-10-25T20:08:21.635Z"
+    },
+    {
+      "step": 5,
+      "action": "click ProjectPicker button",
+      "result": {
+        "success": false,
+        "error": "locator.click: Error: strict mode violation: getByRole('button', { name: /horror/i }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700↵                       rounded-lg hover:shadow-lg hover:border-blue-500 dark:hover:border-blue-400↵                       transition-all duration-200 text-left\">…</button> aka getByRole('button', { name: 'horror-story 2 scenes 1' })\n    2) <button type=\"button\" class=\"w-full p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left flex items-center justify-between\">…</button> aka getByRole('button', { name: 'horror-story 2 scenes · 1' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /horror/i })\u001b[22m\n"
+      },
+      "timestamp": "2025-10-25T20:08:22.145Z"
+    },
+    {
+      "step": 6,
+      "action": "verify project visible: horror-story",
+      "result": {
+        "success": false,
+        "error": "locator.waitFor: Error: strict mode violation: getByText('horror-story') resolved to 2 elements:\n    1) <h3 class=\"font-semibold text-gray-900 dark:text-gray-100 truncate\">horror-story</h3> aka getByRole('button', { name: 'horror-story 2 scenes 1' })\n    2) <h3 class=\"font-semibold text-gray-900 dark:text-gray-100\">horror-story</h3> aka getByRole('button', { name: 'horror-story 2 scenes · 1' })\n\nCall log:\n\u001b[2m  - waiting for getByText('horror-story') to be visible\u001b[22m\n"
+      },
+      "timestamp": "2025-10-25T20:08:22.151Z"
+    },
+    {
+      "step": 7,
+      "action": "verify project visible: adventure-game",
+      "result": {
+        "success": false,
+        "error": "locator.waitFor: Error: strict mode violation: getByText('adventure-game') resolved to 2 elements:\n    1) <h3 class=\"font-semibold text-gray-900 dark:text-gray-100 truncate\">adventure-game</h3> aka getByRole('button', { name: 'adventure-game 1 scene 1' })\n    2) <h3 class=\"font-semibold text-gray-900 dark:text-gray-100\">adventure-game</h3> aka getByRole('button', { name: 'adventure-game 1 scenes · 1' })\n\nCall log:\n\u001b[2m  - waiting for getByText('adventure-game') to be visible\u001b[22m\n"
+      },
+      "timestamp": "2025-10-25T20:08:22.155Z"
+    },
+    {
+      "step": 8,
+      "action": "verify project visible: default",
+      "result": {
+        "success": false,
+        "error": "locator.waitFor: Error: strict mode violation: getByText('default') resolved to 2 elements:\n    1) <h3 class=\"font-semibold text-gray-900 dark:text-gray-100 truncate\">default</h3> aka getByRole('button', { name: 'default 0 scenes 0 chapters' })\n    2) <h3 class=\"font-semibold text-gray-900 dark:text-gray-100\">default</h3> aka getByRole('button', { name: 'default 0 scenes · 0 chapters' })\n\nCall log:\n\u001b[2m  - waiting for getByText('default') to be visible\u001b[22m\n"
+      },
+      "timestamp": "2025-10-25T20:08:22.159Z"
+    },
+    {
+      "step": 9,
+      "action": "screenshot: final-state",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-25T20:08:22.201Z"
+        },
+        "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761422902159-03-final-state.png"
+      },
+      "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761422902159-03-final-state.png",
+      "timestamp": "2025-10-25T20:08:22.201Z"
+    },
+    {
+      "step": 10,
+      "action": "final observation",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=9708acfe:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-25T20:08:22.202Z"
+        }
+      },
+      "timestamp": "2025-10-25T20:08:22.202Z"
+    }
+  ],
+  "summary": {
+    "totalSteps": 10,
+    "successful": 5,
+    "failed": 5
+  }
+}
