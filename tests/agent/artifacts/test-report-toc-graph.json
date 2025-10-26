@@ -1,0 +1,634 @@
+{
+  "testName": "TOC Graph Visualization",
+  "startTime": "2025-10-26T09:20:08.467Z",
+  "endTime": "2025-10-26T09:20:18.239Z",
+  "duration": 9772,
+  "steps": [
+    {
+      "step": 1,
+      "action": "goto http://localhost:5183/",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:09.004Z"
+        }
+      },
+      "timestamp": "2025-10-26T09:20:09.004Z"
+    },
+    {
+      "step": 2,
+      "action": "goto /cards/toc-graph",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/cards/toc-graph",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:09.558Z"
+        }
+      },
+      "timestamp": "2025-10-26T09:20:09.558Z"
+    },
+    {
+      "step": 3,
+      "action": "screenshot: toc-graph-loaded",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/cards/toc-graph",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:09.648Z"
+        },
+        "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761470409559-01-toc-graph-loaded.png"
+      },
+      "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761470409559-01-toc-graph-loaded.png",
+      "timestamp": "2025-10-26T09:20:09.648Z"
+    },
+    {
+      "step": 4,
+      "action": "wait for network idle",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/cards/toc-graph",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:09.650Z"
+        }
+      },
+      "timestamp": "2025-10-26T09:20:09.650Z"
+    },
+    {
+      "step": 5,
+      "action": "check SVG elements",
+      "result": {
+        "success": true,
+        "observation": {
+          "found": true,
+          "svg": true,
+          "circles": 0,
+          "paths": 1,
+          "lines": 0,
+          "texts": 0,
+          "viewBox": "0 0 24 24"
+        }
+      },
+      "timestamp": "2025-10-26T09:20:09.651Z"
+    },
+    {
+      "step": 6,
+      "action": "screenshot: graph-elements",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/cards/toc-graph",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:09.687Z"
+        },
+        "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761470409651-02-graph-elements.png"
+      },
+      "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761470409651-02-graph-elements.png",
+      "timestamp": "2025-10-26T09:20:09.687Z"
+    },
+    {
+      "step": 7,
+      "action": "verify TOC heading",
+      "result": {
+        "success": false,
+        "error": "locator.waitFor: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Table of Contents') to be visible\u001b[22m\n"
+      },
+      "timestamp": "2025-10-26T09:20:12.689Z"
+    },
+    {
+      "step": 8,
+      "action": "check empty state",
+      "result": {
+        "success": true,
+        "observation": {
+          "hasEmptyState": false
+        }
+      },
+      "timestamp": "2025-10-26T09:20:12.691Z"
+    },
+    {
+      "step": 9,
+      "action": "check console logs",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/cards/toc-graph",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:12.693Z"
+        }
+      },
+      "timestamp": "2025-10-26T09:20:12.693Z"
+    },
+    {
+      "step": 10,
+      "action": "check responsive layout",
+      "result": {
+        "success": true,
+        "observation": {
+          "hasGrid": true,
+          "hasSvg": true,
+          "gridClasses": "grid grid-cols-1 md:grid-cols-2 gap-6 mb-12",
+          "svgWidth": 20,
+          "svgHeight": 20
+        }
+      },
+      "timestamp": "2025-10-26T09:20:12.694Z"
+    },
+    {
+      "step": 11,
+      "action": "screenshot: final-state",
+      "result": {
+        "success": true,
+        "observation": {
+          "url": "http://localhost:5183/cards/toc-graph",
+          "title": "",
+          "roles": [
+            {
+              "role": "button",
+              "name": "New Project Create a fresh interactive fiction project from scratch",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scene 1 chapter",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "horror-story 2 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "default 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "adventure-game 1 scenes · 1 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "scifi-space-odyssey-2025 0 scenes · 0 chapters",
+              "tag": "button"
+            },
+            {
+              "role": "button",
+              "name": "test-project 0 scenes · 0 chapters",
+              "tag": "button"
+            }
+          ],
+          "consoleLogs": [
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard",
+            "[DEBUG] [vite] connecting...",
+            "[DEBUG] [vite] connected.",
+            "[LOG] Route changed, current project: none",
+            "[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+            "[ERROR] API request failed: /api/projects/current Error: API Error: 404 {\"message\":\"No project selected\"}\n    at ApiClient.request (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/api-client.ts:26:15)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async loadCurrentProject (http://localhost:5183/@fs/home/lpm/REPO/loke/loke-cards/apps/shared/src/stores/project.svelte.ts:28:20)\n    at async Module.track_reactivity_loss (http://localhost:5183/node_modules/.vite/deps/chunk-LZI32UU5.js?v=476377a9:1483:15)\n    at async http://localhost:5183/src/routes/+layout.svelte:35:4",
+            "[LOG] No current project, showing dashboard"
+          ],
+          "timestamp": "2025-10-26T09:20:12.736Z"
+        },
+        "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761470412694-03-final-state.png"
+      },
+      "screenshot": "/home/lpm/REPO/loke/loke-cards/tests/agent/artifacts/1761470412694-03-final-state.png",
+      "timestamp": "2025-10-26T09:20:12.736Z"
+    },
+    {
+      "step": 12,
+      "action": "click TOC nav link",
+      "result": {
+        "success": false,
+        "error": "locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Table of Contents')\u001b[22m\n"
+      },
+      "timestamp": "2025-10-26T09:20:18.239Z"
+    }
+  ],
+  "summary": {
+    "totalSteps": 12,
+    "successful": 10,
+    "failed": 2
+  }
+}

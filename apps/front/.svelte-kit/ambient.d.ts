@@ -30,7 +30,6 @@ declare module '$env/static/private' {
 	export const LESSOPEN: string;
 	export const USER: string;
 	export const CLAUDE_CODE_ENTRYPOINT: string;
-	export const LC_TIME: string;
 	export const npm_config_user_agent: string;
 	export const GIT_EDITOR: string;
 	export const XDG_SESSION_TYPE: string;
@@ -46,11 +45,9 @@ declare module '$env/static/private' {
 	export const ZED_TERM: string;
 	export const npm_package_json: string;
 	export const NVM_INC: string;
-	export const QT_STYLE_OVERRIDE: string;
 	export const GIO_LAUNCHED_DESKTOP_FILE: string;
 	export const GNOME_SHELL_SESSION_MODE: string;
 	export const GTK_MODULES: string;
-	export const LC_MONETARY: string;
 	export const MANAGERPID: string;
 	export const SYSTEMD_EXEC_PID: string;
 	export const IM_CONFIG_CHECK_ENV: string;
@@ -83,7 +80,6 @@ declare module '$env/static/private' {
 	export const npm_package_name: string;
 	export const COREPACK_ENABLE_AUTO_PIN: string;
 	export const XDG_MENU_PREFIX: string;
-	export const LC_ADDRESS: string;
 	export const GNOME_SETUP_DISPLAY: string;
 	export const XDG_RUNTIME_DIR: string;
 	export const npm_config_frozen_lockfile: string;
@@ -91,7 +87,6 @@ declare module '$env/static/private' {
 	export const NoDefaultCurrentDirectoryInExePath: string;
 	export const LANG: string;
 	export const XDG_CURRENT_DESKTOP: string;
-	export const LC_TELEPHONE: string;
 	export const XMODIFIERS: string;
 	export const XDG_SESSION_DESKTOP: string;
 	export const XAUTHORITY: string;
@@ -100,7 +95,6 @@ declare module '$env/static/private' {
 	export const npm_lifecycle_script: string;
 	export const SSH_AUTH_SOCK: string;
 	export const SHELL: string;
-	export const LC_NAME: string;
 	export const npm_package_version: string;
 	export const npm_config_verify_deps_before_run: string;
 	export const npm_lifecycle_event: string;
@@ -109,9 +103,7 @@ declare module '$env/static/private' {
 	export const GDMSESSION: string;
 	export const LESSCLOSE: string;
 	export const CLAUDECODE: string;
-	export const LC_MEASUREMENT: string;
 	export const GJS_DEBUG_OUTPUT: string;
-	export const LC_IDENTIFICATION: string;
 	export const QT_IM_MODULE: string;
 	export const ALACRITTY_WINDOW_ID: string;
 	export const PWD: string;
@@ -120,11 +112,9 @@ declare module '$env/static/private' {
 	export const NVM_CD_FLAGS: string;
 	export const XDG_DATA_DIRS: string;
 	export const npm_config_recursive: string;
-	export const LC_NUMERIC: string;
 	export const PNPM_SCRIPT_SRC_DIR: string;
 	export const npm_config__jsr_registry: string;
 	export const npm_command: string;
-	export const LC_PAPER: string;
 	export const MEMORY_PRESSURE_WRITE: string;
 	export const INIT_CWD: string;
 	export const NODE_ENV: string;
@@ -161,7 +151,6 @@ declare module '$env/dynamic/private' {
 		LESSOPEN: string;
 		USER: string;
 		CLAUDE_CODE_ENTRYPOINT: string;
-		LC_TIME: string;
 		npm_config_user_agent: string;
 		GIT_EDITOR: string;
 		XDG_SESSION_TYPE: string;
@@ -177,11 +166,9 @@ declare module '$env/dynamic/private' {
 		ZED_TERM: string;
 		npm_package_json: string;
 		NVM_INC: string;
-		QT_STYLE_OVERRIDE: string;
 		GIO_LAUNCHED_DESKTOP_FILE: string;
 		GNOME_SHELL_SESSION_MODE: string;
 		GTK_MODULES: string;
-		LC_MONETARY: string;
 		MANAGERPID: string;
 		SYSTEMD_EXEC_PID: string;
 		IM_CONFIG_CHECK_ENV: string;
@@ -214,7 +201,6 @@ declare module '$env/dynamic/private' {
 		npm_package_name: string;
 		COREPACK_ENABLE_AUTO_PIN: string;
 		XDG_MENU_PREFIX: string;
-		LC_ADDRESS: string;
 		GNOME_SETUP_DISPLAY: string;
 		XDG_RUNTIME_DIR: string;
 		npm_config_frozen_lockfile: string;
@@ -222,7 +208,6 @@ declare module '$env/dynamic/private' {
 		NoDefaultCurrentDirectoryInExePath: string;
 		LANG: string;
 		XDG_CURRENT_DESKTOP: string;
-		LC_TELEPHONE: string;
 		XMODIFIERS: string;
 		XDG_SESSION_DESKTOP: string;
 		XAUTHORITY: string;
@@ -231,7 +216,6 @@ declare module '$env/dynamic/private' {
 		npm_lifecycle_script: string;
 		SSH_AUTH_SOCK: string;
 		SHELL: string;
-		LC_NAME: string;
 		npm_package_version: string;
 		npm_config_verify_deps_before_run: string;
 		npm_lifecycle_event: string;
@@ -240,9 +224,7 @@ declare module '$env/dynamic/private' {
 		GDMSESSION: string;
 		LESSCLOSE: string;
 		CLAUDECODE: string;
-		LC_MEASUREMENT: string;
 		GJS_DEBUG_OUTPUT: string;
-		LC_IDENTIFICATION: string;
 		QT_IM_MODULE: string;
 		ALACRITTY_WINDOW_ID: string;
 		PWD: string;
@@ -251,11 +233,9 @@ declare module '$env/dynamic/private' {
 		NVM_CD_FLAGS: string;
 		XDG_DATA_DIRS: string;
 		npm_config_recursive: string;
-		LC_NUMERIC: string;
 		PNPM_SCRIPT_SRC_DIR: string;
 		npm_config__jsr_registry: string;
 		npm_command: string;
-		LC_PAPER: string;
 		MEMORY_PRESSURE_WRITE: string;
 		INIT_CWD: string;
 		NODE_ENV: string;

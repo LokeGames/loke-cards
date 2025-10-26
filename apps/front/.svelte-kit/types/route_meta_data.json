@@ -33,7 +33,13 @@
 	"/cards/states/new": [
 		"src/routes/+layout.ts"
 	],
+	"/cards/toc-graph": [
+		"src/routes/+layout.ts"
+	],
 	"/cards/toc": [
+		"src/routes/+layout.ts"
+	],
+	"/projects": [
 		"src/routes/+layout.ts"
 	],
 	"/settings": [

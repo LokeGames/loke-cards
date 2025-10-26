@@ -24,6 +24,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@loke/cards": "workspace:*",
     "@loke/shared": "workspace:*",
     "@loke/ui": "workspace:*",
     "lucide-svelte": "^0.546.0"

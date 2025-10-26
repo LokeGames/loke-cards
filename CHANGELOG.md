@@ -5,6 +5,56 @@ All notable changes to Loke Cards will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### TOC Graph Visualization (Phase 2 Complete)
+
+- **GitKraken-style Scene Flow Graph**
+  - Visual representation of scene connections with lanes, branches, and merges
+  - Pure SVG rendering with S-curve bezier edges
+  - Color-coded lanes (7-color palette with modulo reuse)
+  - Rail lines showing lane continuity
+  - Dashed lines for conditional edges
+  - Two-column layout: TOC list (left) + graph visualization (right)
+
+- **Components** (`packages/cards/src/lib/toc-graph/`)
+  - `TocGraph.svelte` - Core SVG renderer with lane layout algorithm
+  - `TocWithGraph.svelte` - Integrated two-column view
+  - `types.ts` - Graph data model (SceneNode, SceneEdge, TOCGraph)
+  - `mapDbToGraph.ts` - Database adapter for converting Scene[] to graph format
+  - `index.ts` - Package exports
+
+- **Routes**
+  - `/cards/toc-graph` - Main demo route in apps/front
+  - `/toc-graph` - Test route in apps/cards
+
+- **Data Integration**
+  - Extracts scene links from `Scene.choices[]` array
+  - Auto-generates graph from database scenes
+  - Handles empty state gracefully
+  - Smart link tagging (choice vs conditional based on `enabled` flag)
+
+- **Menu Navigation**
+  - Added "TOC Graph" menu item to cards navigation
+  - Integrated with existing sidebar menu structure
+
+- **Package Structure**
+  - Created `@loke/cards` package with proper exports
+  - Added workspace dependencies to apps/cards and apps/front
+  - Configured package.json with toc-graph module export
+
+### Technical Details
+
+- Lane layout algorithm: O(N log N + E) complexity
+  - Inherit: single parent → child keeps parent's lane
+  - Merge: multiple parents → child takes lowest lane, others freed
+  - New branch: no parent → allocate first free lane or create new
+- Configurable spacing: `laneGap` (84px), `rowGap` (56px), `dotR` (7px)
+- Responsive design with Tailwind grid layout
+- Dark mode support for text and backgrounds
+
 ## [0.1.0] - 2025-10-23
 
 ### MVP Release - Single Project Database Architecture

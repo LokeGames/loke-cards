@@ -1,0 +1,14 @@
+{
+  "name": "@loke/cards",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cards component library (Svelte)",
+  "exports": {
+    "./toc-graph": "./src/lib/toc-graph/index.ts"
+  },
+  "scripts": {},
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  }
+}
