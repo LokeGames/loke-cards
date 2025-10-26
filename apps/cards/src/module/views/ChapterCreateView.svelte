@@ -42,16 +42,22 @@
       return;
     }
 
+    const chapterData = {
+      id: finalChapterId,
+      name: rawName.trim(),
+      description: rawDesc.trim(),
+      projectId: projectState.currentProject.id,
+    };
+
+    console.log("Creating chapter with data:", chapterData);
+
     saving = true;
     try {
-      await db.createChapter({
-        id: finalChapterId,
-        name: rawName.trim(),
-        description: rawDesc.trim(),
-        projectId: projectState.currentProject.id,
-      } as any);
+      const result = await db.createChapter(chapterData as any);
+      console.log("Chapter created successfully:", result);
       goto("/cards/chapters");
     } catch (err) {
+      console.error("Failed to create chapter:", err);
       error = err instanceof Error ? err.message : "Failed to create chapter";
     } finally {
       saving = false;
