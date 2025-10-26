@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount, tick } from "svelte";
   import { afterNavigate } from "$app/navigation";
   import { db } from "@loke/shared/database";
   import type { Scene, Chapter } from "@loke/shared";
   import { Plus, BookOpen, FileText, AlertCircle, List } from "lucide-svelte";
   import {
-    TocGraphGitgraph,
+    SceneFlowGraph,
+    layoutSceneGraph,
     type GraphSceneLink,
     type GraphSceneNode,
   } from "@loke/cards/toc-graph-gitgraph";
@@ -26,9 +27,9 @@
     }, {});
   });
 
-  let graphSceneNodes = $state<GraphSceneNode[]>([]);
+  let baseGraphNodes = $state<GraphSceneNode[]>([]);
   $effect(() => {
-    graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
+    baseGraphNodes = scenes.map<GraphSceneNode>((scene, index) => ({
       id: scene.id ?? scene.sceneId ?? `scene-${index}`,
       title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
       order: index,
@@ -57,7 +58,9 @@
     const seen = new Set<string>();
 
     scenes.forEach((scene, sceneIndex) => {
-      const sourceId = sceneIdLookup.get(scene.id ?? scene.sceneId ?? `scene-${sceneIndex}`);
+      const sourceId = sceneIdLookup.get(
+        scene.id ?? scene.sceneId ?? `scene-${sceneIndex}`,
+      );
       if (!sourceId) {
         return;
       }
@@ -88,11 +91,97 @@
     graphSceneLinks = edges;
   });
 
+  let graphSceneNodes = $state<GraphSceneNode[]>([]);
+  let laneCount = $state(1);
+  $effect(() => {
+    const { nodes, laneCount: lanes } = layoutSceneGraph(
+      baseGraphNodes,
+      graphSceneLinks,
+    );
+    graphSceneNodes = nodes;
+    laneCount = lanes;
+  });
+
   const GRAPH_COLUMN_WIDTH = 112;
   const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
   const GRAPH_CARD_MIN_HEIGHT = 72;
-  const GRAPH_ROW_GAP = 12;
-  const GRAPH_ROW_HEIGHT = GRAPH_CARD_MIN_HEIGHT + GRAPH_ROW_GAP;
+
+  let graphContainer: HTMLDivElement | null = null;
+  const anchorElements = new Map<string, HTMLElement>();
+  let rowPositions = $state<Array<{ id: string; y: number }>>([]);
+  let graphHeight = $state(0);
+
+  let anchorObserver: ResizeObserver | null = null;
+  let containerObserver: ResizeObserver | null = null;
+  let updateScheduled = false;
+
+  function schedulePositionsUpdate() {
+    if (updateScheduled) {
+      return;
+    }
+    updateScheduled = true;
+    requestAnimationFrame(async () => {
+      updateScheduled = false;
+      await tick();
+      if (!graphContainer) {
+        return;
+      }
+      const containerRect = graphContainer.getBoundingClientRect();
+      const items: Array<{ id: string; y: number }> = [];
+      anchorElements.forEach((element, id) => {
+        const rect = element.getBoundingClientRect();
+        items.push({
+          id,
+          y: rect.top + rect.height / 2 - containerRect.top,
+        });
+      });
+      items.sort((a, b) => {
+        const orderA = graphSceneNodes.findIndex((node) => node.id === a.id);
+        const orderB = graphSceneNodes.findIndex((node) => node.id === b.id);
+        return orderA - orderB;
+      });
+      rowPositions = items;
+      graphHeight = containerRect.height;
+    });
+  }
+
+  function registerSceneAnchor(sceneId: string) {
+    return (element: HTMLElement | null) => {
+      const existing = anchorElements.get(sceneId);
+      if (existing) {
+        anchorObserver?.unobserve(existing);
+      }
+
+      if (element) {
+        anchorElements.set(sceneId, element);
+        if (anchorObserver) {
+          anchorObserver.observe(element);
+        }
+      } else {
+        anchorElements.delete(sceneId);
+      }
+
+      schedulePositionsUpdate();
+    };
+  }
+
+  onMount(() => {
+    anchorObserver = new ResizeObserver(() => schedulePositionsUpdate());
+    containerObserver = new ResizeObserver(() => schedulePositionsUpdate());
+    if (graphContainer) {
+      containerObserver.observe(graphContainer);
+    }
+    anchorElements.forEach((element) => anchorObserver?.observe(element));
+
+    window.addEventListener("resize", schedulePositionsUpdate);
+    schedulePositionsUpdate();
+  });
+
+  onDestroy(() => {
+    anchorObserver?.disconnect();
+    containerObserver?.disconnect();
+    window.removeEventListener("resize", schedulePositionsUpdate);
+  });
 
   async function loadData() {
     loading = true;
@@ -102,6 +191,7 @@
       console.error("Failed to load data:", error);
     } finally {
       loading = false;
+      schedulePositionsUpdate();
     }
   }
 
