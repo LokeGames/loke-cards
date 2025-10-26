@@ -45,7 +45,7 @@
     saving = true;
     try {
       await db.createChapter({
-        id: finalChapterId,
+        chapterId: finalChapterId,
         name: rawName.trim(),
         description: rawDesc.trim(),
         projectId: projectState.currentProject.id,
