@@ -41,13 +41,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Navigation Shell Refactor**
+- **Navigation Shell Refactor (2025-10-26)**
   - Introduced `@loke/front-api` with `FrontModuleDefinition`, registry helpers, and lazy view resolution
   - Added `AppShell` and `TopNavBar` primitives in `@loke/ui` so the host shell can render chrome + module slots without sidebar coupling
   - Replaced `apps/front` sidebar layout with the new shell: top-level actions (theme toggle, settings) render via module-aware navigation
   - `@loke/apps-cards` now exports `cardsFrontModule` and a module-owned workspace (`src/module/`) that renders all cards routes internally
   - Legacy cards route files in `apps/front` now delegate to the shared module views, eliminating duplicate screens
-  - Integrated with existing sidebar menu structure
+  - **Dual-topbar navigation system** (highly successful design):
+    - Top level: `AppHeader` with app title "Loke Cards", theme toggle, and project picker
+    - Second level: `TopNavBar` with dashboard icon (far left) + module tabs (Cards, Chapters) + actions (Settings)
+  - Added Dashboard icon to TopNavBar for quick access to ProjectDashboard view
+  - Fixed Svelte 5 reactivity issues:
+    - Converted project store to `projectState` object pattern (required for Svelte 5 `$state` exports)
+    - Updated all components (`AppHeader`, `ProjectDashboard`, `ProjectPicker`, `+layout.svelte`) to use `projectState`
+    - Fixed `$derived()` syntax errors - changed to `$derived.by()` in `+layout.svelte` and `CardsModuleView.svelte`
+    - Project switching now works correctly with reactive state updates
 
 - **Package Structure**
   - Created `@loke/cards` package with proper exports

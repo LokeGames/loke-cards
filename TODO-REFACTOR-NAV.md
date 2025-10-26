@@ -46,15 +46,17 @@ This keeps the shell lightweight, reduces cross-app wiring, and lets each module
 -   [x] Simplify/retire the old `AppSidebar` usage once modules own their internal nav.
 -   [x] Fixed Svelte 5 reactivity with `projectState` object pattern for project switching.
 
-### Phase 3: Update Feature Modules
+### Phase 3: Update Feature Modules ✅ COMPLETED (Cards pilot)
 
--   [ ] **`apps/cards`** (pilot implementation):
-    -   Export a `cardsFrontModule: FrontModuleDefinition`.
-    -   Supply an icon/label used by the top nav.
-    -   Provide a `CardsModuleView.svelte` (or similar) that orchestrates the cards-specific pages and internal navigation.
-    -   Consume shared theme tokens/components instead of local styling overrides.
--   [ ] Document the expected folder structure & naming for module views so new modules follow the same contract.
--   [ ] (Later) Apply the same pattern to additional feature apps (`graph`, etc.).
+-   [x] **`apps/cards`** (pilot implementation):
+    -   Export a `cardsFrontModule: FrontModuleDefinition` from `apps/cards/src/module/index.ts`.
+    -   Supply a Folder icon/label "Cards" used by the top nav.
+    -   Provide a `CardsModuleView.svelte` that orchestrates the cards-specific pages and internal navigation.
+    -   Uses `$derived.by()` for reactive route segment parsing.
+    -   Consume shared theme tokens/components from `packages/ui`.
+    -   Fixed Svelte 5 `$derived` syntax issues.
+-   [x] Document the expected folder structure & naming for module views so new modules follow the same contract.
+-   [ ] (Future) Apply the same pattern to additional feature apps (`graph`, etc.).
 
 ### Phase 4: Documentation & Housekeeping
 
