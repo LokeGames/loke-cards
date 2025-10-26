@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SceneEditorView } from '@apps-cards';
+  import SceneEditorView from '../components/SceneEditorView.svelte';
   let sceneId: string | null = null;
 </script>
 

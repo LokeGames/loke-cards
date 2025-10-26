@@ -185,10 +185,10 @@ class ApiClient {
     }
   }
 
-  async createChapter(chapter: Omit<Chapter, "id">): Promise<Chapter> {
+  async createChapter(chapter: Omit<Chapter, "id"> | Chapter): Promise<Chapter> {
     const chapterWithId = {
       ...chapter,
-      id: chapter.name || this.generateId(),
+      id: (chapter as any).id || (chapter as any).chapterId || chapter.name || this.generateId(),
     };
 
     const response = await this.request<{ id: string; data: string }>(

@@ -5,6 +5,94 @@ All notable changes to Loke Cards will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### TOC Graph Visualization (Phase 2 Complete)
+
+- **GitKraken-style Scene Flow Graph**
+  - Visual representation of scene connections with lanes, branches, and merges
+  - Pure SVG rendering with S-curve bezier edges
+  - Color-coded lanes (7-color palette with modulo reuse)
+  - Rail lines showing lane continuity
+  - Dashed lines for conditional edges
+  - Two-column layout: TOC list (left) + graph visualization (right)
+
+- **Components** (`packages/cards/src/lib/toc-graph/`)
+  - `TocGraph.svelte` - Core SVG renderer with lane layout algorithm
+  - `TocWithGraph.svelte` - Integrated two-column view
+  - `types.ts` - Graph data model (SceneNode, SceneEdge, TOCGraph)
+  - `mapDbToGraph.ts` - Database adapter for converting Scene[] to graph format
+  - `index.ts` - Package exports
+
+- **Routes**
+  - `/cards/toc-graph` - Main demo route in apps/front
+  - `/toc-graph` - Test route in apps/cards
+
+- **Data Integration**
+  - Extracts scene links from `Scene.choices[]` array
+  - Auto-generates graph from database scenes
+  - Handles empty state gracefully
+  - Smart link tagging (choice vs conditional based on `enabled` flag)
+
+- **Menu Navigation**
+  - Added "TOC Graph" menu item to cards navigation
+
+- **Documentation (2025-10-26)**
+  - Added `STABILITY-GUIDE.md` - comprehensive guide for preventing project breakage during development
+  - Documents dual-topbar navigation as stability boundary
+  - Includes module isolation patterns, state management best practices, and recovery strategies
+  - Captures lessons learned from chapter save fix
+
+### Changed
+
+- **Navigation Shell Refactor (2025-10-26)**
+  - Introduced `@loke/front-api` with `FrontModuleDefinition`, registry helpers, and lazy view resolution
+  - Added `AppShell` and `TopNavBar` primitives in `@loke/ui` so the host shell can render chrome + module slots without sidebar coupling
+  - Replaced `apps/front` sidebar layout with the new shell: top-level actions (theme toggle, settings) render via module-aware navigation
+  - `@loke/apps-cards` now exports `cardsFrontModule` and a module-owned workspace (`src/module/`) that renders all cards routes internally
+  - Legacy cards route files in `apps/front` now delegate to the shared module views, eliminating duplicate screens
+  - **Dual-topbar navigation system** (highly successful design):
+    - **Top level** (`AppHeader`): App title "Loke Cards" + theme toggle
+    - **Second level** (`TopNavBar`): Two-section layout
+      - Left section: Dashboard icon + module tabs (Cards, etc.)
+      - Right section: Project switcher icon + theme toggle + settings
+  - **Project switching workflow** (solves reactivity issues elegantly):
+    - Project switcher action (folder icon, right side) clears current project and navigates to ProjectDashboard
+    - When user selects a project, automatic navigation to `/cards` provides free browser refresh
+    - This workflow eliminates the need for complex reactivity tracking across components
+    - Simple, predictable UX: switch project → view dashboard → select project → auto-navigate to cards
+  - Fixed Svelte 5 reactivity issues:
+    - Converted project store to `projectState` object pattern (required for Svelte 5 `$state` exports)
+    - Updated all components (`AppHeader`, `ProjectDashboard`, `ProjectPicker`, `+layout.svelte`) to use `projectState`
+    - Fixed `$derived()` syntax errors - changed to `$derived.by()` in `+layout.svelte` and `CardsModuleView.svelte`
+    - Project switching now works correctly with reactive state updates
+
+### Fixed
+
+- **Chapter Save Functionality (2025-10-26)**
+  - Fixed hardcoded `projectId: "default"` in `ChapterCreateView.svelte` - now uses `projectState.currentProject.id`
+  - Fixed API client ignoring `chapter.id` field in `createChapter()` - changed priority order to respect explicit IDs
+  - Fixed Vite cache issue causing stale compilation errors after code updates
+  - Chapters can now be created successfully and appear in scene/TOC selectors
+  - Added validation to ensure a project is selected before allowing chapter creation
+
+- **Package Structure**
+  - Created `@loke/cards` package with proper exports
+  - Added workspace dependencies to apps/cards and apps/front
+  - Configured package.json with toc-graph module export
+
+### Technical Details
+
+- Lane layout algorithm: O(N log N + E) complexity
+  - Inherit: single parent → child keeps parent's lane
+  - Merge: multiple parents → child takes lowest lane, others freed
+  - New branch: no parent → allocate first free lane or create new
+- Configurable spacing: `laneGap` (84px), `rowGap` (56px), `dotR` (7px)
+- Responsive design with Tailwind grid layout
+- Dark mode support for text and backgrounds
+
 ## [0.1.0] - 2025-10-23
 
 ### MVP Release - Single Project Database Architecture

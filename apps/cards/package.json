@@ -6,7 +6,9 @@
   "description": "Cards micro-app (Svelte library)",
   "main": "src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./module": "./src/module/index.ts",
+    "./module/*": "./src/module/*"
   },
   "scripts": {
     "test": "vitest run",
@@ -23,7 +25,10 @@
     "vitest": "^1.6.1"
   },
   "dependencies": {
+    "@loke/front-api": "workspace:*",
+    "@loke/cards": "workspace:*",
     "@loke/shared": "workspace:*",
-    "@loke/ui": "workspace:*"
+    "@loke/ui": "workspace:*",
+    "lucide-svelte": "^0.546.0"
   }
 }

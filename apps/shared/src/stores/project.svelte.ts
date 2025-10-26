@@ -9,11 +9,14 @@ import type { Project } from '../types';
 import { apiClient } from '../api-client';
 
 // === State (Svelte 5 runes) ===
+// Use a state object so we can export it and maintain reactivity
 
-let currentProject = $state<Project | null>(null);
-let projects = $state<Project[]>([]);
-let isLoadingProjects = $state<boolean>(false);
-let error = $state<string | null>(null);
+export const projectState = $state({
+  currentProject: null as Project | null,
+  projects: [] as Project[],
+  isLoadingProjects: false,
+  error: null as string | null,
+});
 
 // === Actions ===
 
@@ -21,20 +24,20 @@ let error = $state<string | null>(null);
  * Load all projects from backend (does NOT auto-select a project)
  */
 export async function loadProjects(): Promise<void> {
-  isLoadingProjects = true;
-  error = null;
+  projectState.isLoadingProjects = true;
+  projectState.error = null;
 
   try {
     const list = await apiClient.listProjects();
-    projects = list;
+    projectState.projects = list;
 
     // Do NOT auto-load current project - user must explicitly select one
     // This keeps the UI in a "no project selected" state until user chooses
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to load projects';
+    projectState.error = err instanceof Error ? err.message : 'Failed to load projects';
     console.error('Failed to load projects:', err);
   } finally {
-    isLoadingProjects = false;
+    projectState.isLoadingProjects = false;
   }
 }
 
@@ -44,11 +47,11 @@ export async function loadProjects(): Promise<void> {
 export async function loadCurrentProject(): Promise<void> {
   try {
     const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    projectState.currentProject = current;
   } catch {
     // No current project or error - stay on dashboard
     console.log('No current project, showing dashboard');
-    currentProject = null;
+    projectState.currentProject = null;
   }
 }
 
@@ -56,19 +59,19 @@ export async function loadCurrentProject(): Promise<void> {
  * Switch to a different project
  */
 export async function switchProject(projectId: string): Promise<void> {
-  error = null;
+  projectState.error = null;
 
   try {
     await apiClient.switchProject(projectId);
 
     // Reload current project info
     const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    projectState.currentProject = current;
 
     // Return and let the component handle navigation (SPA style)
     // No page reload - just reactive state update
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to switch project';
+    projectState.error = err instanceof Error ? err.message : 'Failed to switch project';
     console.error('Failed to switch project:', err);
     throw err;
   }
@@ -78,20 +81,20 @@ export async function switchProject(projectId: string): Promise<void> {
  * Create a new project
  */
 export async function createNewProject(name: string): Promise<Project> {
-  error = null;
+  projectState.error = null;
 
   try {
     const project = await apiClient.createProject(name);
 
     // Add to list
-    projects = [...projects, project];
+    projectState.projects = [...projectState.projects, project];
 
     // Switch to new project
     await switchProject(project.id);
 
     return project;
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to create project';
+    projectState.error = err instanceof Error ? err.message : 'Failed to create project';
     console.error('Failed to create project:', err);
     throw err;
   }
@@ -101,35 +104,26 @@ export async function createNewProject(name: string): Promise<Project> {
  * Refresh current project stats
  */
 export async function refreshCurrentProject(): Promise<void> {
-  error = null;
+  projectState.error = null;
 
   try {
     const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    projectState.currentProject = current;
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to refresh project';
+    projectState.error = err instanceof Error ? err.message : 'Failed to refresh project';
     console.error('Failed to refresh project:', err);
   }
 }
 
-// === Getters (expose reactive state) ===
-
-export function getCurrentProject() {
-  return currentProject;
-}
-
-export function getProjects() {
-  return projects;
-}
-
-export function getIsLoadingProjects() {
-  return isLoadingProjects;
-}
-
-export function getError() {
-  return error;
-}
+// === Helper functions ===
 
 export function clearError() {
-  error = null;
+  projectState.error = null;
+}
+
+/**
+ * Clear current project (go back to dashboard)
+ */
+export function clearCurrentProject() {
+  projectState.currentProject = null;
 }
