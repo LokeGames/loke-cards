@@ -33,6 +33,12 @@
 	"/cards/states/new": [
 		"src/routes/+layout.ts"
 	],
+	"/cards/toc-graph-test": [
+		"src/routes/+layout.ts"
+	],
+	"/cards/toc-graph": [
+		"src/routes/+layout.ts"
+	],
 	"/cards/toc": [
 		"src/routes/+layout.ts"
 	],
@@ -40,6 +46,9 @@
 		"src/routes/+layout.ts"
 	],
 	"/settings": [
+		"src/routes/+layout.ts"
+	],
+	"/toc-graph-standalone": [
 		"src/routes/+layout.ts"
 	]
 }
