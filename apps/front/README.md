@@ -18,10 +18,9 @@ This package is the **owner of the application's visual theme**.
 
 This package is responsible for:
 
--   **Routing**: The entire application's routing structure is defined in `src/routes`. All pages and URL endpoints are managed here.
--   **Menu Composition (Smart Container)**: This application acts as the **"smart" container**. It is responsible for building the application's main menu. It dynamically imports menu definitions from all active feature packages (e.g., `cardsMenu` from `@loke/cards`), assembles them into a single, complete menu structure, and then passes that structure as a prop to the "dumb" `AppSidebar` UI component from `@loke/ui`.
--   **Top-Level Layout**: The main application layout, including the header, sidebar, and project dashboard, is defined in `src/routes/+layout.svelte`.
--   **Page Composition**: Pages are constructed here by importing and arranging components from feature libraries (`@loke/cards`, `@loke/graph`) and the UI library (`@loke/ui`).
+-   **Routing**: The root routes live in `src/routes`, but feature-specific navigation is owned by each module. When a path matches a registered module (e.g. `/cards/*`), the shell mounts that module’s exported view component instead of rendering nested SvelteKit pages directly.
+-   **Module Activation (Smart Container)**: `front` discovers `FrontModuleDefinition` objects (see `src/lib/front-modules.ts`), renders them in the top navigation, and mounts the active module’s view via the shared `AppShell` component. The legacy sidebar menu has been retired.
+-   **Top-Level Layout**: Global chrome—including the header, project dashboard entry point, toasts, and shell actions—is composed in `src/routes/+layout.svelte` using the presentational `@loke/ui` components.
 -   **Application-Specific Features**: High-level features like the main project dashboard (`src/lib/components/dashboard/`) and the settings page (`src/routes/settings/`) belong here.
 
 ## Boundaries (What NOT to include)
