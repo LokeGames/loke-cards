@@ -114,6 +114,7 @@
   let anchorObserver: ResizeObserver | null = null;
   let containerObserver: ResizeObserver | null = null;
   let updateScheduled = false;
+  let lastObservedContainer: HTMLElement | null = null;
 
   function schedulePositionsUpdate() {
     if (updateScheduled) {
@@ -183,6 +184,19 @@
     window.removeEventListener("resize", schedulePositionsUpdate);
   });
 
+  $effect(() => {
+    if (!containerObserver) {
+      return;
+    }
+    if (lastObservedContainer) {
+      containerObserver.unobserve(lastObservedContainer);
+    }
+    if (graphContainer) {
+      containerObserver.observe(graphContainer);
+    }
+    lastObservedContainer = graphContainer;
+  });
+
   async function loadData() {
     loading = true;
     try {
@@ -240,14 +254,14 @@
     </div>
   {:else}
     <div class="grid gap-6" style={`grid-template-columns:${GRAPH_COLUMN_WIDTH}px minmax(0,1fr);`}>
-      <div class="relative">
-        <div class="sticky top-6 h-full">
-          <TocGraphGitgraph
-            nodes={graphSceneNodes}
-            links={graphSceneLinks}
-            rowHeight={GRAPH_ROW_HEIGHT}
-          />
-        </div>
+      <div class="relative" bind:this={graphContainer}>
+        <SceneFlowGraph
+          nodes={graphSceneNodes}
+          links={graphSceneLinks}
+          positions={rowPositions}
+          laneCount={laneCount}
+          height={graphHeight}
+        />
       </div>
 
       <div class="space-y-6 pl-4">
