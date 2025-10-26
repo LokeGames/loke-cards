@@ -1,5 +1,4 @@
-import type { Branch } from "@gitgraph/js";
-import type { GitgraphUserApi } from "@gitgraph/core";
+import type { BranchUserApi, GitgraphUserApi } from "@gitgraph/core";
 
 export interface GraphSceneNode {
   id: string;
@@ -32,7 +31,7 @@ const DEFAULT_COLORS = [
 
 interface LaneContext {
   lane: number;
-  branch: Branch;
+  branch: BranchUserApi<SVGElement>;
 }
 
 export function mapTocToGitgraph(
@@ -43,7 +42,7 @@ export function mapTocToGitgraph(
 ) {
   const colors = options?.colors ?? DEFAULT_COLORS;
   const laneByScene = new Map<string, LaneContext>();
-  const branchesByLane = new Map<number, Branch>();
+  const branchesByLane = new Map<number, BranchUserApi<SVGElement>>();
 
   const sortedNodes = [...nodes].sort((a, b) => a.order - b.order);
   const incoming = new Map<string, GraphSceneLink[]>();
