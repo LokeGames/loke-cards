@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { onDestroy, onMount, tick } from "svelte";
-  import type { Action } from "svelte/action";
+  import { onMount } from "svelte";
   import { afterNavigate } from "$app/navigation";
   import { db } from "@loke/shared/database";
   import type { Scene, Chapter } from "@loke/shared";
   import { Plus, BookOpen, FileText, AlertCircle, List } from "lucide-svelte";
   import {
-    SceneFlowGraph,
     layoutSceneGraph,
     type GraphSceneLink,
     type GraphSceneNode,
