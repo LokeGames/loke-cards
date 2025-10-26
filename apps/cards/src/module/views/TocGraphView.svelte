@@ -10,9 +10,9 @@
     type GraphSceneNode,
   } from "@loke/cards/toc-graph-gitgraph";
 
-  let chapters: Chapter[] = [];
-  let scenes: Scene[] = [];
-  let loading = true;
+  let chapters = $state<Chapter[]>([]);
+  let scenes = $state<Scene[]>([]);
+  let loading = $state(true);
 
   let scenesByChapter: Record<string, Scene[]> = {};
   $: scenesByChapter = scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
