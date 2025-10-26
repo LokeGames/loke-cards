@@ -179,20 +179,9 @@
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">No content yet</h3>
       <p class="mt-2 text-gray-600 dark:text-gray-400">Start by creating chapters and scenes</p>
     </div>
-  {:else}
-    <div class="grid gap-6" style={`grid-template-columns:${GRAPH_COLUMN_WIDTH}px minmax(0,1fr);`}>
-      <div class="relative" bind:this={graphContainer}>
-        <SceneFlowGraph
-          nodes={graphSceneNodes}
-          links={graphSceneLinks}
-          positions={rowPositions}
-          laneCount={laneCount}
-          height={graphHeight}
-        />
-      </div>
-
-      <div class="space-y-6 pl-4">
-        {#each chapters as chapter}
+{:else}
+    <div class="space-y-6">
+      {#each chapters as chapter}
           <div class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
             <div class="border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
               <div class="flex items-center justify-between">
@@ -280,11 +269,11 @@
               These scenes are not assigned to any chapter
             </p>
           </div>
-          <div class="space-y-3 p-4">
-            {#each scenesByChapter.uncategorized as scene, idx}
-              {@const canonicalId = scene.id ?? scene.sceneId ?? `uncat-${idx}`}
-              {@const anchorId = sceneIdLookup.get(canonicalId) ?? canonicalId}
-              {@const isFirst = idx === 0}
+        <div class="space-y-3 p-4">
+          {#each scenesByChapter.uncategorized as scene, idx}
+            {@const canonicalId = scene.id ?? scene.sceneId ?? `uncat-${idx}`}
+            {@const anchorId = sceneIdLookup.get(canonicalId) ?? canonicalId}
+            {@const isFirst = idx === 0}
               {@const isLast = idx === scenesByChapter.uncategorized.length - 1}
               {@const hasLane = laneByScene.has(anchorId)}
               {@const laneColor = laneColorFor(anchorId)}
@@ -313,7 +302,6 @@
           </div>
         </div>
       {/if}
-      </div>
     </div>
   {/if}
 </div>
