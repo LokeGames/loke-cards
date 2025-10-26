@@ -166,6 +166,23 @@
     };
   }
 
+  function sceneAnchor(node: HTMLElement, sceneId: string) {
+    registerSceneAnchor(sceneId)(node);
+    return {
+      update(newSceneId: string) {
+        if (newSceneId === sceneId) {
+          return;
+        }
+        registerSceneAnchor(sceneId)(null);
+        sceneId = newSceneId;
+        registerSceneAnchor(sceneId)(node);
+      },
+      destroy() {
+        registerSceneAnchor(sceneId)(null);
+      },
+    };
+  }
+
   onMount(() => {
     anchorObserver = new ResizeObserver(() => schedulePositionsUpdate());
     containerObserver = new ResizeObserver(() => schedulePositionsUpdate());
