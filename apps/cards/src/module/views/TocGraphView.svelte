@@ -81,133 +81,49 @@
     graphSceneLinks = edges;
   });
 
-  let graphSceneNodes = $state<GraphSceneNode[]>([]);
-  let laneCount = $state(1);
-  $effect(() => {
-    const { nodes, laneCount: lanes } = layoutSceneGraph(
-      baseGraphNodes,
-      graphSceneLinks,
-    );
-    graphSceneNodes = nodes;
-    laneCount = lanes;
-    schedulePositionsUpdate();
-  });
-
   const GRAPH_COLUMN_WIDTH = 112;
   const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
   const GRAPH_CARD_MIN_HEIGHT = 72;
 
-  let graphContainer: HTMLDivElement | null = null;
-  const anchorElements = new Map<string, HTMLElement>();
-  let rowPositions = $state<Array<{ id: string; y: number }>>([]);
-  let graphHeight = $state(0);
+  const LANE_COLORS = [
+    "#60a5fa",
+    "#22d3ee",
+    "#a78bfa",
+    "#34d399",
+    "#f472b6",
+    "#f59e0b",
+    "#ef4444",
+  ];
 
-  let anchorObserver: ResizeObserver | null = null;
-  let containerObserver: ResizeObserver | null = null;
-  let updateScheduled = false;
-  let lastObservedContainer: HTMLElement | null = null;
-
-  function schedulePositionsUpdate() {
-    if (updateScheduled) {
-      return;
-    }
-    updateScheduled = true;
-    requestAnimationFrame(async () => {
-      updateScheduled = false;
-      await tick();
-      if (!graphContainer) {
-        return;
-      }
-      const containerRect = graphContainer.getBoundingClientRect();
-      const items: Array<{ id: string; y: number }> = [];
-      anchorElements.forEach((element, id) => {
-        const rect = element.getBoundingClientRect();
-        items.push({
-          id,
-          y: rect.top + rect.height / 2 - containerRect.top,
-        });
-      });
-      items.sort((a, b) => {
-        const orderA = graphSceneNodes.findIndex((node) => node.id === a.id);
-        const orderB = graphSceneNodes.findIndex((node) => node.id === b.id);
-        return orderA - orderB;
-      });
-      rowPositions = items;
-      const contentHeight =
-        items.length > 0
-          ? Math.max(...items.map((item) => item.y)) + GRAPH_CARD_MIN_HEIGHT
-          : 0;
-      graphHeight = Math.max(containerRect.height, contentHeight);
-    });
-  }
-
-  function registerSceneAnchor(sceneId: string) {
-    return (element: HTMLElement | null) => {
-      const existing = anchorElements.get(sceneId);
-      if (existing) {
-        anchorObserver?.unobserve(existing);
-      }
-
-      if (element) {
-        anchorElements.set(sceneId, element);
-        if (anchorObserver) {
-          anchorObserver.observe(element);
-        }
-      } else {
-        anchorElements.delete(sceneId);
-      }
-
-      schedulePositionsUpdate();
-    };
-  }
-
-  const sceneAnchor: Action<HTMLElement, string> = (node, sceneId) => {
-    registerSceneAnchor(sceneId)(node);
-    return {
-      update(newSceneId: string) {
-        if (newSceneId === sceneId) {
-          return;
-        }
-        registerSceneAnchor(sceneId)(null);
-        sceneId = newSceneId;
-        registerSceneAnchor(sceneId)(node);
-      },
-      destroy() {
-        registerSceneAnchor(sceneId)(null);
-      },
-    };
-  };
-
-  onMount(() => {
-    anchorObserver = new ResizeObserver(() => schedulePositionsUpdate());
-    containerObserver = new ResizeObserver(() => schedulePositionsUpdate());
-    if (graphContainer) {
-      containerObserver.observe(graphContainer);
-    }
-    anchorElements.forEach((element) => anchorObserver?.observe(element));
-
-    window.addEventListener("resize", schedulePositionsUpdate);
-    schedulePositionsUpdate();
-  });
-
-  onDestroy(() => {
-    anchorObserver?.disconnect();
-    containerObserver?.disconnect();
-    window.removeEventListener("resize", schedulePositionsUpdate);
-  });
-
+  let graphSceneNodes = $state<GraphSceneNode[]>([]);
+  let laneByScene = $state<Map<string, number>>(new Map());
   $effect(() => {
-    if (!containerObserver) {
-      return;
-    }
-    if (lastObservedContainer) {
-      containerObserver.unobserve(lastObservedContainer);
-    }
-    if (graphContainer) {
-      containerObserver.observe(graphContainer);
-    }
-    lastObservedContainer = graphContainer;
+    const baseNodes = scenes.map<GraphSceneNode>((scene, index) => ({
+      id: scene.id ?? scene.sceneId ?? `scene-${index}`,
+      title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
+      order: index,
+    }));
+
+    const { nodes, laneByScene: laneMap } = layoutSceneGraph(
+      baseNodes,
+      graphSceneLinks,
+    );
+    graphSceneNodes = nodes;
+    laneByScene = laneMap;
   });
+
+  function laneColorFor(sceneId: string): string {
+    const lane = laneByScene.get(sceneId) ?? 0;
+    return LANE_COLORS[lane % LANE_COLORS.length];
+  }
+
+  function laneClass(isFirst: boolean, isLast: boolean, hasLane: boolean): string {
+    const classes = ["graph-cell"];
+    if (isFirst) classes.push("graph-cell--first");
+    if (isLast) classes.push("graph-cell--last");
+    if (!hasLane) classes.push("graph-cell--empty");
+    return classes.join(" ");
+  }
 
   async function loadData() {
     loading = true;
@@ -217,7 +133,6 @@
       console.error("Failed to load data:", error);
     } finally {
       loading = false;
-      schedulePositionsUpdate();
     }
   }
 
