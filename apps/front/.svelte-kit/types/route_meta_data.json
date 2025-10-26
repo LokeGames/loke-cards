@@ -47,5 +47,8 @@
 	],
 	"/settings": [
 		"src/routes/+layout.ts"
+	],
+	"/toc-graph-standalone": [
+		"src/routes/+layout.ts"
 	]
 }
