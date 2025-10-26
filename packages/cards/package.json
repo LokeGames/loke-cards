@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Cards component library (Svelte)",
   "exports": {
-    "./toc-graph": "./src/lib/toc-graph/index.ts"
+    "./toc-graph": "./src/lib/toc-graph/index.ts",
+    "./toc-graph-gitgraph": "./src/lib/toc-graph-gitgraph/index.ts"
   },
   "scripts": {},
   "peerDependencies": {
