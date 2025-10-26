@@ -10,6 +10,7 @@ The primary role of this package is to provide a library of "dumb" or "presentat
 
 - `AppShell` wraps the global header, top navigation, and the active module view. It owns layout only—data and effects stay in the host app.
 - `TopNavBar` renders module entries and shell actions using props (`modules`, `actions`, `activeModuleId`) and emits `select`/`action` events so the host can react.
+- `AppSidebar` is a purely presentational list renderer. Pass `sections` (grouped items with `{ id, label, href?, onClick?, icon?, disabled?, badge? }`) and optionally `activeItemId`. The component never imports feature code; it simply emits `select` when users interact with an item.
 
 Pass icons as Svelte components (from `lucide-svelte` or local wrappers) and keep label strings short so they fit inside the compact top bar.
 
