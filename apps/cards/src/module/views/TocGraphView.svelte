@@ -303,3 +303,47 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .graph-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 72px;
+  }
+
+  .graph-cell .graph-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--lane-color, rgba(148, 163, 184, 0.4));
+  }
+
+  .graph-cell.graph-cell--first .graph-line {
+    top: 50%;
+  }
+
+  .graph-cell.graph-cell--last .graph-line {
+    bottom: 50%;
+  }
+
+  .graph-cell.graph-cell--first.graph-cell--last .graph-line {
+    display: none;
+  }
+
+  .graph-cell .graph-node {
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    border: 2px solid var(--lane-color, #60a5fa);
+    background-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.5);
+  }
+
+  .graph-cell.graph-cell--empty .graph-line,
+  .graph-cell.graph-cell--empty .graph-node {
+    display: none;
+  }
+</style>
