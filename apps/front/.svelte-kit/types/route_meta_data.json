@@ -33,6 +33,9 @@
 	"/cards/states/new": [
 		"src/routes/+layout.ts"
 	],
+	"/cards/toc-graph-test": [
+		"src/routes/+layout.ts"
+	],
 	"/cards/toc-graph": [
 		"src/routes/+layout.ts"
 	],

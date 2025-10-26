@@ -17,5 +17,6 @@ This package should only contain:
 
 ## Boundaries (What NOT to include)
 
--   **No Svelte Components**: This package **must not** contain any `.svelte` files or UI-rendering code.
+-   **No Svelte Components or UI**: This package **must not** contain any `.svelte` files or UI-rendering code.
+-   **No Styling or CSS**: This package must not contain any CSS, styling information, or Tailwind classes. Its purpose is to be purely for logic and data.
 -   **No App-Specific Dependencies**: It should not depend on other `apps/*` packages like `@loke/front` or `@loke/cards`. It is a foundational package that other packages depend on.

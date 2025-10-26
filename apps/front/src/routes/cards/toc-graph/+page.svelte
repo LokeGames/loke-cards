@@ -6,14 +6,17 @@
   import { mapDbToGraph } from '@loke/cards/toc-graph';
   import type { DbScene, DbLink, TOCGraph } from '@loke/cards/toc-graph';
 
-  let graph: TOCGraph | null = null;
-  let loading = true;
-  let error: string | null = null;
+  let graph = $state<TOCGraph | null>(null);
+  let loading = $state(true);
+  let error = $state<string | null>(null);
 
   onMount(async () => {
     try {
+      console.log('[TOC Graph] Starting to load scenes...');
+
       // Load scenes from database
       const scenes = await db.getAllScenes();
+      console.log(`[TOC Graph] Loaded ${scenes.length} scenes from database`);
 
       // Convert Scene[] to DbScene[]
       const dbScenes: DbScene[] = scenes.map((scene, index) => ({
@@ -21,6 +24,7 @@
         title: scene.title || scene.sceneId || `Scene ${index + 1}`,
         order: index, // Use array index as order since scenes don't have explicit order
       }));
+      console.log(`[TOC Graph] Converted to ${dbScenes.length} DbScenes`);
 
       // Extract links from Scene.choices to DbLink[]
       const dbLinks: DbLink[] = [];
@@ -37,12 +41,16 @@
           });
         }
       });
+      console.log(`[TOC Graph] Extracted ${dbLinks.length} links from choices`);
 
       // Convert to graph format
       graph = mapDbToGraph(dbScenes, dbLinks);
+      console.log('[TOC Graph] Graph created:', graph);
+      console.log('[TOC Graph] Graph has', graph.nodes.length, 'nodes and', graph.edges.length, 'edges');
       loading = false;
+      console.log('[TOC Graph] Loading set to false, should render now');
     } catch (err) {
-      console.error('Failed to load TOC graph data:', err);
+      console.error('[TOC Graph] Failed to load TOC graph data:', err);
       error = err instanceof Error ? err.message : 'Unknown error';
       loading = false;
     }
@@ -72,7 +80,14 @@
         No scenes found. Create some scenes first to see the graph visualization.
       </div>
     {:else}
-      <TocWithGraph {graph} />
+      <div>
+        <p class="text-sm text-gray-500 mb-4">Debug: Rendering graph with {graph.nodes.length} nodes and {graph.edges.length} edges</p>
+        <TocWithGraph {graph} />
+      </div>
     {/if}
+  {:else}
+    <div class="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded">
+      <strong>Debug:</strong> Unexpected state - loading={loading}, error={error}, graph={graph}
+    </div>
   {/if}
 </div>

@@ -17,7 +17,8 @@ export const nodes = [
 	() => import('./nodes/13'),
 	() => import('./nodes/14'),
 	() => import('./nodes/15'),
-	() => import('./nodes/16')
+	() => import('./nodes/16'),
+	() => import('./nodes/17')
 ];
 
 export const server_loads = [];
@@ -34,10 +35,11 @@ export const dictionary = {
 		"/cards/states": [10],
 		"/cards/states/edit/[id]": [11],
 		"/cards/states/new": [12],
+		"/cards/toc-graph-test": [15],
 		"/cards/toc-graph": [14],
 		"/cards/toc": [13],
-		"/projects": [15],
-		"/settings": [16]
+		"/projects": [16],
+		"/settings": [17]
 	};
 
 export const hooks = {

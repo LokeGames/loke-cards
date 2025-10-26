@@ -27,7 +27,7 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/cards" | "/cards/chapters" | "/cards/chapters/edit" | "/cards/chapters/edit/[id]" | "/cards/chapters/new" | "/cards/scenes" | "/cards/scenes/edit" | "/cards/scenes/edit/[id]" | "/cards/scenes/new" | "/cards/states" | "/cards/states/edit" | "/cards/states/edit/[id]" | "/cards/states/new" | "/cards/toc-graph" | "/cards/toc" | "/projects" | "/settings";
+		RouteId(): "/" | "/cards" | "/cards/chapters" | "/cards/chapters/edit" | "/cards/chapters/edit/[id]" | "/cards/chapters/new" | "/cards/scenes" | "/cards/scenes/edit" | "/cards/scenes/edit/[id]" | "/cards/scenes/new" | "/cards/states" | "/cards/states/edit" | "/cards/states/edit/[id]" | "/cards/states/new" | "/cards/toc-graph-test" | "/cards/toc-graph" | "/cards/toc" | "/projects" | "/settings";
 		RouteParams(): {
 			"/cards/chapters/edit/[id]": { id: string };
 			"/cards/scenes/edit/[id]": { id: string };
@@ -48,12 +48,13 @@ declare module "$app/types" {
 			"/cards/states/edit": { id?: string };
 			"/cards/states/edit/[id]": { id: string };
 			"/cards/states/new": Record<string, never>;
+			"/cards/toc-graph-test": Record<string, never>;
 			"/cards/toc-graph": Record<string, never>;
 			"/cards/toc": Record<string, never>;
 			"/projects": Record<string, never>;
 			"/settings": Record<string, never>
 		};
-		Pathname(): "/" | "/cards" | "/cards/" | "/cards/chapters" | "/cards/chapters/" | "/cards/chapters/edit" | "/cards/chapters/edit/" | `/cards/chapters/edit/${string}` & {} | `/cards/chapters/edit/${string}/` & {} | "/cards/chapters/new" | "/cards/chapters/new/" | "/cards/scenes" | "/cards/scenes/" | "/cards/scenes/edit" | "/cards/scenes/edit/" | `/cards/scenes/edit/${string}` & {} | `/cards/scenes/edit/${string}/` & {} | "/cards/scenes/new" | "/cards/scenes/new/" | "/cards/states" | "/cards/states/" | "/cards/states/edit" | "/cards/states/edit/" | `/cards/states/edit/${string}` & {} | `/cards/states/edit/${string}/` & {} | "/cards/states/new" | "/cards/states/new/" | "/cards/toc-graph" | "/cards/toc-graph/" | "/cards/toc" | "/cards/toc/" | "/projects" | "/projects/" | "/settings" | "/settings/";
+		Pathname(): "/" | "/cards" | "/cards/" | "/cards/chapters" | "/cards/chapters/" | "/cards/chapters/edit" | "/cards/chapters/edit/" | `/cards/chapters/edit/${string}` & {} | `/cards/chapters/edit/${string}/` & {} | "/cards/chapters/new" | "/cards/chapters/new/" | "/cards/scenes" | "/cards/scenes/" | "/cards/scenes/edit" | "/cards/scenes/edit/" | `/cards/scenes/edit/${string}` & {} | `/cards/scenes/edit/${string}/` & {} | "/cards/scenes/new" | "/cards/scenes/new/" | "/cards/states" | "/cards/states/" | "/cards/states/edit" | "/cards/states/edit/" | `/cards/states/edit/${string}` & {} | `/cards/states/edit/${string}/` & {} | "/cards/states/new" | "/cards/states/new/" | "/cards/toc-graph-test" | "/cards/toc-graph-test/" | "/cards/toc-graph" | "/cards/toc-graph/" | "/cards/toc" | "/cards/toc/" | "/projects" | "/projects/" | "/settings" | "/settings/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/manifest.json" | string & {};
 	}

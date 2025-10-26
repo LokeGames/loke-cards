@@ -7,23 +7,13 @@
   let { disabled = false }: { disabled?: boolean } = $props();
 
   let cardsMenuItems = $state<Array<{ label: string; href: string; icon?: any }>>([]);
-  let graphMenuItems = $state<Array<{ label: string; href: string; icon?: any }>>([]);
   let loading = $state(true);
-  
+
   onMount(async () => {
     try {
       // Load cards menu
       const cardsModule = await import('@loke/apps-cards');
       cardsMenuItems = cardsModule.cardsMenu || [];
-
-      // Load graph menu (if available)
-      try {
-        const graphModule = await import('@loke/apps-graph');
-        graphMenuItems = graphModule.graphMenu || [];
-      } catch (e) {
-        // Graph module not available
-        console.log('Graph menu not available');
-      }
     } catch (error) {
       console.error('Failed to load menus:', error);
     } finally {
@@ -61,28 +51,11 @@
           {#each cardsMenuItems as item}
             <a href={item.href} class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
               {#if item.icon}
-                <svelte:component this={item.icon} class="w-4 h-4" />
-              {:else}
-                <span class="w-4 h-4"></span>
-              {/if}
-              {item.label}
-            </a>
-          {/each}
-        </div>
-      </div>
-    {/if}
-    
-    <!-- Graph Section -->
-    {#if graphMenuItems.length > 0}
-      <div>
-        <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-          Graph
-        </h3>
-        <div class="space-y-1">
-          {#each graphMenuItems as item}
-            <a href={item.href} class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
-              {#if item.icon}
-                <svelte:component this={item.icon} class="w-4 h-4" />
+                {#if typeof item.icon === 'string'}
+                  <span class="w-4 h-4 flex items-center justify-center text-sm">{item.icon}</span>
+                {:else}
+                  <svelte:component this={item.icon} class="w-4 h-4" />
+                {/if}
               {:else}
                 <span class="w-4 h-4"></span>
               {/if}
