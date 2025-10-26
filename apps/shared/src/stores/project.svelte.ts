@@ -9,12 +9,14 @@ import type { Project } from '../types';
 import { apiClient } from '../api-client';
 
 // === State (Svelte 5 runes) ===
-// Export $state directly so reactivity works properly in components
+// Use a state object so we can export it and maintain reactivity
 
-export let currentProject = $state<Project | null>(null);
-export let projects = $state<Project[]>([]);
-export let isLoadingProjects = $state<boolean>(false);
-export let error = $state<string | null>(null);
+export const projectState = $state({
+  currentProject: null as Project | null,
+  projects: [] as Project[],
+  isLoadingProjects: false,
+  error: null as string | null,
+});
 
 // === Actions ===
 
@@ -22,20 +24,20 @@ export let error = $state<string | null>(null);
  * Load all projects from backend (does NOT auto-select a project)
  */
 export async function loadProjects(): Promise<void> {
-  isLoadingProjects = true;
-  error = null;
+  projectState.isLoadingProjects = true;
+  projectState.error = null;
 
   try {
     const list = await apiClient.listProjects();
-    projects = list;
+    projectState.projects = list;
 
     // Do NOT auto-load current project - user must explicitly select one
     // This keeps the UI in a "no project selected" state until user chooses
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to load projects';
+    projectState.error = err instanceof Error ? err.message : 'Failed to load projects';
     console.error('Failed to load projects:', err);
   } finally {
-    isLoadingProjects = false;
+    projectState.isLoadingProjects = false;
   }
 }
 
@@ -113,23 +115,7 @@ export async function refreshCurrentProject(): Promise<void> {
   }
 }
 
-// === Getters (expose reactive state) ===
-
-export function getCurrentProject() {
-  return currentProject;
-}
-
-export function getProjects() {
-  return projects;
-}
-
-export function getIsLoadingProjects() {
-  return isLoadingProjects;
-}
-
-export function getError() {
-  return error;
-}
+// === Helper functions ===
 
 export function clearError() {
   error = null;
