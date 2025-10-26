@@ -125,7 +125,7 @@
               <button
                 type="button"
                 class="rounded bg-red-600 px-3 py-1 text-sm text-white transition-colors hover:bg-red-700"
-                on:click={() => {
+                onclick={() => {
                   if (confirm(`Delete state variable "${state.name}"?\n\nWarning: This may break scenes that reference this state.`)) {
                     db.deleteState(state.id).then(() => {
                       states = states.filter((s) => s.id !== state.id);
