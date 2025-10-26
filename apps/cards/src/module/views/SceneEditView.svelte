@@ -22,7 +22,7 @@
       type="button"
       class="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
       title="Close and return to previous page"
-      on:click={handleClose}
+      onclick={handleClose}
     >
       <X size={24} class="text-gray-600 dark:text-gray-400" />
     </button>
