@@ -138,8 +138,9 @@ Notes:
 * [x] Add dependency `@gitgraph/js`.
 * [x] Implement `mapTocToGitgraph.ts` (simple allocator).
 * [x] Implement `TocGraphGitgraph.svelte` and mount in TOC route.
-* [ ] Provide color palette + small theme tweaks.
+* [x] Provide color palette + small theme tweaks.
 * [ ] Verify alignment with real data.
+* [ ] Render choice edges (branch/merge lines) with gitgraph.
 * [ ] Add README section (2–3 paragraphs).
 
 ---

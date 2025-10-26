@@ -46,6 +46,23 @@ export function mapTocToGitgraph(
   const branchesByLane = new Map<number, Branch>();
 
   const sortedNodes = [...nodes].sort((a, b) => a.order - b.order);
+  const incoming = new Map<string, GraphSceneLink[]>();
+  const outgoing = new Map<string, GraphSceneLink[]>();
+  sortedNodes.forEach((node) => {
+    incoming.set(node.id, []);
+    outgoing.set(node.id, []);
+  });
+  links.forEach((link) => {
+    if (!incoming.has(link.to)) {
+      incoming.set(link.to, []);
+    }
+    if (!outgoing.has(link.from)) {
+      outgoing.set(link.from, []);
+    }
+    incoming.get(link.to)?.push(link);
+    outgoing.get(link.from)?.push(link);
+  });
+
   let nextLane = 0;
 
   function ensureBranch(lane: number): LaneContext {
@@ -76,16 +93,34 @@ export function mapTocToGitgraph(
   }
 
   sortedNodes.forEach((node) => {
+    const incomingEdges = incoming.get(node.id) ?? [];
+    const parentLanes = incomingEdges
+      .map((edge) => laneByScene.get(edge.from)?.lane)
+      .filter((lane): lane is number => typeof lane === "number")
+      .sort((a, b) => a - b);
+
     const lane =
-      typeof node.lane === "number" ? node.lane : laneByScene.get(node.id)?.lane ?? nextLane++;
+      typeof node.lane === "number"
+        ? node.lane
+        : parentLanes.length > 0
+          ? parentLanes[0]!
+          : laneByScene.get(node.id)?.lane ?? nextLane++;
+
     const { branch } = ensureBranch(lane);
 
     branch.commit({
       subject: node.title,
       hash: node.id,
+      style: {
+        message: {
+          display: false,
+        },
+      },
     });
 
-    laneByScene.set(node.id, { lane, branch });
+    const ctx = { lane, branch };
+    laneByScene.set(node.id, ctx);
+    node.lane = lane;
   });
 
   // Links will be rendered in a later iteration; keep the data pass-through so callers
