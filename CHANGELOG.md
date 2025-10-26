@@ -38,6 +38,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Menu Navigation**
   - Added "TOC Graph" menu item to cards navigation
+
+### Changed
+
+- **Navigation Shell Refactor**
+  - Introduced `@loke/front-api` with `FrontModuleDefinition`, registry helpers, and lazy view resolution
+  - Added `AppShell` and `TopNavBar` primitives in `@loke/ui` so the host shell can render chrome + module slots without sidebar coupling
+  - Replaced `apps/front` sidebar layout with the new shell: top-level actions (theme toggle, settings) render via module-aware navigation
+  - `@loke/apps-cards` now exports `cardsFrontModule` and a module-owned workspace (`src/module/`) that renders all cards routes internally
+  - Legacy cards route files in `apps/front` now delegate to the shared module views, eliminating duplicate screens
   - Integrated with existing sidebar menu structure
 
 - **Package Structure**
