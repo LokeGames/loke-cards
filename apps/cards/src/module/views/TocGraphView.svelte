@@ -26,15 +26,6 @@
     }, {});
   });
 
-  let baseGraphNodes = $state<GraphSceneNode[]>([]);
-  $effect(() => {
-    baseGraphNodes = scenes.map<GraphSceneNode>((scene, index) => ({
-      id: scene.id ?? scene.sceneId ?? `scene-${index}`,
-      title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
-      order: index,
-    }));
-  });
-
   let sceneIdLookup = $state<Map<string, string>>(new Map());
   $effect(() => {
     const byId = new Map<string, string>();
