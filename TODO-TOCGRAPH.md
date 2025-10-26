@@ -42,8 +42,8 @@ packages/cards/src/lib/toc-graph-gitgraph/
 
 * **Grid:** `grid-cols-[gutter_96px,content_1fr]` (Tailwind arbitrary sizes ok).
 * **Indent TOC:** add `pl-4` inside content column so cards shift slightly right.
-* **Row height:** match TOC card rows (e.g., `min-h-[56px]`). Use the same vertical rhythm to align nodes.
-* **Gutter:** `position: relative;` with a fixed height equal to the list height; mount gitgraph **inside**.
+* **Row anchors:** expose a hidden anchor `<div>` per TOC row (cf. `doc/gitgraph.html`). Measure anchors with `ResizeObserver` and feed their midpoints into the graph overlay so nodes stay glued even when card height varies.
+* **Gutter:** `position: relative;` container scrolls with the TOC list; stretch the SVG overlay to the measured height (no sticky positioning).
 
 Acceptance: Node centers are vertically aligned with the visual mid of each scene card.
 
@@ -76,31 +76,14 @@ Notes:
 
 ### 4.1 `mapTocToGitgraph.ts`
 
-* Input: `scenes: Scene[]`, `links: Link[]`.
-* Output: `{ commits: CommitSpec[], edges: EdgeSpec[] }` or directly an **apply(graph)** function that drives gitgraph:
+* Export `layoutSceneGraph` to assign deterministic lanes (reused by both gitgraph adapter and custom SVG overlay).
+* Existing `mapTocToGitgraph` keeps gitgraph compatibility, but lane data is shared.
 
-  * Maintain `laneBySceneId: Map<string, number>`.
-  * Maintain `branches: Branch[]` (gitgraph handles) indexed by lane.
-  * Iterate scenes in visual order:
+### 4.2 `SceneFlowGraph.svelte`
 
-    * If lane missing → open new branch `branch({ name: "lane-N" })`.
-    * `branch.commit({ subject: scene.title })` and store commit handle by scene id.
-  * Iterate links:
-
-    * For `A→B`: ensure B has a lane (allocate if needed). From A’s lane, call `branches[A.lane].branch({ name })` → immediate `commit()` → `merge(branches[B.lane])`.
-* Keep it **deterministic**; no reflow.
-
-### 4.2 `TocGraphGitgraph.svelte`
-
-* Props: `scenes`, `links`, `rowHeight = 56`, `gutterWidth = 96`.
-* Measure total height = `scenes.length * rowHeight`.
-* Mount gitgraph:
-
-  * `import { createGitgraph } from "@gitgraph/js";`
-  * Render target: a `<div class="absolute inset-0" />`.
-  * Theme: small nodes, stroke width ~2.
-  * Colors: palette array; gitgraph supports `template.colors`.
-* After mount, call `apply(graph)` from mapper.
+* SVG overlay that receives lane-assigned nodes + real row midpoints.
+* Draws lane rails, S-curves, and node dots based on measured `y` coordinates.
+* Keeps styling inline with Cards UI while matching table rows pixel-for-pixel.
 
 ---
 
