@@ -32,7 +32,7 @@ This keeps the shell lightweight, reduces cross-app wiring, and lets each module
     -   Determine the active module from the current route segment (e.g. `/cards/...` -> module `cards`).
     -   Lazy-load the module’s view via `loadView()` and render it inside `AppShell`.
     -   Keep responsibility for global header, project picker, toasts, and theme state.
--   [ ] Simplify/retire the old `AppSidebar` usage once modules own their internal nav.
+-   [x] Simplify/retire the old `AppSidebar` usage once modules own their internal nav.
 
 ### Phase 3: Update Feature Modules
 
@@ -50,6 +50,7 @@ This keeps the shell lightweight, reduces cross-app wiring, and lets each module
 -   [ ] **Update `apps/front/README.md`** to clarify that it is the host shell, not a menu composer.
 -   [ ] **Update `apps/cards/README.md`** (and other feature READMEs) to describe exporting `FrontModuleDefinition` and owning internal navigation.
 -   [ ] **Update `ISSUES.md`** to reference this refactor and track completion.
+-   [ ] **Document migration notes** so legacy routes know how to hook into the new module shell.
 
 ### Phase 5: Validation & Feedback
 
@@ -58,12 +59,12 @@ This keeps the shell lightweight, reduces cross-app wiring, and lets each module
 -   [ ] **Iterative Reviews**: Schedule checkpoints with product/UX (and you) after (a) shell nav is in place and (b) Cards module view is integrated, to confirm UX direction.
 -   [ ] **Telemetry/Logging (optional)**: Add lightweight logging or feature flags so we can dogfood the new nav before fully flipping over (if needed).
 
-### Phase 6: Documentation & Housekeeping
+### Phase 6: Rollout & Adoption
 
--   [ ] **Update `packages/ui/README.md`** with the new shell/top-nav components and usage examples.
--   [ ] **Update `apps/front/README.md`** with the new shell/top-nav components and usage examples.
--   [ ] **Update `apps/cards/README.md`** with the new shell/top-nav components and usage examples.
--   [ ] **Update CHANGELOG.md** with the new shell/top-nav components and usage examples.
+-   [ ] **Flagged rollout**: Ship behind an environment flag so the new shell can be flipped per workspace.
+-   [ ] **Support playbook**: Share a short guide with customer support outlining the new navigation patterns.
+-   [ ] **Measure adoption**: Capture basic telemetry (module switches, fallback hits) to validate UX assumptions.
+-   [ ] **Update CHANGELOG.md** once the new shell reaches general availability.
 ## 3. Architectural Outcome
 
 -   `apps/front` = host shell: owns theme, layout chrome, top-level actions, and module activation.

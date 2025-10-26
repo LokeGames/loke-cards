@@ -25,6 +25,7 @@
     "vitest": "^1.6.1"
   },
   "dependencies": {
+    "@loke/front-api": "workspace:*",
     "@loke/cards": "workspace:*",
     "@loke/shared": "workspace:*",
     "@loke/ui": "workspace:*"
