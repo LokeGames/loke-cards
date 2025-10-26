@@ -31,7 +31,7 @@
 
   const currentLoader = $derived(() => selectLoader(moduleSegments));
 
-  let viewComponent = $state<ComponentType | null>(null);
+  let ActiveViewComponent = $state<ComponentType | null>(null);
   let viewLoading = $state(false);
   let viewError = $state<string | null>(null);
   let requestToken = 0;
@@ -42,7 +42,7 @@
     const loader = currentLoader;
 
     if (!loader) {
-      viewComponent = null;
+      ActiveViewComponent = null;
       viewLoading = false;
       viewError = null;
       return;
@@ -60,13 +60,13 @@
         if (!component) {
           throw new Error("Module view did not export a Svelte component");
         }
-        viewComponent = component;
+        ActiveViewComponent = component;
       })
       .catch((error) => {
         if (token !== requestToken) {
           return;
         }
-        viewComponent = null;
+        ActiveViewComponent = null;
         viewError = error instanceof Error ? error.message : String(error);
         console.error("Cards module view failed to load", error);
       })
@@ -162,8 +162,8 @@
           Return to Cards overview
         </a>
       </div>
-    {:else if viewComponent}
-      <svelte:component this={viewComponent} />
+    {:else if ActiveViewComponent}
+      <ActiveViewComponent />
     {:else}
       <div class="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Unknown Cards destination</h2>

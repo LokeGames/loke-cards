@@ -50,7 +50,7 @@
     return frontModules.find((module) => module.id === activeModuleId) ?? null;
   });
 
-  let moduleComponent = $state<ComponentType | null>(null);
+  let ActiveModuleComponent = $state<ComponentType | null>(null);
   let moduleLoading = $state(false);
   let moduleError = $state<string | null>(null);
   let requestToken = 0;
@@ -68,7 +68,7 @@
     const definition = activeModuleDefinition;
 
     if (!hasProject || !definition) {
-      moduleComponent = null;
+      ActiveModuleComponent = null;
       moduleError = null;
       moduleLoading = false;
       return;
@@ -82,13 +82,13 @@
         if (token !== requestToken) {
           return;
         }
-        moduleComponent = component;
+        ActiveModuleComponent = component;
       })
       .catch((error) => {
         if (token !== requestToken) {
           return;
         }
-        moduleComponent = null;
+        ActiveModuleComponent = null;
         moduleError = error instanceof Error ? error.message : String(error);
         console.error(`Failed to load front module "${definition.id}"`, error);
       })
@@ -125,8 +125,8 @@
         <p class="font-medium">Something went wrong while loading this workspace.</p>
         <pre class="max-w-full overflow-auto rounded bg-red-100 px-3 py-2 text-xs text-red-700 dark:bg-red-900/40 dark:text-red-200">{moduleError}</pre>
       </div>
-    {:else if moduleComponent}
-      <svelte:component this={moduleComponent} />
+    {:else if ActiveModuleComponent}
+      <ActiveModuleComponent />
     {:else}
       <div class="flex h-full items-center justify-center p-6 text-sm text-gray-500 dark:text-gray-400">
         <p>Select a module to begin.</p>
