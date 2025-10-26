@@ -142,7 +142,11 @@
         return orderA - orderB;
       });
       rowPositions = items;
-      graphHeight = containerRect.height;
+      const contentHeight =
+        items.length > 0
+          ? Math.max(...items.map((item) => item.y)) + GRAPH_CARD_MIN_HEIGHT
+          : 0;
+      graphHeight = Math.max(containerRect.height, contentHeight);
     });
   }
 
