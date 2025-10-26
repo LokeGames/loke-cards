@@ -24,13 +24,61 @@
   }, {});
 
   $: graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
-    id: scene.sceneId,
-    title: scene.title ?? scene.sceneId,
+    id: scene.id ?? scene.sceneId ?? `scene-${index}`,
+    title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
     order: index,
   }));
 
-  // TODO(toc-graph): map real choice/transition data once schema exposes links.
-  $: graphSceneLinks = [] as GraphSceneLink[];
+  const sceneIdLookup = $derived.by(() => {
+    const byId = new Map<string, string>();
+    scenes.forEach((scene, index) => {
+      const canonical = scene.id ?? scene.sceneId ?? `scene-${index}`;
+      byId.set(canonical, canonical);
+      if (scene.sceneId) {
+        byId.set(scene.sceneId, canonical);
+      }
+      if (scene.title) {
+        byId.set(scene.title, canonical);
+      }
+    });
+    return byId;
+  });
+
+  const graphSceneLinks = $derived.by(() => {
+    const edges: GraphSceneLink[] = [];
+    const seen = new Set<string>();
+
+    scenes.forEach((scene, sceneIndex) => {
+      const sourceId = sceneIdLookup.get(scene.id ?? scene.sceneId ?? `scene-${sceneIndex}`);
+      if (!sourceId) {
+        return;
+      }
+
+      scene.choices?.forEach((choice, choiceIndex) => {
+        if (!choice.nextScene) {
+          return;
+        }
+        const targetId = sceneIdLookup.get(choice.nextScene);
+        if (!targetId) {
+          return;
+        }
+
+        const key = `${sourceId}->${targetId}`;
+        if (seen.has(key)) {
+          return;
+        }
+        seen.add(key);
+
+        edges.push({
+          from: sourceId,
+          to: targetId,
+          tag: choice.enabled === false ? "conditional" : "choice",
+        });
+      });
+    });
+
+    return edges;
+  });
 
   const GRAPH_COLUMN_WIDTH = 112;
   const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
