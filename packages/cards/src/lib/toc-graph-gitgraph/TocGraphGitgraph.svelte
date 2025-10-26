@@ -1,12 +1,11 @@
 <script lang="ts">
   import { onDestroy, onMount, afterUpdate } from "svelte";
-  import { Orientation, templateExtend } from "@gitgraph/core";
   import {
     mapTocToGitgraph,
     type GraphSceneLink,
     type GraphSceneNode,
   } from "./mapTocToGitgraph";
-  import type { GitgraphUserApi } from "@gitgraph/core";
+  import type { GitgraphUserApi } from "@gitgraph/js";
 
   const DEFAULT_COLORS = [
     "#60a5fa",
@@ -28,12 +27,13 @@
   let signature = "";
   let templateSignature = "";
   let totalHeight = 0;
-  let createGitgraph: ((container: HTMLElement, options?: any) => GitgraphUserApi<SVGElement>) | null = null;
+  let gitgraphModule: typeof import("@gitgraph/js") | null = null;
 
   $: totalHeight = Math.max(nodes.length, 1) * rowHeight + rowHeight;
 
   function getTemplate() {
-    return templateExtend("metro", {
+    if (!gitgraphModule) return null;
+    return gitgraphModule.templateExtend("metro", {
       colors,
       branch: {
         label: {
@@ -84,14 +84,16 @@
 
   function ensureGitgraph() {
     if (!container) return;
-    if (!createGitgraph) return;
+    if (!gitgraphModule) return;
     const nextTemplateSignature = computeTemplateSignature();
 
     if (!gitgraph || templateSignature !== nextTemplateSignature) {
       container.innerHTML = "";
-      gitgraph = createGitgraph(container, {
-        orientation: Orientation.Vertical,
-        template: getTemplate(),
+      const template = getTemplate();
+      if (!template) return;
+      gitgraph = gitgraphModule.createGitgraph(container, {
+        orientation: gitgraphModule.Orientation.Vertical,
+        template,
         responsive: true,
       });
       templateSignature = nextTemplateSignature;
@@ -112,7 +114,7 @@
   onMount(() => {
     import("@gitgraph/js")
       .then((mod) => {
-        createGitgraph = mod.createGitgraph;
+        gitgraphModule = mod;
         signature = computeSignature();
         renderGraph();
       })
