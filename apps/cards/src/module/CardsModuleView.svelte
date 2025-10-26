@@ -21,7 +21,7 @@
 
   const pathname = $derived($page.url.pathname);
 
-  const moduleSegments = $derived(() => {
+  const moduleSegments = $derived.by(() => {
     const segments = pathname.split("/").filter(Boolean);
     if (segments[0] !== "cards") {
       return [];
@@ -29,7 +29,7 @@
     return segments.slice(1);
   });
 
-  const currentLoader = $derived(() => selectLoader(moduleSegments));
+  const currentLoader = $derived.by(() => selectLoader(moduleSegments));
 
   let ActiveViewComponent = $state<ComponentType | null>(null);
   let viewLoading = $state(false);
