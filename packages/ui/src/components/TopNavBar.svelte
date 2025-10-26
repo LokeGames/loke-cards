@@ -1,6 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher, type ComponentType } from 'svelte';
-  import LayoutDashboard from '../icons/LayoutDashboard.svelte';
 
   export interface TopNavModuleItem {
     id: string;
@@ -67,16 +66,6 @@
 
 <div class="flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-2 text-sm dark:border-gray-800 dark:bg-gray-900">
   <nav class="flex items-center gap-1">
-    <!-- Dashboard Link (far left) -->
-    <a
-      href="/"
-      class="flex items-center gap-2 rounded-md px-3 py-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-      title="Dashboard"
-    >
-      <LayoutDashboard class="h-4 w-4" aria-hidden="true" />
-      <span class="sr-only">Dashboard</span>
-    </a>
-
     {#each modules as module (module.id)}
       {#if module.href}
         <a
