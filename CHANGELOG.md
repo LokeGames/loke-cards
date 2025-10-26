@@ -48,9 +48,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `@loke/apps-cards` now exports `cardsFrontModule` and a module-owned workspace (`src/module/`) that renders all cards routes internally
   - Legacy cards route files in `apps/front` now delegate to the shared module views, eliminating duplicate screens
   - **Dual-topbar navigation system** (highly successful design):
-    - Top level: `AppHeader` with app title "Loke Cards", theme toggle, and project picker
-    - Second level: `TopNavBar` with dashboard icon (far left) + module tabs (Cards, Chapters) + actions (Settings)
-  - Added Dashboard icon to TopNavBar for quick access to ProjectDashboard view
+    - **Top level** (`AppHeader`): App title "Loke Cards" + theme toggle
+    - **Second level** (`TopNavBar`): Two-section layout
+      - Left section: Dashboard icon + module tabs (Cards, etc.)
+      - Right section: Project switcher icon + theme toggle + settings
+  - **Project switching workflow** (solves reactivity issues elegantly):
+    - Project switcher action (folder icon, right side) clears current project and navigates to ProjectDashboard
+    - When user selects a project, automatic navigation to `/cards` provides free browser refresh
+    - This workflow eliminates the need for complex reactivity tracking across components
+    - Simple, predictable UX: switch project → view dashboard → select project → auto-navigate to cards
   - Fixed Svelte 5 reactivity issues:
     - Converted project store to `projectState` object pattern (required for Svelte 5 `$state` exports)
     - Updated all components (`AppHeader`, `ProjectDashboard`, `ProjectPicker`, `+layout.svelte`) to use `projectState`
