@@ -90,7 +90,9 @@
 
   const GRAPH_COLUMN_WIDTH = 112;
   const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
-  const GRAPH_ROW_HEIGHT = 72;
+  const GRAPH_CARD_MIN_HEIGHT = 72;
+  const GRAPH_ROW_GAP = 12;
+  const GRAPH_ROW_HEIGHT = GRAPH_CARD_MIN_HEIGHT + GRAPH_ROW_GAP;
 
   async function loadData() {
     loading = true;
