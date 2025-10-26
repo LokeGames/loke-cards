@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git Graph</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #1e1e1e;
+        color: #cccccc;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 13px;
+        overflow-x: auto;
+      }
+
+      .container {
+        display: flex;
+        min-width: 1200px;
+      }
+
+      .branches {
+        width: 200px;
+        background: #252526;
+        border-right: 1px solid #3c3c3c;
+        flex-shrink: 0;
+      }
+
+      .branch-item {
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        border-bottom: 1px solid #2d2d2d;
+      }
+
+      .branch-item:hover {
+        background: #2a2d2e;
+      }
+
+      .branch-item.active {
+        background: #094771;
+      }
+
+      .branch-icon {
+        width: 16px;
+        height: 16px;
+        opacity: 0.7;
+      }
+
+      .graph-area {
+        flex: 1;
+        display: flex;
+      }
+
+      .graph-canvas {
+        width: 300px;
+        position: relative;
+        background: #1e1e1e;
+        flex-shrink: 0;
+      }
+
+      .commit-messages {
+        flex: 1;
+        background: #252526;
+      }
+
+      .commit-row {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid #2d2d2d;
+        position: relative;
+      }
+
+      .commit-row:hover {
+        background: #2a2d2e;
+      }
+
+      .commit-message {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .commit-time {
+        color: #858585;
+        font-size: 11px;
+        margin-left: 16px;
+      }
+
+      .commit-node {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        z-index: 10;
+      }
+
+      .header {
+        display: flex;
+        background: #2d2d2d;
+        border-bottom: 1px solid #3c3c3c;
+        height: 30px;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 11px;
+        color: #858585;
+        text-transform: uppercase;
+      }
+
+      .header-branches {
+        width: 200px;
+      }
+
+      .header-graph {
+        width: 300px;
+        text-align: center;
+      }
+
+      .header-commits {
+        flex: 1;
+        padding-left: 16px;
+      }
+
+      svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .wip-badge {
+        background: #3c3c3c;
+        color: #cccccc;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin-right: 8px;
+      }
+
+      .changes-badge {
+        background: #1a7f37;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-branches">Branch / Tag</div>
+      <div class="header-graph">Graph</div>
+      <div class="header-commits">Commit Message</div>
+    </div>
+
+    <div class="container">
+      <div class="branches" id="branches"></div>
+      <div class="graph-area">
+        <div class="graph-canvas" id="graph">
+          <svg id="svg"></svg>
+        </div>
+        <div class="commit-messages" id="commits"></div>
+      </div>
+    </div>
+
+    <script>
+      const branches = [
+        { name: "main", active: true, icon: "📌" },
+        { name: "roller/chromiu...", icon: "🔀" },
+        { name: "roller/chromiu...", icon: "🔀" },
+        { name: "roller/node/main", icon: "🔀" },
+        { name: "trop/16-x-y-bp-fi...", icon: "🔀" },
+        { name: "trop/17-x-y-bp-fi...", icon: "🔀" },
+        { name: "trop/15-x-y-bp-fi...", icon: "🔀", highlight: true },
+        { name: "trop/14-x-y-bp-fi...", icon: "🔀" },
+        { name: "child-window-pr...", icon: "🔀" },
+        { name: "17-x-y", active: true, icon: "✓" },
+        { name: "v18.0.0-nightly.202...", icon: "🏷️" },
+        { name: "v13.6.3", icon: "🏷️" },
+        { name: "cherry-pick/13-x...", icon: "🔀" },
+        { name: "cherry-pick/13-x...", icon: "🔀" },
+        { name: "cherry-pick/13-x...", icon: "🔀" },
+        { name: "cherry-pick/13-x...", icon: "🔀" },
+        { name: "cherry-pick/13-x...", icon: "🔀" },
+        { name: "cherry-pick/13-x...", icon: "🔀" },
+      ];
+
+      const commits = [
+        {
+          msg: "Bump v18.0.0-nightly.20211202",
+          time: "3 hours ago",
+          color: "#00d4aa",
+          icon: "🤖",
+          wip: true,
+          changes: "3 + 1",
+        },
+        {
+          msg: "chore: bump chromium in DEPS to 98.0.4742.0",
+          time: null,
+          color: "#b968d9",
+          icon: "🔄",
+        },
+        {
+          msg: "chore: bump chromium in DEPS to 98.0.4742.0",
+          time: null,
+          color: "#b968d9",
+          icon: "🔄",
+        },
+        {
+          msg: "chore: bump node in DEPS to v16.13.1",
+          time: null,
+          color: "#b968d9",
+          icon: "🔄",
+        },
+        {
+          msg: "fix: gtk_native_dialog_run() calls show() internally",
+          time: "12 hours ago",
+          color: "#e06c75",
+          icon: "🔧",
+        },
+        {
+          msg: "fix: gtk_native_dialog_run() calls show() internally",
+          time: null,
+          color: "#e06c75",
+          icon: "🔧",
+        },
+        {
+          msg: "fix: gtk_native_dialog_run() calls show() internally",
+          time: null,
+          color: "#d19a66",
+          icon: "🔧",
+        },
+        {
+          msg: "fix: gtk_native_dialog_run() calls show() internally",
+          time: null,
+          color: "#61afef",
+          icon: "🔧",
+        },
+        {
+          msg: "fix: gtk_native_dialog_run() calls show() internally (#32049)",
+          time: null,
+          color: "#61afef",
+          icon: "🔧",
+        },
+        {
+          msg: 'test: remove "nativeWindowOpen: false" from renderer tests',
+          time: null,
+          color: "#e5c07b",
+          icon: "🧪",
+        },
+        {
+          msg: "fix: avoid double call in OnRefreshComplete on aura platforms (#32070)",
+          time: null,
+          color: "#98c379",
+          icon: "🔧",
+        },
+        {
+          msg: "Bump v18.0.0-nightly.20211201",
+          time: null,
+          color: "#00d4aa",
+          icon: "🤖",
+        },
+        {
+          msg: "chore: bump chromium in DEPS to 98.0.4740.0",
+          time: null,
+          color: "#b968d9",
+          icon: "🔄",
+        },
+        {
+          msg: "chore: bump chromium in DEPS to 98.0.4740.0",
+          time: null,
+          color: "#b968d9",
+          icon: "🔄",
+        },
+        {
+          msg: "fix: window.open not overriding parent's webPreferences",
+          time: null,
+          color: "#e5c07b",
+          icon: "🔧",
+        },
+        {
+          msg: "Bump v13.6.3",
+          time: "yesterday",
+          color: "#d19a66",
+          icon: "🤖",
+        },
+        {
+          msg: "fix: avoid double call in OnRefreshComplete on aura platforms (#32052)",
+          time: null,
+          color: "#61afef",
+          icon: "🔧",
+        },
+        {
+          msg: "build: add CI path-filtering for docs-only changes (#32054)",
+          time: null,
+          color: "#98c379",
+          icon: "🏗️",
+        },
+      ];
+
+      // Render branches
+      const branchesEl = document.getElementById("branches");
+      branches.forEach((branch) => {
+        const div = document.createElement("div");
+        div.className = "branch-item" + (branch.active ? " active" : "");
+        div.innerHTML = `<span class="branch-icon">${branch.icon}</span><span>${branch.name}</span>`;
+        branchesEl.appendChild(div);
+      });
+
+      // Render commits
+      const commitsEl = document.getElementById("commits");
+      commits.forEach((commit, i) => {
+        const div = document.createElement("div");
+        div.className = "commit-row";
+        div.style.height = "40px";
+
+        let html = '<div class="commit-message">';
+        if (commit.wip) html += '<span class="wip-badge">// WIP</span>';
+        html += commit.msg;
+        if (commit.changes)
+          html += `<span class="changes-badge">✏️ ${commit.changes}</span>`;
+        html += "</div>";
+        if (commit.time)
+          html += `<div class="commit-time">${commit.time}</div>`;
+
+        div.innerHTML = html;
+        commitsEl.appendChild(div);
+      });
+
+      // Draw graph
+      const svg = document.getElementById("svg");
+      const graphEl = document.getElementById("graph");
+      svg.setAttribute("height", commits.length * 40);
+
+      // Define columns for different branches
+      const columns = [40, 80, 120, 160, 200, 240];
+
+      // Draw paths
+      const paths = [
+        // Main vertical line (cyan)
+        { from: [0, 40], to: [17, 40], column: 0, color: "#00d4aa" },
+        // Purple branches
+        { from: [1, 80], to: [3, 80], column: 1, color: "#b968d9" },
+        { from: [1, 120], to: [2, 120], column: 2, color: "#b968d9" },
+        // Red/Orange branches
+        { from: [4, 160], to: [6, 160], column: 3, color: "#e06c75" },
+        { from: [6, 200], to: [8, 200], column: 4, color: "#d19a66" },
+        // Merges
+        {
+          from: [6, 200],
+          to: [10, 40],
+          column: 4,
+          color: "#d19a66",
+          curve: true,
+        },
+        {
+          from: [8, 200],
+          to: [10, 40],
+          column: 4,
+          color: "#61afef",
+          curve: true,
+        },
+      ];
+
+      paths.forEach((path) => {
+        const line = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
+        const x = columns[path.column];
+        const y1 = path.from[0] * 40 + 20;
+        const y2 = path.to[0] * 40 + 20;
+
+        if (path.curve) {
+          // Bezier curve for merges
+          const x2 = columns[0];
+          const d = `M ${x} ${y1} C ${x} ${y1 + (y2 - y1) / 2}, ${x2} ${y1 + (y2 - y1) / 2}, ${x2} ${y2}`;
+          line.setAttribute("d", d);
+        } else {
+          // Straight line
+          line.setAttribute("d", `M ${x} ${y1} L ${x} ${y2}`);
+        }
+
+        line.setAttribute("stroke", path.color);
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("fill", "none");
+        svg.appendChild(line);
+      });
+
+      // Draw nodes
+      commits.forEach((commit, i) => {
+        const node = document.createElement("div");
+        node.className = "commit-node";
+        node.style.left = columns[0] - 8 + "px";
+        node.style.top = i * 40 + 12 + "px";
+        node.style.backgroundColor = "#1e1e1e";
+        node.style.borderColor = commit.color;
+        node.textContent = commit.icon;
+        graphEl.appendChild(node);
+      });
+    </script>
+  </body>
+</html>
