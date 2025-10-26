@@ -63,6 +63,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fixed `$derived()` syntax errors - changed to `$derived.by()` in `+layout.svelte` and `CardsModuleView.svelte`
     - Project switching now works correctly with reactive state updates
 
+### Fixed
+
+- **Chapter Save Functionality (2025-10-26)**
+  - Fixed hardcoded `projectId: "default"` in `ChapterCreateView.svelte` - now uses `projectState.currentProject.id`
+  - Fixed API client ignoring `chapter.id` field in `createChapter()` - changed priority order to respect explicit IDs
+  - Fixed Vite cache issue causing stale compilation errors after code updates
+  - Chapters can now be created successfully and appear in scene/TOC selectors
+  - Added validation to ensure a project is selected before allowing chapter creation
+
 - **Package Structure**
   - Created `@loke/cards` package with proper exports
   - Added workspace dependencies to apps/cards and apps/front
