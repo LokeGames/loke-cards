@@ -95,7 +95,6 @@
     "#ef4444",
   ];
 
-  let graphSceneNodes = $state<GraphSceneNode[]>([]);
   let laneByScene = $state<Map<string, number>>(new Map());
   $effect(() => {
     const baseNodes = scenes.map<GraphSceneNode>((scene, index) => ({
@@ -108,7 +107,6 @@
       baseNodes,
       graphSceneLinks,
     );
-    graphSceneNodes = nodes;
     laneByScene = laneMap;
   });
 
