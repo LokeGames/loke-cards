@@ -99,6 +99,7 @@ declare module '$env/static/private' {
 	export const XDG_CONFIG_DIRS: string;
 	export const NVM_CD_FLAGS: string;
 	export const XDG_DATA_DIRS: string;
+	export const npm_config_recursive: string;
 	export const npm_config__jsr_registry: string;
 	export const npm_command: string;
 	export const PNPM_SCRIPT_SRC_DIR: string;
@@ -208,6 +209,7 @@ declare module '$env/dynamic/private' {
 		XDG_CONFIG_DIRS: string;
 		NVM_CD_FLAGS: string;
 		XDG_DATA_DIRS: string;
+		npm_config_recursive: string;
 		npm_config__jsr_registry: string;
 		npm_command: string;
 		PNPM_SCRIPT_SRC_DIR: string;
