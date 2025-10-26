@@ -58,7 +58,7 @@
   }
 </script>
 
-<div class="project-dashboard h-full flex items-center justify-center p-8">
+<div class="project-dashboard mx-auto p-8">
   <div class="max-w-4xl w-full">
     <!-- Welcome Header -->
     <div class="text-center mb-12">

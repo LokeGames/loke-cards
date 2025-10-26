@@ -123,7 +123,7 @@
   </svelte:fragment>
 
   {#if !hasProject}
-    <div class="flex h-full items-center justify-center p-6">
+    <div class="h-full overflow-auto p-6">
       <ProjectDashboard />
     </div>
   {:else if activeModuleDefinition}
