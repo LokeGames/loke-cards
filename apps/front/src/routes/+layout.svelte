@@ -108,7 +108,7 @@
   navHidden={!hasProject}
 >
   <svelte:fragment slot="header">
-    <AppHeader title="Loke Cards" showProjectPicker={true} showThemeToggle={false} />
+    <AppHeader title="Loke Cards" showProjectPicker={false} showThemeToggle={false} />
   </svelte:fragment>
 
   {#if !hasProject}

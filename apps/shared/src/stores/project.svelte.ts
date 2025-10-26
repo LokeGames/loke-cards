@@ -9,11 +9,12 @@ import type { Project } from '../types';
 import { apiClient } from '../api-client';
 
 // === State (Svelte 5 runes) ===
+// Export $state directly so reactivity works properly in components
 
-let currentProject = $state<Project | null>(null);
-let projects = $state<Project[]>([]);
-let isLoadingProjects = $state<boolean>(false);
-let error = $state<string | null>(null);
+export let currentProject = $state<Project | null>(null);
+export let projects = $state<Project[]>([]);
+export let isLoadingProjects = $state<boolean>(false);
+export let error = $state<string | null>(null);
 
 // === Actions ===
 
