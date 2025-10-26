@@ -36,6 +36,9 @@
 	"/cards/toc": [
 		"src/routes/+layout.ts"
 	],
+	"/projects": [
+		"src/routes/+layout.ts"
+	],
 	"/settings": [
 		"src/routes/+layout.ts"
 	]
