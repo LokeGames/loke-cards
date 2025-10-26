@@ -4,10 +4,7 @@
   import type { Project } from '@loke/shared/types';
   import { goto } from '$app/navigation';
   import {
-    currentProject,
-    projects,
-    isLoadingProjects,
-    error,
+    projectState,
     loadProjects,
     switchProject,
     createNewProject,
@@ -31,7 +28,7 @@
 
   // Filtered projects based on search
   let filteredProjects = $derived(
-    projects.filter(p =>
+    projectState.projects.filter(p =>
       p.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
@@ -39,14 +36,14 @@
   // Load projects when dropdown is opened (not automatically on mount)
   // This prevents the "Loading..." state on startup
   async function ensureProjectsLoaded() {
-    if (!hasLoaded && !isLoadingProjects) {
+    if (!hasLoaded && !projectState.isLoadingProjects) {
       await loadProjects();
       hasLoaded = true;
     }
   }
 
   async function handleSwitch(projectId: string) {
-    if (projectId === currentProject?.id) {
+    if (projectId === projectState.currentProject?.id) {
       isOpen = false;
       return;
     }
@@ -131,14 +128,14 @@
            focus:outline-none focus:ring-2 focus:ring-blue-500
            transition-colors duration-150"
     onclick={toggleDropdown}
-    disabled={isLoadingProjects || isProcessing}
+    disabled={projectState.isLoadingProjects || isProcessing}
   >
     <Folder class="w-4 h-4 text-gray-600 dark:text-gray-400" />
     <span class="project-name text-gray-900 dark:text-gray-100">
-      {#if isLoadingProjects}
+      {#if projectState.isLoadingProjects}
         Loading...
-      {:else if currentProject}
-        {currentProject.name}
+      {:else if projectState.currentProject}
+        {projectState.currentProject.name}
       {:else}
         Select Project
       {/if}
@@ -166,7 +163,7 @@
       </div>
 
       <!-- View All Projects Button (if a project is selected) -->
-      {#if currentProject}
+      {#if projectState.currentProject}
         <button
           type="button"
           class="view-all-button w-full px-4 py-3 text-sm font-medium text-left flex items-center gap-2
@@ -188,7 +185,7 @@
 
       <!-- Projects List -->
       <div class="projects-list max-h-80 overflow-y-auto">
-        {#if isLoadingProjects}
+        {#if projectState.isLoadingProjects}
           <div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
             Loading projects...
           </div>
@@ -202,7 +199,7 @@
               type="button"
               class="project-item w-full flex items-center justify-between px-4 py-3
                      hover:bg-gray-100 dark:hover:bg-gray-700
-                     {currentProject?.id === project.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
+                     {projectState.currentProject?.id === project.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
                      border-b border-gray-100 dark:border-gray-700 last:border-b-0
                      transition-colors duration-150"
               onclick={() => handleSwitch(project.id)}
@@ -216,7 +213,7 @@
                   {project.sceneCount} scenes · {project.chapterCount} chapters
                 </span>
               </div>
-              {#if currentProject?.id === project.id}
+              {#if projectState.currentProject?.id === project.id}
                 <span class="text-blue-500 dark:text-blue-400">✓</span>
               {/if}
             </button>
@@ -281,9 +278,9 @@
       {/if}
 
       <!-- Error Message -->
-      {#if error}
+      {#if projectState.error}
         <div class="p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800">
-          {error}
+          {projectState.error}
         </div>
       {/if}
     </div>
