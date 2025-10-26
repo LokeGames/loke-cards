@@ -37,7 +37,7 @@
     },
   ];
 
-  const activeModuleId = $derived<string | null>(() => {
+  const activeModuleId = $derived.by<string | null>(() => {
     const pathname = $page.url.pathname;
     const segments = pathname.split('/').filter(Boolean);
     if (segments.length === 0) {
@@ -46,7 +46,7 @@
     return segments[0];
   });
 
-  const activeModuleDefinition = $derived<FrontModuleDefinition | null>(() => {
+  const activeModuleDefinition = $derived.by<FrontModuleDefinition | null>(() => {
     return frontModules.find((module) => module.id === activeModuleId) ?? null;
   });
 
