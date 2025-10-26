@@ -15,3 +15,4 @@ export * from "./lib/codegen";
 // dataClient removed - use db from @loke/shared/database directly
 export * from "./menu";
 export { cardsFrontModule } from "./front-module";
+export { CardsModuleView } from "./module";
