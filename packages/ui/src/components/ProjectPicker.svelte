@@ -22,10 +22,10 @@
   let hasLoaded = $state(false);
 
   // Reactive getters from store (Svelte 5 runes)
-  let currentProject = $derived(getCurrentProject());
-  let projects = $derived(getProjects());
-  let isLoadingProjects = $derived(getIsLoadingProjects());
-  let error = $derived(getError());
+  let currentProject = $derived.by(() => getCurrentProject());
+  let projects = $derived.by(() => getProjects());
+  let isLoadingProjects = $derived.by(() => getIsLoadingProjects());
+  let error = $derived.by(() => getError());
 
   // Debug effect to track isOpen state
   $effect(() => {

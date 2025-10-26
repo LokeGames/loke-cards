@@ -19,9 +19,9 @@
   let isProcessing = $state(false);
 
   // Reactive getters from store
-  let projects = $derived(getProjects());
-  let isLoadingProjects = $derived(getIsLoadingProjects());
-  let error = $derived(getError());
+  let projects = $derived.by(() => getProjects());
+  let isLoadingProjects = $derived.by(() => getIsLoadingProjects());
+  let error = $derived.by(() => getError());
 
   // Recent projects (last 4, sorted by... we'll need updated_at later)
   let recentProjects = $derived(projects.slice(0, 4));

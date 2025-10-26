@@ -14,8 +14,8 @@
     showThemeToggle?: boolean;
   } = $props();
 
-  const currentProject = $derived(getCurrentProject());
-  const displayTitle = $derived(currentProject ? `${title}: ${currentProject.name}` : title);
+  const currentProject = $derived.by(() => getCurrentProject());
+  const displayTitle = $derived.by(() => currentProject ? `${title}: ${currentProject.name}` : title);
 
   let theme = $state<ThemePreference>(themePreference.getCurrent());
 
