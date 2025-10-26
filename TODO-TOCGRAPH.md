@@ -122,8 +122,8 @@ Notes:
 * [x] Implement `mapTocToGitgraph.ts` (simple allocator).
 * [x] Implement `TocGraphGitgraph.svelte` and mount in TOC route.
 * [x] Provide color palette + small theme tweaks.
-* [ ] Verify alignment with real data.
-* [ ] Render choice edges (branch/merge lines) with gitgraph.
+* [x] Verify alignment with real data (row anchors + measured overlay).
+* [x] Render choice edges via custom SVG overlay (SceneFlowGraph).
 * [ ] Add README section (2–3 paragraphs).
 
 ---
@@ -131,4 +131,5 @@ Notes:
 ## 9) Notes / Future
 
 * If lanes overlap too much, consider **max lanes per chapter** and fold extra as dotted.
-* If we later need curved merges or pan/zoom, we can swap to a custom SVG, but keep the same mapper API.
+* SceneFlowGraph overlay now mirrors the approach in `doc/gitgraph.html`; gitgraph adapter is retained for standalone/legacy routes.
+* If we later need curved merges or pan/zoom, we can extend the custom SVG while keeping the same layout API.
