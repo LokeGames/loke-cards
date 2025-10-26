@@ -101,7 +101,7 @@
               <button
                 type="button"
                 class="rounded bg-red-600 px-3 py-1 text-sm text-white transition-colors hover:bg-red-700"
-                on:click={() => {
+                onclick={() => {
                   if (confirm(`Delete scene "${scene.title || scene.sceneId}"?`)) {
                     db.deleteScene(scene.id).then(() => {
                       scenes = scenes.filter((s) => s.id !== scene.id);

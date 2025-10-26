@@ -92,7 +92,7 @@
               <button
                 type="button"
                 class="rounded bg-red-600 px-3 py-1 text-sm text-white transition-colors hover:bg-red-700"
-                on:click={() => {
+                onclick={() => {
                   if (confirm(`Delete chapter "${chapter.name || chapter.title || chapter.id}"?`)) {
                     db.deleteChapter(chapter.id).then(() => {
                       chapters = chapters.filter((c) => c.id !== chapter.id);
