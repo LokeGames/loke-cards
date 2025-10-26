@@ -90,13 +90,14 @@
       <p class="mt-2 text-gray-600 dark:text-gray-400">Start by creating chapters and scenes</p>
     </div>
   {:else}
-    <div class="grid grid-cols-[112px_minmax(0,1fr)] gap-6">
+    <div class="grid gap-6" style={`grid-template-columns:${GRAPH_COLUMN_WIDTH}px minmax(0,1fr);`}>
       <div class="relative">
         <div class="sticky top-6 h-full">
-          <!-- TODO(toc-graph): Mount TocGraphGitgraph here -->
-          <div class="rounded-lg border border-dashed border-transparent p-4 text-xs text-gray-400 dark:text-gray-600">
-            {graphSceneNodes.length} scenes • {graphSceneLinks.length} links
-          </div>
+          <TocGraphGitgraph
+            nodes={graphSceneNodes}
+            links={graphSceneLinks}
+            rowHeight={GRAPH_ROW_HEIGHT}
+          />
         </div>
       </div>
 
@@ -130,10 +131,11 @@
               {#if scenesByChapter[chapter.id]?.length > 0}
                 <div class="space-y-3">
                   {#each scenesByChapter[chapter.id] as scene, idx}
-                    <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-3">
-                      <div class="relative flex items-center justify-center">
-                        <div class="h-10 w-10 rounded-full border border-dashed border-gray-300 dark:border-gray-700"></div>
-                      </div>
+                    <div
+                      class="grid gap-3"
+                      style={`grid-template-columns:${GRAPH_COLUMN_WIDTH - 24}px minmax(0,1fr);`}
+                    >
+                      <div aria-hidden="true"></div>
                       <a
                         href={`/cards/scenes/edit/${scene.id}`}
                         class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
