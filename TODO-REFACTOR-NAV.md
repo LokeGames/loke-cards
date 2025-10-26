@@ -22,25 +22,29 @@ This keeps the shell lightweight, reduces cross-app wiring, and lets each module
 
 ## 2. Refactoring Plan
 
-### Phase 1: Shared UI & Front Module API
+### Phase 1: Shared UI & Front Module API ✅ COMPLETED
 
--   [ ] **Create `TopNavBar.svelte`** in `packages/ui`: renders a list of modules + shell actions (e.g. Settings, theme toggle) using props only.
--   [ ] **Create `AppShell.svelte`** in `packages/ui`: hosts header, top nav, and a `<slot>` (or `<svelte:component>`) for the active module view. No module-specific knowledge.
--   [ ] **Introduce a Front Module API** (new `packages/front-api` or similar):
+-   [x] **Create `TopNavBar.svelte`** in `packages/ui`: renders a list of modules + shell actions (e.g. Settings, theme toggle) using props only.
+-   [x] **Create `AppShell.svelte`** in `packages/ui`: hosts header, top nav, and a `<slot>` (or `<svelte:component>`) for the active module view. No module-specific knowledge.
+-   [x] **Introduce a Front Module API** (new `packages/front-api` or similar):
     -   Define `FrontModuleDefinition` type: `{ id, label, icon, loadView, defaultPath?, order? }`.
     -   Provide helpers for feature packages to register definitions while enforcing shell theme usage.
--   [ ] Ensure docs in UI/API packages explain required theme classes/tokens so feature modules stay on-brand.
+-   [x] **Dashboard icon added** to TopNavBar (far left) linking to ProjectDashboard view.
 
-### Phase 2: Refactor `apps/front`
+### Phase 2: Refactor `apps/front` ✅ COMPLETED
 
--   [ ] **Update `apps/front/src/routes/+layout.svelte`**:
+-   [x] **Update `apps/front/src/routes/+layout.svelte`**:
     -   Import the new `AppShell`.
-    -   Load available module definitions (static import list for now; future: discovery/registry).
-    -   Append shell-only actions (Settings, Theme Switcher) to the top bar.
-    -   Determine the active module from the current route segment (e.g. `/cards/...` -> module `cards`).
-    -   Lazy-load the module’s view via `loadView()` and render it inside `AppShell`.
+    -   Load available module definitions (static import from `$lib/front-modules`).
+    -   Append shell-only actions (Settings, Theme Toggle) to the top bar.
+    -   Determine the active module from the current route segment using `$derived.by()`.
+    -   Lazy-load the module's view via `loadView()` and render it inside `AppShell`.
     -   Keep responsibility for global header, project picker, toasts, and theme state.
+    -   **Dual-topbar system**:
+      - Top level: `AppHeader` with app title, theme toggle, project picker (when applicable)
+      - Second level: `TopNavBar` inside `AppShell` with dashboard icon + module tabs + actions
 -   [x] Simplify/retire the old `AppSidebar` usage once modules own their internal nav.
+-   [x] Fixed Svelte 5 reactivity with `projectState` object pattern for project switching.
 
 ### Phase 3: Update Feature Modules
 
