@@ -28,6 +28,7 @@
     "@loke/front-api": "workspace:*",
     "@loke/cards": "workspace:*",
     "@loke/shared": "workspace:*",
-    "@loke/ui": "workspace:*"
+    "@loke/ui": "workspace:*",
+    "lucide-svelte": "^0.546.0"
   }
 }
