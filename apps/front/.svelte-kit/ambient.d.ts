@@ -36,10 +36,10 @@ declare module '$env/static/private' {
 	export const CLUTTER_DISABLE_MIPMAPPED_TEXT: string;
 	export const SHLVL: string;
 	export const HOME: string;
-	export const OLDPWD: string;
 	export const DESKTOP_SESSION: string;
 	export const NVM_BIN: string;
 	export const npm_package_json: string;
+	export const VITE_DEV_PORT: string;
 	export const NVM_INC: string;
 	export const GNOME_SHELL_SESSION_MODE: string;
 	export const GTK_MODULES: string;
@@ -65,8 +65,8 @@ declare module '$env/static/private' {
 	export const npm_config_node_gyp: string;
 	export const PATH: string;
 	export const SESSION_MANAGER: string;
-	export const npm_package_name: string;
 	export const NODE: string;
+	export const npm_package_name: string;
 	export const COREPACK_ENABLE_AUTO_PIN: string;
 	export const XDG_MENU_PREFIX: string;
 	export const GNOME_TERMINAL_SCREEN: string;
@@ -86,8 +86,8 @@ declare module '$env/static/private' {
 	export const SSH_AUTH_SOCK: string;
 	export const SHELL: string;
 	export const npm_package_version: string;
-	export const npm_lifecycle_event: string;
 	export const npm_config_verify_deps_before_run: string;
+	export const npm_lifecycle_event: string;
 	export const NODE_PATH: string;
 	export const QT_ACCESSIBILITY: string;
 	export const GDMSESSION: string;
@@ -100,9 +100,9 @@ declare module '$env/static/private' {
 	export const NVM_CD_FLAGS: string;
 	export const XDG_DATA_DIRS: string;
 	export const npm_config_recursive: string;
+	export const PNPM_SCRIPT_SRC_DIR: string;
 	export const npm_config__jsr_registry: string;
 	export const npm_command: string;
-	export const PNPM_SCRIPT_SRC_DIR: string;
 	export const MEMORY_PRESSURE_WRITE: string;
 	export const VTE_VERSION: string;
 	export const INIT_CWD: string;
@@ -146,10 +146,10 @@ declare module '$env/dynamic/private' {
 		CLUTTER_DISABLE_MIPMAPPED_TEXT: string;
 		SHLVL: string;
 		HOME: string;
-		OLDPWD: string;
 		DESKTOP_SESSION: string;
 		NVM_BIN: string;
 		npm_package_json: string;
+		VITE_DEV_PORT: string;
 		NVM_INC: string;
 		GNOME_SHELL_SESSION_MODE: string;
 		GTK_MODULES: string;
@@ -175,8 +175,8 @@ declare module '$env/dynamic/private' {
 		npm_config_node_gyp: string;
 		PATH: string;
 		SESSION_MANAGER: string;
-		npm_package_name: string;
 		NODE: string;
+		npm_package_name: string;
 		COREPACK_ENABLE_AUTO_PIN: string;
 		XDG_MENU_PREFIX: string;
 		GNOME_TERMINAL_SCREEN: string;
@@ -196,8 +196,8 @@ declare module '$env/dynamic/private' {
 		SSH_AUTH_SOCK: string;
 		SHELL: string;
 		npm_package_version: string;
-		npm_lifecycle_event: string;
 		npm_config_verify_deps_before_run: string;
+		npm_lifecycle_event: string;
 		NODE_PATH: string;
 		QT_ACCESSIBILITY: string;
 		GDMSESSION: string;
@@ -210,9 +210,9 @@ declare module '$env/dynamic/private' {
 		NVM_CD_FLAGS: string;
 		XDG_DATA_DIRS: string;
 		npm_config_recursive: string;
+		PNPM_SCRIPT_SRC_DIR: string;
 		npm_config__jsr_registry: string;
 		npm_command: string;
-		PNPM_SCRIPT_SRC_DIR: string;
 		MEMORY_PRESSURE_WRITE: string;
 		VTE_VERSION: string;
 		INIT_CWD: string;
