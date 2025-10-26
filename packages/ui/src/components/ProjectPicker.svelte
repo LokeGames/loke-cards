@@ -4,13 +4,13 @@
   import type { Project } from '@loke/shared/types';
   import { goto } from '$app/navigation';
   import {
+    currentProject,
+    projects,
+    isLoadingProjects,
+    error,
     loadProjects,
     switchProject,
     createNewProject,
-    getCurrentProject,
-    getProjects,
-    getIsLoadingProjects,
-    getError,
     clearError,
     clearCurrentProject
   } from '@loke/shared/stores/project.svelte';
@@ -22,12 +22,6 @@
   let newProjectName = $state('');
   let isProcessing = $state(false);
   let hasLoaded = $state(false);
-
-  // Reactive getters from store (Svelte 5 runes)
-  let currentProject = $derived.by(() => getCurrentProject());
-  let projects = $derived.by(() => getProjects());
-  let isLoadingProjects = $derived.by(() => getIsLoadingProjects());
-  let error = $derived.by(() => getError());
 
   // Debug effect to track isOpen state
   $effect(() => {

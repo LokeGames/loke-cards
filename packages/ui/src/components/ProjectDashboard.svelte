@@ -4,12 +4,12 @@
   import Folder from '../icons/Folder.svelte';
   import type { Project } from '@loke/shared/types';
   import {
+    projects,
+    isLoadingProjects,
+    error,
     loadProjects,
     switchProject,
     createNewProject,
-    getProjects,
-    getIsLoadingProjects,
-    getError,
     clearError
   } from '@loke/shared/stores/project.svelte';
 
@@ -17,11 +17,6 @@
   let isCreatingProject = $state(false);
   let newProjectName = $state('');
   let isProcessing = $state(false);
-
-  // Reactive getters from store
-  let projects = $derived.by(() => getProjects());
-  let isLoadingProjects = $derived.by(() => getIsLoadingProjects());
-  let error = $derived.by(() => getError());
 
   // Recent projects (last 4, sorted by... we'll need updated_at later)
   let recentProjects = $derived(projects.slice(0, 4));

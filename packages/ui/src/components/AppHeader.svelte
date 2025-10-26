@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import ProjectPicker from './ProjectPicker.svelte';
-  import { getCurrentProject } from '@loke/shared/stores/project.svelte';
+  import { currentProject } from '@loke/shared/stores/project.svelte';
   import { themePreference, type ThemePreference } from '../stores/theme';
 
   let {
@@ -14,8 +14,7 @@
     showThemeToggle?: boolean;
   } = $props();
 
-  const currentProject = $derived.by(() => getCurrentProject());
-  const displayTitle = $derived.by(() => currentProject ? `${title}: ${currentProject.name}` : title);
+  const displayTitle = $derived(currentProject ? `${title}: ${currentProject.name}` : title);
 
   let theme = $state<ThemePreference>(themePreference.getCurrent());
 

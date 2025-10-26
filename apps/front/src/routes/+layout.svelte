@@ -13,7 +13,7 @@
   import { frontModules } from '$lib/front-modules';
   import { resolveModuleView, type FrontModuleDefinition } from '@loke/front-api';
   import { themePreference } from '@loke/ui';
-  import { getCurrentProject, loadCurrentProject } from '@loke/shared/stores/project.svelte';
+  import { currentProject as projectStore, loadCurrentProject } from '@loke/shared/stores/project.svelte';
 
   const moduleNavItems = frontModules.map((module) => ({
     id: module.id,
@@ -55,8 +55,7 @@
   let moduleError = $state<string | null>(null);
   let requestToken = 0;
 
-  const currentProject = $derived.by(() => getCurrentProject());
-  const hasProject = $derived.by(() => currentProject !== null);
+  const hasProject = $derived(projectStore !== null);
 
   onMount(async () => {
     await loadCurrentProject();
