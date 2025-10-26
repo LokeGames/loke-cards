@@ -58,13 +58,13 @@ This keeps the shell lightweight, reduces cross-app wiring, and lets each module
 -   [x] Document the expected folder structure & naming for module views so new modules follow the same contract.
 -   [ ] (Future) Apply the same pattern to additional feature apps (`graph`, etc.).
 
-### Phase 4: Documentation & Housekeeping
+### Phase 4: Documentation & Housekeeping ✅ COMPLETED
 
--   [ ] **Update `packages/ui/README.md`** with the new shell/top-nav components and usage examples.
--   [ ] **Update `apps/front/README.md`** to clarify that it is the host shell, not a menu composer.
--   [ ] **Update `apps/cards/README.md`** (and other feature READMEs) to describe exporting `FrontModuleDefinition` and owning internal navigation.
--   [ ] **Update `ISSUES.md`** to reference this refactor and track completion.
--   [ ] **Document migration notes** so legacy routes know how to hook into the new module shell.
+-   [x] **Update `packages/ui/README.md`** with the new shell/top-nav components and usage examples.
+-   [x] **Update `apps/front/README.md`** to clarify that it is the host shell, not a menu composer.
+-   [x] **Update `apps/cards/README.md`** (and other feature READMEs) to describe exporting `FrontModuleDefinition` and owning internal navigation.
+-   [x] **Update `ISSUES.md`** to reference this refactor and track completion. (ISSUES.md created with refactor tracking)
+-   [x] **Document migration notes** so legacy routes know how to hook into the new module shell. (STABILITY-GUIDE.md covers this)
 
 ### Phase 5: Validation & Feedback
 
