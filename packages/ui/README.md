@@ -8,11 +8,71 @@ The primary role of this package is to provide a library of "dumb" or "presentat
 
 ### Shell Primitives
 
-- `AppShell` wraps the global header, top navigation, and the active module view. It owns layout only—data and effects stay in the host app.
-- `TopNavBar` renders module entries and shell actions using props (`modules`, `actions`, `activeModuleId`) and emits `select`/`action` events so the host can react.
-- `AppSidebar` is a purely presentational list renderer. Pass `sections` (grouped items with `{ id, label, href?, onClick?, icon?, disabled?, badge? }`) and optionally `activeItemId`. The component never imports feature code; it simply emits `select` when users interact with an item.
+The Loke platform uses a **dual-topbar navigation system** with two distinct levels:
 
-Pass icons as Svelte components (from `lucide-svelte` or local wrappers) and keep label strings short so they fit inside the compact top bar.
+#### Level 1: AppHeader
+Global application header providing app-wide context:
+- App title/branding
+- Global theme toggle
+- Optional project picker (when applicable)
+
+#### Level 2: TopNavBar (Module Navigation)
+Secondary navigation bar for modules and actions:
+- **Left section**: Dashboard icon + module tabs
+- **Right section**: Shell actions (project switcher, theme, settings)
+
+#### Components
+
+##### `AppShell`
+Wraps the global header, top navigation, and the active module view. It owns layout only—data and effects stay in the host app.
+
+**Props:**
+- `modules: FrontModuleNavItem[]` - Module navigation items
+- `actions: ShellAction[]` - Shell actions (right side)
+- `activeModuleId: string | null` - Current active module ID
+- `navHidden?: boolean` - Hide navigation (e.g., when no project selected)
+
+**Slots:**
+- `header` - For `AppHeader` component
+- Default slot - For module view content
+
+**Usage Example:**
+```svelte
+<AppShell
+  modules={moduleNavItems}
+  actions={shellActions}
+  activeModuleId={activeModuleId}
+  navHidden={!hasProject}
+>
+  <svelte:fragment slot="header">
+    <AppHeader title="Loke Cards" showThemeToggle={true} />
+  </svelte:fragment>
+
+  {#if hasProject && ActiveModuleComponent}
+    <ActiveModuleComponent />
+  {:else}
+    <ProjectDashboard />
+  {/if}
+</AppShell>
+```
+
+##### `TopNavBar`
+Renders module entries and shell actions using props. Fully presentational—emits events for the host to handle.
+
+**Props:**
+- `modules: FrontModuleNavItem[]` - Module navigation items
+  - `{ id: string, label: string, icon: ComponentType, href: string }`
+- `actions: ShellAction[]` - Shell actions (settings, theme toggle, etc.)
+  - `{ id: string, label: string, icon: ComponentType, href?: string, onClick?: () => void }`
+- `activeModuleId: string | null` - Highlight active module
+
+**Usage:**
+TopNavBar is rendered inside AppShell. Pass icons as Svelte components (from `lucide-svelte` or local wrappers) and keep label strings short so they fit inside the compact top bar.
+
+##### `AppSidebar`
+A purely presentational list renderer for internal module navigation. Pass `sections` (grouped items with `{ id, label, href?, onClick?, icon?, disabled?, badge? }`) and optionally `activeItemId`. The component never imports feature code; it simply emits `select` when users interact with an item.
+
+**Note:** With the dual-topbar system, AppSidebar is used for internal module navigation, not top-level navigation.
 
 ## Guiding Principles
 
