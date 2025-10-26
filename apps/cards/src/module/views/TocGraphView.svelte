@@ -173,18 +173,22 @@
         {/each}
 
         {#if scenesByChapter.uncategorized?.length > 0}
-          <div class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-            <div class="border-b border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
-              <div class="flex items-center gap-2">
-                <AlertCircle size={20} class="text-yellow-600 dark:text-yellow-400" />
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Uncategorized Scenes</h2>
-              </div>
-              <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                These scenes are not assigned to any chapter
-              </p>
+        <div class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+          <div class="border-b border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
+            <div class="flex items-center gap-2">
+              <AlertCircle size={20} class="text-yellow-600 dark:text-yellow-400" />
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Uncategorized Scenes</h2>
             </div>
-            <div class="space-y-2 p-4">
-              {#each scenesByChapter.uncategorized as scene}
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              These scenes are not assigned to any chapter
+            </p>
+          </div>
+          <div class="space-y-3 p-4">
+            {#each scenesByChapter.uncategorized as scene}
+              <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-3">
+                <div class="relative flex items-center justify-center">
+                  <div class="h-10 w-10 rounded-full border border-dashed border-yellow-300/70 dark:border-yellow-800/60"></div>
+                </div>
                 <a
                   href={`/cards/scenes/edit/${scene.id}`}
                   class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -195,10 +199,11 @@
                   </div>
                   <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{scene.sceneId}</p>
                 </a>
-              {/each}
-            </div>
+              </div>
+            {/each}
           </div>
-        {/if}
+        </div>
+      {/if}
       </div>
     </div>
   {/if}
