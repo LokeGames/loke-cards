@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SceneEditorView } from "../../components/SceneEditorView.svelte";
+  import SceneEditorView from "../../components/SceneEditorView.svelte";
 </script>
 
 <div class="mx-auto h-full max-w-4xl overflow-auto p-6">

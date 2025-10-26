@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import { SceneEditorView } from "../../components/SceneEditorView.svelte";
+  import SceneEditorView from "../../components/SceneEditorView.svelte";
   import { X } from "lucide-svelte";
 
   const sceneId = $derived($page.params.id);
