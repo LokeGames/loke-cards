@@ -30,6 +30,10 @@
   let gitgraph: GitgraphUserApi<SVGElement> | null = null;
   let container: HTMLDivElement | null = null;
   let signature = "";
+  let templateSignature = "";
+  let totalHeight = 0;
+
+  $: totalHeight = Math.max(nodes.length, 1) * rowHeight + rowHeight;
 
   function getTemplate() {
     return templateExtend("metro", {
@@ -74,14 +78,25 @@
     return JSON.stringify(key);
   }
 
+  function computeTemplateSignature(): string {
+    return JSON.stringify({
+      rowHeight,
+      colors,
+    });
+  }
+
   function ensureGitgraph() {
     if (!container) return;
-    if (!gitgraph) {
+    const nextTemplateSignature = computeTemplateSignature();
+
+    if (!gitgraph || templateSignature !== nextTemplateSignature) {
+      container.innerHTML = "";
       gitgraph = createGitgraph(container, {
         orientation: Orientation.Vertical,
         template: getTemplate(),
         responsive: true,
       });
+      templateSignature = nextTemplateSignature;
       return;
     }
 
@@ -117,5 +132,9 @@
 </script>
 
 <div class="relative h-full w-full overflow-hidden">
-  <div bind:this={container} class="h-full w-full"></div>
+  <div
+    bind:this={container}
+    class="h-full w-full"
+    style={`height:${totalHeight}px;`}
+  ></div>
 </div>

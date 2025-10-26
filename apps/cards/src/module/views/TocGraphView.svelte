@@ -181,10 +181,11 @@
           </div>
           <div class="space-y-3 p-4">
             {#each scenesByChapter.uncategorized as scene}
-              <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-3">
-                <div class="relative flex items-center justify-center">
-                  <div class="h-10 w-10 rounded-full border border-dashed border-yellow-300/70 dark:border-yellow-800/60"></div>
-                </div>
+              <div
+                class="grid gap-3"
+                style={`grid-template-columns:${GRAPH_COLUMN_WIDTH - 24}px minmax(0,1fr);`}
+              >
+                <div aria-hidden="true"></div>
                 <a
                   href={`/cards/scenes/edit/${scene.id}`}
                   class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
