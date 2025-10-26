@@ -2,6 +2,14 @@
 
 This document captures the new plan for decoupling navigation so that each feature module owns its internal layout while `apps/front` remains the host shell.
 
+## ⭐ Design Feedback (2025-10-26)
+
+**User loves the dual-level topbar design:**
+- Top level (AppHeader): "Loke Cards" title + theme toggle + project picker
+- Second level (TopNavBar): Dashboard icon (far left) + module tabs (Cards, Chapters) + actions (Settings)
+
+This two-tier navigation provides clear visual hierarchy and excellent UX. Keep this pattern!
+
 ## 1. The Goal
 
 We want a navigation model where:
