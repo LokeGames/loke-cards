@@ -1,1 +1,2 @@
 https://github.com/jagenjo/litegraph.js
+brug dette bibliotek til at lave et node system til at vise scener og deres links imellem dem. Det kan bruges til at oprette en grafisk representation af en scenegraf, hvor hver node repræsenterer en scene eller en gruppe af scener, og deres links repræsenterer forbindelser mellem dem. Node systemet kan bruges til at oprette en grafisk representation af en scenegraf, hvor hver node repræsenterer en scene eller en gruppe af scener, og deres links repræsenterer forbindelser mellem dem.
