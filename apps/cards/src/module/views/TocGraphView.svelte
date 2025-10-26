@@ -223,13 +223,23 @@
                   {#each scenesByChapter[chapter.id] as scene, idx}
                     {@const canonicalId = scene.id ?? scene.sceneId ?? `scene-${idx}`}
                     {@const anchorId = sceneIdLookup.get(canonicalId) ?? canonicalId}
-                    <div class="grid gap-3" style={`grid-template-columns:${GRAPH_ROW_COLUMN_WIDTH}px minmax(0,1fr);`}>
-                      <div class="relative">
-                        <div class="pointer-events-none h-full" use:sceneAnchor={anchorId}></div>
+                    {@const isFirst = idx === 0}
+                    {@const isLast = idx === scenesByChapter[chapter.id].length - 1}
+                    {@const hasLane = laneByScene.has(anchorId)}
+                    {@const laneColor = laneColorFor(anchorId)}
+                    <div
+                      class="grid gap-3"
+                      style={`grid-template-columns:${GRAPH_ROW_COLUMN_WIDTH}px minmax(0,1fr);`}
+                    >
+                      <div class={laneClass(isFirst, isLast, hasLane)} style={`--lane-color:${laneColor};`}>
+                        <span class="graph-line" />
+                        {#if hasLane}
+                          <span class="graph-node" />
+                        {/if}
                       </div>
                       <a
                         href={`/cards/scenes/edit/${scene.id}`}
-                        class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 min-h-[72px]"
+                        class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 min-h-[${GRAPH_CARD_MIN_HEIGHT}px]"
                       >
                         <div class="flex items-start justify-between">
                           <div class="flex items-start gap-3">
