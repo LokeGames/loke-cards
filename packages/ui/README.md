@@ -6,6 +6,13 @@ This package contains generic, reusable Svelte components that form the building
 
 The primary role of this package is to provide a library of "dumb" or "presentational" components that are completely agnostic of any application-specific business logic.
 
+### Shell Primitives
+
+- `AppShell` wraps the global header, top navigation, and the active module view. It owns layout only—data and effects stay in the host app.
+- `TopNavBar` renders module entries and shell actions using props (`modules`, `actions`, `activeModuleId`) and emits `select`/`action` events so the host can react.
+
+Pass icons as Svelte components (from `lucide-svelte` or local wrappers) and keep label strings short so they fit inside the compact top bar.
+
 ## Guiding Principles
 
 Components in this package follow a **"Presentational" (or "Dumb") Component** pattern. Their sole responsibility is to render UI based on the data they are given.
@@ -18,3 +25,5 @@ Components in this package follow a **"Presentational" (or "Dumb") Component** p
 ## Theming
 
 Components must be themeable by the host application. They should use the semantic theme classes provided by `apps/front` (e.g., `bg-surface`, `text-primary`) instead of hardcoded Tailwind classes (e.g., `bg-white`). This allows the host application to control the final look and feel.
+
+When building new shell-aware components, prefer the neutral palette used by `AppShell` (`bg-gray-50`/`dark:bg-gray-950`, `text-gray-900`/`dark:text-gray-100`). Module authors should stick to the same tokens to maintain a cohesive top-level experience.

@@ -1,0 +1,16 @@
+{
+  "name": "@loke/front-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Contracts and helpers for feature modules to integrate with the front shell",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  }
+}
