@@ -10,7 +10,10 @@
   import LoadingState from '@loke/ui/components/states/LoadingState.svelte';
   import SettingsIcon from '@loke/ui/icons/Settings.svelte';
   import ThemeToggleIcon from '$lib/components/ThemeToggleIcon.svelte';
+  import FolderIcon from '@loke/ui/icons/Folder.svelte';
   import { frontModules } from '$lib/front-modules';
+  import { goto } from '$app/navigation';
+  import { clearCurrentProject } from '@loke/shared/stores/project.svelte';
   import { resolveModuleView, type FrontModuleDefinition } from '@loke/front-api';
   import { themePreference } from '@loke/ui';
   import { projectState, loadCurrentProject } from '@loke/shared/stores/project.svelte';
@@ -23,6 +26,15 @@
   }));
 
   const shellActions = [
+    {
+      id: 'projects',
+      label: 'Switch project',
+      icon: FolderIcon,
+      onClick: () => {
+        clearCurrentProject();
+        goto('/');
+      },
+    },
     {
       id: 'toggle-theme',
       label: 'Toggle theme',

@@ -1,11 +1,7 @@
 import { sortFrontModules, type FrontModuleDefinition } from "@loke/front-api";
 import { cardsFrontModule } from "@loke/apps-cards";
-import { projectsFrontModule } from "./modules/projects-module";
 
-const registeredModules: FrontModuleDefinition[] = [
-  projectsFrontModule,
-  cardsFrontModule,
-];
+const registeredModules: FrontModuleDefinition[] = [cardsFrontModule];
 
 export const frontModules = sortFrontModules(registeredModules);
 
