@@ -45,11 +45,11 @@
     saving = true;
     try {
       await db.createChapter({
-        chapterId: finalChapterId,
+        id: finalChapterId,
         name: rawName.trim(),
         description: rawDesc.trim(),
         projectId: projectState.currentProject.id,
-      });
+      } as any);
       goto("/cards/chapters");
     } catch (err) {
       error = err instanceof Error ? err.message : "Failed to create chapter";
