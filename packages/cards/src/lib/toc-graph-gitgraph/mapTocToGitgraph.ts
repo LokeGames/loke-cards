@@ -80,16 +80,12 @@ export function mapTocToGitgraph(
       typeof node.lane === "number" ? node.lane : laneByScene.get(node.id)?.lane ?? nextLane++;
     const { branch } = ensureBranch(lane);
 
-    const commit = branch.commit({
+    branch.commit({
       subject: node.title,
       hash: node.id,
     });
 
     laneByScene.set(node.id, { lane, branch });
-
-    // Reserve a lane for the commit reference when future links target it
-    // to avoid opening duplicate branches.
-    void commit;
   });
 
   // Links will be rendered in a later iteration; keep the data pass-through so callers
