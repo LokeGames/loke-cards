@@ -55,8 +55,8 @@
   let moduleError = $state<string | null>(null);
   let requestToken = 0;
 
-  const currentProject = $derived(getCurrentProject());
-  const hasProject = $derived(currentProject !== null);
+  const currentProject = $derived.by(() => getCurrentProject());
+  const hasProject = $derived.by(() => currentProject !== null);
 
   onMount(async () => {
     await loadCurrentProject();
