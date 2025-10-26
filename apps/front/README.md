@@ -6,6 +6,38 @@ This package is the **Main Application Shell** for the Loke platform. It is the 
 
 The primary role of this package is to handle application-level concerns, such as routing, layout, and the composition of pages. It acts as the "host" for feature modules like `@loke/cards`.
 
+## Navigation Architecture
+
+Loke Cards uses a **dual-topbar navigation system** with two distinct levels:
+
+### Level 1: AppHeader (Top Bar)
+Located at the very top of the application, providing global app context:
+- **App Title**: "Loke Cards" branding
+- **Theme Toggle**: Switch between light/dark mode
+- Rendered by `@loke/ui/components/AppHeader.svelte`
+
+### Level 2: TopNavBar (Module Navigation)
+Located below the header, providing module and action navigation:
+- **Left Section**: Navigation
+  - Dashboard icon (home) - quick access to project dashboard
+  - Module tabs (Cards, etc.) - switch between feature modules
+- **Right Section**: Actions
+  - Project switcher (folder icon) - change current project
+  - Theme toggle - quick theme switching
+  - Settings - application settings
+- Rendered by `@loke/ui/components/TopNavBar.svelte` within `AppShell`
+
+### Project Switching Workflow
+The project switcher provides an elegant solution to state management:
+1. User clicks project switcher icon (right side)
+2. Current project is cleared via `clearCurrentProject()`
+3. Navigation to `/` shows `ProjectDashboard`
+4. User selects a new project
+5. Automatic navigation to `/cards` provides natural browser refresh
+6. This workflow eliminates complex cross-component reactivity tracking
+
+This design provides clear visual hierarchy and predictable user experience.
+
 ## Theming & Styling
 
 This package is the **owner of the application's visual theme**.
