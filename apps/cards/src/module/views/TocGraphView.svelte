@@ -40,7 +40,7 @@
 
 <div class="h-full overflow-auto p-6">
   <div class="mb-6 flex items-center justify-between">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Table of Contents</h1>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Table of Contents Map</h1>
     <div class="flex gap-2">
       <a
         href="/cards/chapters/new"
