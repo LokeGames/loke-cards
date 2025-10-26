@@ -47,11 +47,11 @@ export async function loadProjects(): Promise<void> {
 export async function loadCurrentProject(): Promise<void> {
   try {
     const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    projectState.currentProject = current;
   } catch {
     // No current project or error - stay on dashboard
     console.log('No current project, showing dashboard');
-    currentProject = null;
+    projectState.currentProject = null;
   }
 }
 
@@ -59,19 +59,19 @@ export async function loadCurrentProject(): Promise<void> {
  * Switch to a different project
  */
 export async function switchProject(projectId: string): Promise<void> {
-  error = null;
+  projectState.error = null;
 
   try {
     await apiClient.switchProject(projectId);
 
     // Reload current project info
     const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    projectState.currentProject = current;
 
     // Return and let the component handle navigation (SPA style)
     // No page reload - just reactive state update
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to switch project';
+    projectState.error = err instanceof Error ? err.message : 'Failed to switch project';
     console.error('Failed to switch project:', err);
     throw err;
   }
@@ -81,20 +81,20 @@ export async function switchProject(projectId: string): Promise<void> {
  * Create a new project
  */
 export async function createNewProject(name: string): Promise<Project> {
-  error = null;
+  projectState.error = null;
 
   try {
     const project = await apiClient.createProject(name);
 
     // Add to list
-    projects = [...projects, project];
+    projectState.projects = [...projectState.projects, project];
 
     // Switch to new project
     await switchProject(project.id);
 
     return project;
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to create project';
+    projectState.error = err instanceof Error ? err.message : 'Failed to create project';
     console.error('Failed to create project:', err);
     throw err;
   }
@@ -104,13 +104,13 @@ export async function createNewProject(name: string): Promise<Project> {
  * Refresh current project stats
  */
 export async function refreshCurrentProject(): Promise<void> {
-  error = null;
+  projectState.error = null;
 
   try {
     const current = await apiClient.getCurrentProject();
-    currentProject = current;
+    projectState.currentProject = current;
   } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to refresh project';
+    projectState.error = err instanceof Error ? err.message : 'Failed to refresh project';
     console.error('Failed to refresh project:', err);
   }
 }
@@ -118,12 +118,12 @@ export async function refreshCurrentProject(): Promise<void> {
 // === Helper functions ===
 
 export function clearError() {
-  error = null;
+  projectState.error = null;
 }
 
 /**
  * Clear current project (go back to dashboard)
  */
 export function clearCurrentProject() {
-  currentProject = null;
+  projectState.currentProject = null;
 }
