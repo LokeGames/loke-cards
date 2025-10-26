@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, type ComponentType } from 'svelte';
+  import LayoutDashboard from '../icons/LayoutDashboard.svelte';
 
   export interface TopNavModuleItem {
     id: string;
