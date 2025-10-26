@@ -1,186 +1,141 @@
-# TODO: TOC-GRAPH Feature Implementation
+# TOC-Graph (gitgraph.js) — Simplified TODO
 
-**Feature**: GitKraken-style TOC Graph Visualization
-**Branch**: `feature/toc-graph`
-**Spec**: `doc/NEXT/1_TOC.md`
-**Status**: In Progress
+**Goal:** Keep the existing Table of Contents view, indent it slightly, and render a GitKraken‑style lane graph in a narrow left gutter using **gitgraph.js**. Circles (nodes) align with each scene card; colored vertical lanes represent links between scenes. No custom SVG algorithms—only gitgraph.js.
 
 ---
 
-## Phase 1: Core Module Implementation ✅ DONE
+## 0) Scope
 
-### 1.1 Data Model ✅ DONE
-- [x] Create `packages/cards/src/lib/toc-graph/types.ts`
-  - SceneId, SceneNode, SceneEdge, TOCGraph interfaces
-  - **Location**: `packages/cards/src/lib/toc-graph/types.ts`
-
-### 1.2 TocGraph Component ✅ DONE
-- [x] Create `packages/cards/src/lib/toc-graph/TocGraph.svelte`
-  - Lane layout algorithm (inherit/merge/new branch)
-  - Pure SVG rendering with rails + S-curves + dots
-  - Reactive layout on graph changes
-  - Color palette (7 colors, reuse via modulo)
-  - **Location**: `packages/cards/src/lib/toc-graph/TocGraph.svelte`
-
-### 1.3 Integration Component ✅ DONE
-- [x] Create `packages/cards/src/lib/toc-graph/TocWithGraph.svelte`
-  - Two-column layout: TOC list (left) + graph (right)
-  - Grid layout with Tailwind (col-span-5 / col-span-7)
-  - **Location**: `packages/cards/src/lib/toc-graph/TocWithGraph.svelte`
-
-### 1.4 Database Adapter ✅ DONE
-- [x] Create `packages/cards/src/lib/toc-graph/mapDbToGraph.ts`
-  - Convert DbScene[] + DbLink[] → TOCGraph
-  - **Location**: `packages/cards/src/lib/toc-graph/mapDbToGraph.ts`
+* **In-scope:** Visual graph-only; no edit UI, no pan/zoom, no mini-map.
+* **Out-of-scope:** Complex merge heuristics, curved splines beyond gitgraph defaults, exporting.
 
 ---
 
-## Phase 2: Demo Route & Integration ✅ DONE
+## 1) Install & Wire-Up
 
-### 2.1 Create Demo Route ✅ DONE
-- [x] Create `apps/cards/src/routes/toc-graph/+page.svelte`
-  - Import TocWithGraph component
-  - Load scenes + links from database via shared/database
-  - Use mapDbToGraph adapter
-  - Render demo with real project data
-- [x] Create `apps/front/src/routes/cards/toc-graph/+page.svelte` (main app route)
+1. `pnpm add @gitgraph/js`
+2. Create `packages/cards/src/lib/toc-graph-gitgraph/` with:
 
-### 2.2 Data Loading ✅ DONE
-- [x] Fetch scenes from `db.getAllScenes()`
-- [x] Extract links from Scene.choices[] (no separate links table exists)
-- [x] Transform to TOCGraph format using mapDbToGraph
-- [x] Handle empty state (no scenes/links)
+   * `TocGraphGitgraph.svelte` — renders the gutter and mounts gitgraph.js.
+   * `mapTocToGitgraph.ts` — converts **scenes + links** → sequence of gitgraph operations.
+3. Route: reuse existing TOC page. Wrap list in a 2‑column layout (gutter + content).
 
-### 2.3 Add Navigation Link ✅ DONE
-- [x] Add "TOC Graph" link to cards app menu (`apps/cards/src/menu.ts`)
-- [x] Created package exports (`packages/cards/package.json`, `packages/cards/src/lib/toc-graph/index.ts`)
-- [x] Added workspace dependencies to apps/cards and apps/front
-
----
-
-## Phase 3: Testing 🔄 PENDING
-
-### 3.1 Unit Tests (vitest)
-- [ ] Test lane layout algorithm
-  - Single chain → all nodes lane 0
-  - Split at node → new lane allocated
-  - Merge of two parents → child occupies min(parentLane), other lanes freed
-  - Multiple branches and merges
-- [ ] Test mapDbToGraph adapter
-  - Empty input → empty graph
-  - Scenes with explicit order
-  - Scenes without order (use index)
-  - Links with different tags (choice, auto, conditional)
-
-### 3.2 Playwright UI Tests
-- [ ] Graph renders without overflow
-- [ ] Clicking node shows correct tooltip (title element)
-- [ ] Resizing container maintains alignment
-- [ ] Conditional edges render as dashed lines
-- [ ] Rails render with correct opacity
-
-### 3.3 Agentic Testing
-- [ ] Create `tests/agent/test-toc-graph.ts`
-  - Navigate to `/cards/toc-graph`
-  - Verify graph is visible
-  - Check SVG elements (rails, edges, nodes)
-  - Verify console has no errors
-
----
-
-## Phase 4: Documentation & Polish 🔄 PENDING
-
-### 4.1 Documentation
-- [ ] Update `CHANGELOG.md` with v0.3.0 TOC-GRAPH feature
-- [ ] Update `TEST-PROOF.md` with test results
-- [ ] Add TOC-GRAPH section to README.md
-
-### 4.2 Code Quality
-- [ ] Run type check: `pnpm check:types`
-- [ ] Fix any TypeScript errors
-- [ ] Review component props and types
-
-### 4.3 Optional Enhancements
-- [ ] Implement `usePanZoom.ts` for SVG pan/zoom
-- [ ] Add click→select event (dispatch custom event)
-- [ ] Add edge markers for choice edges (chevron/arrow)
-- [ ] Add minimap in corner
-
----
-
-## Phase 5: Git & Deployment 🔄 PENDING
-
-### 5.1 Commit & Push
-- [ ] Git add all new files
-- [ ] Commit with message:
-  ```
-  feat(toc-graph): add GitKraken-style SVG lanes with S-curves and TOC integration
-
-  - lane assignment (inherit/merge/new branch)
-  - rails + bezier edges + node dots + labels
-  - demo TocWithGraph.svelte with real project data
-  - types + mapDbToGraph adapter
-  - baseline tests (vitest + Playwright)
-
-  🤖 Generated with Claude Code
-  Co-Authored-By: Claude <noreply@anthropic.com>
-  ```
-- [ ] Push feature branch to origin
-
-### 5.2 Merge to Dev
-- [ ] Test all features work in dev environment
-- [ ] Merge `feature/toc-graph` → `dev`
-- [ ] Delete local feature branch
-- [ ] Push to origin/dev
-
----
-
-## Current Status Summary
-
-**✅ Completed**:
-- Core module structure (`types.ts`, `TocGraph.svelte`, `TocWithGraph.svelte`, `mapDbToGraph.ts`)
-- Lane layout algorithm implementation
-- SVG rendering with rails, S-curves, dots, labels
-
-**🔄 Next Steps**:
-1. Create demo route at `apps/cards/src/routes/toc-graph/+page.svelte`
-2. Load real scene/link data from database
-3. Add navigation link to menu
-4. Write unit tests for lane algorithm
-5. Write Playwright/agentic tests
-
-**🔧 Technical Notes**:
-- Using Svelte 5 runes syntax ($state, $effect, $props)
-- Pure SVG rendering (no Canvas/D3)
-- Algorithm complexity: O(N log N + E)
-- Palette: 7 colors reused via modulo
-- Lane gap: 84px, Row gap: 56px (configurable props)
-
----
-
-## Files Created
-
-```
-packages/cards/src/lib/toc-graph/
-├── types.ts                    # ✅ Graph data model
-├── TocGraph.svelte             # ✅ SVG renderer with lane layout
-├── TocWithGraph.svelte         # ✅ Two-column integration
-└── mapDbToGraph.ts             # ✅ Database adapter
-
-apps/cards/src/routes/toc-graph/
-└── +page.svelte                # ⏳ TODO: Demo route
+```txt
+apps/cards/src/routes/toc/+page.svelte     # existing TOC
+packages/cards/src/lib/toc-graph-gitgraph/
+  ├─ TocGraphGitgraph.svelte
+  └─ mapTocToGitgraph.ts
 ```
 
 ---
 
-## Database Schema Requirements
+## 2) Layout (UI-only)
 
-Need to verify/implement:
-- Scenes table with `id`, `title`, `order` fields
-- Links/Edges table with `from_id`, `to_id`, `tag` fields
-- Check `@loke/shared/database` for available queries
+* **Grid:** `grid-cols-[gutter_96px,content_1fr]` (Tailwind arbitrary sizes ok).
+* **Indent TOC:** add `pl-4` inside content column so cards shift slightly right.
+* **Row height:** match TOC card rows (e.g., `min-h-[56px]`). Use the same vertical rhythm to align nodes.
+* **Gutter:** `position: relative;` with a fixed height equal to the list height; mount gitgraph **inside**.
+
+Acceptance: Node centers are vertically aligned with the visual mid of each scene card.
 
 ---
 
-**Last Updated**: 2025-10-25 22:25
-**Updated By**: Claude Code
+## 3) Data Mapping (Simple)
+
+Input from DB / state you already have:
+
+```ts
+Scene = { id: string; title: string; order?: number }
+Link  = { from: string; to: string }
+```
+
+Rules (keep dumb/simple):
+
+* Sort scenes by `order ?? index` → this becomes the **commit order**.
+* Each **scene** = one **commit** on a lane/branch.
+* Each **link (A→B)** creates a **temporary branch** from A's lane that targets B.
+* If a scene already has a lane, reuse it; otherwise allocate **next free lane**.
+* **Colors:** sequential palette per lane (not per link). New lane → next color.
+
+Notes:
+
+* We are not replicating true git semantics—just using gitgraph primitives to draw lanes.
+
+---
+
+## 4) Implementation Sketch
+
+### 4.1 `mapTocToGitgraph.ts`
+
+* Input: `scenes: Scene[]`, `links: Link[]`.
+* Output: `{ commits: CommitSpec[], edges: EdgeSpec[] }` or directly an **apply(graph)** function that drives gitgraph:
+
+  * Maintain `laneBySceneId: Map<string, number>`.
+  * Maintain `branches: Branch[]` (gitgraph handles) indexed by lane.
+  * Iterate scenes in visual order:
+
+    * If lane missing → open new branch `branch({ name: "lane-N" })`.
+    * `branch.commit({ subject: scene.title })` and store commit handle by scene id.
+  * Iterate links:
+
+    * For `A→B`: ensure B has a lane (allocate if needed). From A’s lane, call `branches[A.lane].branch({ name })` → immediate `commit()` → `merge(branches[B.lane])`.
+* Keep it **deterministic**; no reflow.
+
+### 4.2 `TocGraphGitgraph.svelte`
+
+* Props: `scenes`, `links`, `rowHeight = 56`, `gutterWidth = 96`.
+* Measure total height = `scenes.length * rowHeight`.
+* Mount gitgraph:
+
+  * `import { createGitgraph } from "@gitgraph/js";`
+  * Render target: a `<div class="absolute inset-0" />`.
+  * Theme: small nodes, stroke width ~2.
+  * Colors: palette array; gitgraph supports `template.colors`.
+* After mount, call `apply(graph)` from mapper.
+
+---
+
+## 5) Styling Rules
+
+* **Lane colors:** cycle through e.g. `[#60a5fa,#22d3ee,#a78bfa,#34d399,#f472b6,#f59e0b,#ef4444]`.
+* **Node style:** small filled circle (no emoji), ring: `#0f172a` to match dark UI.
+* **Lines:** 2px.
+* **Hover:** Optional: lighten the lane on hover of corresponding card using shared scene id.
+
+---
+
+## 6) Minimal Acceptance Criteria
+
+* The TOC list renders unchanged except a small left indent.
+* A gutter shows a vertical, colored lane graph.
+* Each scene has a circle aligned with its card.
+* Links create visible colored connections using gitgraph.
+* New lanes get new colors automatically.
+* No horizontal scroll explosion; graph stays within gutter width.
+
+---
+
+## 7) Quick Test Plan (no heavy infra)
+
+* Empty scenes → graph area renders empty without errors.
+* Single chain of scenes (no links) → one lane with aligned nodes.
+* A→B link where `B` is below `A` → visible vertical path across rows.
+* Two links from one scene → two lanes with distinct colors.
+
+---
+
+## 8) Tasks Checklist
+
+* [ ] Add dependency `@gitgraph/js`.
+* [ ] Implement `mapTocToGitgraph.ts` (simple allocator).
+* [ ] Implement `TocGraphGitgraph.svelte` and mount in TOC route.
+* [ ] Provide color palette + small theme tweaks.
+* [ ] Verify alignment with real data.
+* [ ] Add README section (2–3 paragraphs).
+
+---
+
+## 9) Notes / Future
+
+* If lanes overlap too much, consider **max lanes per chapter** and fold extra as dotted.
+* If we later need curved merges or pan/zoom, we can swap to a custom SVG, but keep the same mapper API.
