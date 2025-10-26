@@ -1,4 +1,4 @@
-import type { BranchUserApi, GitgraphUserApi } from "@gitgraph/core";
+import type { BranchUserApi, GitgraphUserApi } from "@gitgraph/js";
 
 export interface GraphSceneNode {
   id: string;
