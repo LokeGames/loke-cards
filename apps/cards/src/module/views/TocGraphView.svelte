@@ -96,12 +96,10 @@
   {:else}
     <div class="grid grid-cols-[112px_minmax(0,1fr)] gap-6">
       <div class="relative">
-        <div class="sticky top-6">
-          <div class="rounded-lg border border-dashed border-gray-300 bg-white/40 p-4 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-400">
-            Graph placeholder
-            <div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-              {graphSceneNodes.length} scenes • {graphSceneLinks.length} links
-            </div>
+        <div class="sticky top-6 h-full">
+          <!-- TODO(toc-graph): Mount TocGraphGitgraph here -->
+          <div class="rounded-lg border border-dashed border-transparent p-4 text-xs text-gray-400 dark:text-gray-600">
+            {graphSceneNodes.length} scenes • {graphSceneLinks.length} links
           </div>
         </div>
       </div>
