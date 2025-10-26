@@ -134,30 +134,35 @@
 
             <div class="p-4">
               {#if scenesByChapter[chapter.id]?.length > 0}
-                <div class="space-y-2">
+                <div class="space-y-3">
                   {#each scenesByChapter[chapter.id] as scene, idx}
-                    <a
-                      href={`/cards/scenes/edit/${scene.id}`}
-                      class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
-                    >
-                      <div class="flex items-start justify-between">
-                        <div class="flex items-start gap-3">
-                          <span class="font-mono text-sm text-gray-500 dark:text-gray-400">{idx + 1}.</span>
-                          <div class="flex items-start gap-2">
-                            <FileText size={16} class="mt-0.5 text-gray-600 dark:text-gray-400" />
-                            <div>
-                              <h3 class="font-medium text-gray-900 dark:text-white">{scene.title || scene.sceneId}</h3>
-                              {#if scene.sceneText}
-                                <p class="mt-1 line-clamp-1 text-sm text-gray-600 dark:text-gray-400">
-                                  {scene.sceneText.substring(0, 100)}...
-                                </p>
-                              {/if}
+                    <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-3">
+                      <div class="relative flex items-center justify-center">
+                        <div class="h-10 w-10 rounded-full border border-dashed border-gray-300 dark:border-gray-700"></div>
+                      </div>
+                      <a
+                        href={`/cards/scenes/edit/${scene.id}`}
+                        class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                      >
+                        <div class="flex items-start justify-between">
+                          <div class="flex items-start gap-3">
+                            <span class="font-mono text-sm text-gray-500 dark:text-gray-400">{idx + 1}.</span>
+                            <div class="flex items-start gap-2">
+                              <FileText size={16} class="mt-0.5 text-gray-600 dark:text-gray-400" />
+                              <div>
+                                <h3 class="font-medium text-gray-900 dark:text-white">{scene.title || scene.sceneId}</h3>
+                                {#if scene.sceneText}
+                                  <p class="mt-1 line-clamp-1 text-sm text-gray-600 dark:text-gray-400">
+                                    {scene.sceneText.substring(0, 100)}...
+                                  </p>
+                                {/if}
+                              </div>
                             </div>
                           </div>
+                          <span class="text-xs text-gray-500 dark:text-gray-400">{scene.sceneId}</span>
                         </div>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">{scene.sceneId}</span>
-                      </div>
-                    </a>
+                      </a>
+                    </div>
                   {/each}
                 </div>
               {:else}
