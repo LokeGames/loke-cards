@@ -16,6 +16,7 @@
 * Work on a dedicated git branch named `toc-graph` so the experiment stays isolated from `main`.
 * Duplicate the existing `TableOfContentsView.svelte` into a new graph-enabled view (e.g. `GraphTocView.svelte`) inside `apps/cards/src/module/views/`.
 * Wire the duplicate into the `toc-graph` loader/menu entries only; leave the original TOC route untouched so regular users remain unaffected while we iterate.
+* ✅ Validated in `Loke Cards: scifi-space-odyssey-2025` — this duplication approach renders correctly and will be our forward path.
 
 ---
 
