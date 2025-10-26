@@ -14,25 +14,29 @@
   let scenes = $state<Scene[]>([]);
   let loading = $state(true);
 
-  let scenesByChapter: Record<string, Scene[]> = {};
-  $: scenesByChapter = scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
-    const chapterId = scene.chapterId || "uncategorized";
-    if (!acc[chapterId]) {
-      acc[chapterId] = [];
-    }
-    acc[chapterId].push(scene);
-    return acc;
-  }, {});
+  let scenesByChapter = $state<Record<string, Scene[]>>({});
+  $effect(() => {
+    scenesByChapter = scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
+      const chapterId = scene.chapterId || "uncategorized";
+      if (!acc[chapterId]) {
+        acc[chapterId] = [];
+      }
+      acc[chapterId].push(scene);
+      return acc;
+    }, {});
+  });
 
-  let graphSceneNodes: GraphSceneNode[] = [];
-  $: graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
-    id: scene.id ?? scene.sceneId ?? `scene-${index}`,
-    title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
-    order: index,
-  }));
+  let graphSceneNodes = $state<GraphSceneNode[]>([]);
+  $effect(() => {
+    graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
+      id: scene.id ?? scene.sceneId ?? `scene-${index}`,
+      title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
+      order: index,
+    }));
+  });
 
-  let sceneIdLookup = new Map<string, string>();
-  $: {
+  let sceneIdLookup = $state<Map<string, string>>(new Map());
+  $effect(() => {
     const byId = new Map<string, string>();
     scenes.forEach((scene, index) => {
       const canonical = scene.id ?? scene.sceneId ?? `scene-${index}`;
@@ -45,10 +49,10 @@
       }
     });
     sceneIdLookup = byId;
-  }
+  });
 
-  let graphSceneLinks: GraphSceneLink[] = [];
-  $: {
+  let graphSceneLinks = $state<GraphSceneLink[]>([]);
+  $effect(() => {
     const edges: GraphSceneLink[] = [];
     const seen = new Set<string>();
 
@@ -82,7 +86,7 @@
     });
 
     graphSceneLinks = edges;
-  }
+  });
 
   const GRAPH_COLUMN_WIDTH = 112;
   const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
