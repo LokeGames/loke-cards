@@ -94,6 +94,7 @@
       gitgraph = gitgraphModule.createGitgraph(container, {
         orientation: gitgraphModule.Orientation.Vertical,
         template,
+        initCommitOffsetY: rowHeight / 2,
         responsive: true,
       });
       templateSignature = nextTemplateSignature;
