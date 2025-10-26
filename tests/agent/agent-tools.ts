@@ -5,8 +5,8 @@
  * The AI can "see" the page through DOM/ARIA/console logs and "act" through tools.
  */
 
-import { Page, expect } from '@playwright/test';
-import * as fs from 'fs';
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
