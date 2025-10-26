@@ -41,9 +41,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Documentation (2025-10-26)**
   - Added `STABILITY-GUIDE.md` - comprehensive guide for preventing project breakage during development
-  - Documents dual-topbar navigation as stability boundary
-  - Includes module isolation patterns, state management best practices, and recovery strategies
-  - Captures lessons learned from chapter save fix
+    - Documents dual-topbar navigation as stability boundary
+    - Includes module isolation patterns, state management best practices, and recovery strategies
+    - Captures lessons learned from chapter save fix
+  - Completed `packages/ui/README.md` - full documentation for shell components
+    - AppShell and TopNavBar usage examples
+    - Navigation architecture diagram
+    - Props, slots, and event documentation
+    - Integration with @loke/front-api
+  - Updated `TODO-REFACTOR-NAV.md` - Phase 4 (Documentation) marked complete
 
 ### Changed
 
