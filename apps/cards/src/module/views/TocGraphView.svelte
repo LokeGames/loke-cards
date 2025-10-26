@@ -5,6 +5,18 @@
   import type { Scene, Chapter } from "@loke/shared";
   import { Plus, BookOpen, FileText, AlertCircle, List } from "lucide-svelte";
 
+  interface GraphSceneNode {
+    id: string;
+    title: string;
+    order: number;
+  }
+
+  interface GraphSceneLink {
+    from: string;
+    to: string;
+    tag: "choice" | "conditional";
+  }
+
   let chapters: Chapter[] = [];
   let scenes: Scene[] = [];
   let loading = true;
@@ -17,6 +29,15 @@
     acc[chapterId].push(scene);
     return acc;
   }, {});
+
+  $: graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
+    id: scene.sceneId,
+    title: scene.title ?? scene.sceneId,
+    order: index,
+  }));
+
+  // TODO(toc-graph): map real choice/transition data once schema exposes links.
+  $: graphSceneLinks = [] as GraphSceneLink[];
 
   async function loadData() {
     loading = true;
@@ -78,6 +99,9 @@
         <div class="sticky top-6">
           <div class="rounded-lg border border-dashed border-gray-300 bg-white/40 p-4 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-400">
             Graph placeholder
+            <div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+              {graphSceneNodes.length} scenes • {graphSceneLinks.length} links
+            </div>
           </div>
         </div>
       </div>
