@@ -14,26 +14,25 @@
   let scenes: Scene[] = [];
   let loading = true;
 
-  const scenesByChapter = $derived.by(() =>
-    scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
-      const chapterId = scene.chapterId || "uncategorized";
-      if (!acc[chapterId]) {
-        acc[chapterId] = [];
-      }
-      acc[chapterId].push(scene);
-      return acc;
-    }, {}),
-  );
+  let scenesByChapter: Record<string, Scene[]> = {};
+  $: scenesByChapter = scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
+    const chapterId = scene.chapterId || "uncategorized";
+    if (!acc[chapterId]) {
+      acc[chapterId] = [];
+    }
+    acc[chapterId].push(scene);
+    return acc;
+  }, {});
 
-  const graphSceneNodes = $derived.by(() =>
-    scenes.map<GraphSceneNode>((scene, index) => ({
-      id: scene.id ?? scene.sceneId ?? `scene-${index}`,
-      title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
-      order: index,
-    })),
-  );
+  let graphSceneNodes: GraphSceneNode[] = [];
+  $: graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
+    id: scene.id ?? scene.sceneId ?? `scene-${index}`,
+    title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
+    order: index,
+  }));
 
-  const sceneIdLookup = $derived.by(() => {
+  let sceneIdLookup = new Map<string, string>();
+  $: {
     const byId = new Map<string, string>();
     scenes.forEach((scene, index) => {
       const canonical = scene.id ?? scene.sceneId ?? `scene-${index}`;
@@ -45,10 +44,11 @@
         byId.set(scene.title, canonical);
       }
     });
-    return byId;
-  });
+    sceneIdLookup = byId;
+  }
 
-  const graphSceneLinks = $derived.by(() => {
+  let graphSceneLinks: GraphSceneLink[] = [];
+  $: {
     const edges: GraphSceneLink[] = [];
     const seen = new Set<string>();
 
@@ -58,7 +58,7 @@
         return;
       }
 
-      scene.choices?.forEach((choice, choiceIndex) => {
+      scene.choices?.forEach((choice) => {
         if (!choice.nextScene) {
           return;
         }
@@ -81,8 +81,8 @@
       });
     });
 
-    return edges;
-  });
+    graphSceneLinks = edges;
+  }
 
   const GRAPH_COLUMN_WIDTH = 112;
   const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
