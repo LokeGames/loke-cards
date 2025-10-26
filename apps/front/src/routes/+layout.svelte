@@ -13,7 +13,7 @@
   import { frontModules } from '$lib/front-modules';
   import { resolveModuleView, type FrontModuleDefinition } from '@loke/front-api';
   import { themePreference } from '@loke/ui';
-  import { currentProject as projectStore, loadCurrentProject } from '@loke/shared/stores/project.svelte';
+  import { projectState, loadCurrentProject } from '@loke/shared/stores/project.svelte';
 
   const moduleNavItems = frontModules.map((module) => ({
     id: module.id,
@@ -55,7 +55,7 @@
   let moduleError = $state<string | null>(null);
   let requestToken = 0;
 
-  const hasProject = $derived(projectStore !== null);
+  const hasProject = $derived(projectState.currentProject !== null);
 
   onMount(async () => {
     await loadCurrentProject();
@@ -107,7 +107,7 @@
   navHidden={!hasProject}
 >
   <svelte:fragment slot="header">
-    <AppHeader title="Loke Cards" showProjectPicker={false} showThemeToggle={false} />
+    <AppHeader title="Loke Cards" showProjectPicker={false} showThemeToggle={true} />
   </svelte:fragment>
 
   {#if !hasProject}

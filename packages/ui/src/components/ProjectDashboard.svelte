@@ -4,9 +4,7 @@
   import Folder from '../icons/Folder.svelte';
   import type { Project } from '@loke/shared/types';
   import {
-    projects,
-    isLoadingProjects,
-    error,
+    projectState,
     loadProjects,
     switchProject,
     createNewProject,
@@ -19,12 +17,12 @@
   let isProcessing = $state(false);
 
   // Recent projects (last 4, sorted by... we'll need updated_at later)
-  let recentProjects = $derived(projects.slice(0, 4));
-  let allProjects = $derived(projects);
+  let recentProjects = $derived(projectState.projects.slice(0, 4));
+  let allProjects = $derived(projectState.projects);
 
   // Load projects on mount if not already loaded
   onMount(async () => {
-    if (projects.length === 0 && !isLoadingProjects) {
+    if (projectState.projects.length === 0 && !projectState.isLoadingProjects) {
       await loadProjects();
     }
   });
@@ -111,7 +109,7 @@
               Browse Projects
             </h3>
             <p class="text-gray-600 dark:text-gray-400">
-              {projects.length} project{projects.length !== 1 ? 's' : ''} available
+              {projectState.projects.length} project{projectState.projects.length !== 1 ? 's' : ''} available
             </p>
           </div>
         </div>
@@ -119,7 +117,7 @@
     </div>
 
     <!-- Loading State -->
-    {#if isLoadingProjects}
+    {#if projectState.isLoadingProjects}
       <div class="text-center py-12">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         <p class="mt-4 text-gray-600 dark:text-gray-400">Loading projects...</p>
@@ -189,7 +187,7 @@
             {/each}
           </div>
         </div>
-      {:else if !isLoadingProjects}
+      {:else if !projectState.isLoadingProjects}
         <div class="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
           <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">No projects yet</p>
           <p class="text-gray-500 dark:text-gray-500">Create your first project to get started</p>
@@ -198,9 +196,9 @@
     {/if}
 
     <!-- Error Display -->
-    {#if error}
+    {#if projectState.error}
       <div class="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-        <p class="text-red-600 dark:text-red-400">{error}</p>
+        <p class="text-red-600 dark:text-red-400">{projectState.error}</p>
       </div>
     {/if}
   </div>
@@ -232,9 +230,9 @@
         />
       </div>
 
-      {#if error}
+      {#if projectState.error}
         <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p class="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p class="text-sm text-red-600 dark:text-red-400">{projectState.error}</p>
         </div>
       {/if}
 
