@@ -74,6 +74,69 @@ A purely presentational list renderer for internal module navigation. Pass `sect
 
 **Note:** With the dual-topbar system, AppSidebar is used for internal module navigation, not top-level navigation.
 
+### Other Core Components
+
+##### `AppHeader`
+Global application header component.
+
+**Props:**
+- `title: string` - Application title (e.g., "Loke Cards")
+- `showThemeToggle?: boolean` - Show theme toggle button
+- `showProjectPicker?: boolean` - Show project picker (deprecated in favor of project switcher action)
+
+**Usage:**
+```svelte
+<AppHeader title="Loke Cards" showThemeToggle={true} />
+```
+
+##### `ProjectDashboard`
+Project selection and creation interface.
+
+**Features:**
+- Lists all available projects
+- Create new project workflow
+- Project switching with stats (scene count, chapter count)
+- Recent projects quick access
+- Responsive grid/list layout
+
+**Usage:**
+```svelte
+{#if !hasProject}
+  <div class="h-full overflow-auto p-6">
+    <ProjectDashboard />
+  </div>
+{/if}
+```
+
+**Note:** ProjectDashboard automatically handles project state via `@loke/shared/stores/project.svelte`. It will load projects on mount and handle project switching with automatic navigation.
+
+### Navigation Architecture
+
+The dual-topbar system provides clear boundaries and prevents state accumulation:
+
+```
+┌─────────────────────────────────────────┐
+│ AppHeader (Level 1)                     │
+│ ├─ App title                            │
+│ └─ Theme toggle                         │
+├─────────────────────────────────────────┤
+│ TopNavBar (Level 2)                     │
+│ ├─ Left: Dashboard icon + Module tabs  │
+│ └─ Right: Actions (Project, Settings)  │
+├─────────────────────────────────────────┤
+│ Module View (Internal)                  │
+│ └─ Feature-specific content & nav      │
+└─────────────────────────────────────────┘
+```
+
+**Benefits:**
+- Clear visual hierarchy
+- Natural state boundaries (navigation = state reset)
+- Module isolation (each module owns internal navigation)
+- Predictable UX
+
+See `apps/front/README.md` and `STABILITY-GUIDE.md` for more details on the navigation architecture.
+
 ## Guiding Principles
 
 Components in this package follow a **"Presentational" (or "Dumb") Component** pattern. Their sole responsibility is to render UI based on the data they are given.
