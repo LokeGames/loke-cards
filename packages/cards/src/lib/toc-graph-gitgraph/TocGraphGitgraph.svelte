@@ -1,16 +1,12 @@
 <script lang="ts">
   import { onDestroy, onMount, afterUpdate } from "svelte";
-  import {
-    createGitgraph,
-    Orientation,
-    templateExtend,
-    type GitgraphUserApi,
-  } from "@gitgraph/js";
+  import { Orientation, templateExtend } from "@gitgraph/core";
   import {
     mapTocToGitgraph,
     type GraphSceneLink,
     type GraphSceneNode,
   } from "./mapTocToGitgraph";
+  import type { GitgraphUserApi } from "@gitgraph/core";
 
   const DEFAULT_COLORS = [
     "#60a5fa",
@@ -32,6 +28,7 @@
   let signature = "";
   let templateSignature = "";
   let totalHeight = 0;
+  let createGitgraph: ((container: HTMLElement, options?: any) => GitgraphUserApi<SVGElement>) | null = null;
 
   $: totalHeight = Math.max(nodes.length, 1) * rowHeight + rowHeight;
 
@@ -87,6 +84,7 @@
 
   function ensureGitgraph() {
     if (!container) return;
+    if (!createGitgraph) return;
     const nextTemplateSignature = computeTemplateSignature();
 
     if (!gitgraph || templateSignature !== nextTemplateSignature) {
@@ -112,8 +110,15 @@
   }
 
   onMount(() => {
-    signature = computeSignature();
-    renderGraph();
+    import("@gitgraph/js")
+      .then((mod) => {
+        createGitgraph = mod.createGitgraph;
+        signature = computeSignature();
+        renderGraph();
+      })
+      .catch((error) => {
+        console.error("Failed to load gitgraph", error);
+      });
   });
 
   afterUpdate(() => {
