@@ -54,7 +54,8 @@
                 {#if typeof item.icon === 'string'}
                   <span class="w-4 h-4 flex items-center justify-center text-sm">{item.icon}</span>
                 {:else}
-                  <svelte:component this={item.icon} class="w-4 h-4" />
+                  {@const Icon = item.icon}
+                  <Icon class="w-4 h-4" />
                 {/if}
               {:else}
                 <span class="w-4 h-4"></span>

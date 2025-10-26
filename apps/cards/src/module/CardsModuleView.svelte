@@ -135,7 +135,8 @@
           class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 {isActivePath(item.href) ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-100' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'}"
         >
           {#if item.icon}
-            <svelte:component this={item.icon} class="h-4 w-4" aria-hidden="true" />
+            {@const Icon = item.icon}
+            <Icon class="h-4 w-4" aria-hidden="true" />
           {/if}
           {item.label}
         </a>
