@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { db } from "@loke/shared/database";
+  import { projectState } from "@loke/shared/stores/project.svelte";
   import ChapterForm from "../../components/ChapterForm.svelte";
 
   let chapterId = "";
@@ -36,13 +37,18 @@
       return;
     }
 
+    if (!projectState.currentProject?.id) {
+      error = "No project selected";
+      return;
+    }
+
     saving = true;
     try {
       await db.createChapter({
         id: finalChapterId,
         name: rawName.trim(),
         description: rawDesc.trim(),
-        projectId: "default",
+        projectId: projectState.currentProject.id,
       });
       goto("/cards/chapters");
     } catch (err) {
