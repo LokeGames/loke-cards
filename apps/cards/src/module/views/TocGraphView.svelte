@@ -361,9 +361,13 @@
             </p>
           </div>
           <div class="space-y-3 p-4">
-            {#each scenesByChapter.uncategorized as scene}
+            {#each scenesByChapter.uncategorized as scene, idx}
+              {@const canonicalId = scene.id ?? scene.sceneId ?? `uncat-${idx}`}
+              {@const anchorId = sceneIdLookup.get(canonicalId) ?? canonicalId}
               <div class="grid gap-3" style={`grid-template-columns:${GRAPH_ROW_COLUMN_WIDTH}px minmax(0,1fr);`}>
-                <div aria-hidden="true"></div>
+                <div class="relative">
+                  <div class="pointer-events-none h-full" use:sceneAnchor={anchorId}></div>
+                </div>
                 <a
                   href={`/cards/scenes/edit/${scene.id}`}
                   class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 min-h-[72px]"
