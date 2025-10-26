@@ -39,6 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Menu Navigation**
   - Added "TOC Graph" menu item to cards navigation
 
+- **Documentation (2025-10-26)**
+  - Added `STABILITY-GUIDE.md` - comprehensive guide for preventing project breakage during development
+  - Documents dual-topbar navigation as stability boundary
+  - Includes module isolation patterns, state management best practices, and recovery strategies
+  - Captures lessons learned from chapter save fix
+
 ### Changed
 
 - **Navigation Shell Refactor (2025-10-26)**
