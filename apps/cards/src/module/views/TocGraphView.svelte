@@ -300,7 +300,7 @@
                 </div>
                 <a
                   href={`/cards/scenes/edit/${scene.id}`}
-                  class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover-bg-gray-600 min-h-[72px]"
+                  class="block rounded bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 min-h-[72px]"
                 >
                   <div class="flex items-center gap-2">
                     <FileText size={16} class="text-gray-600 dark:text-gray-400" />
