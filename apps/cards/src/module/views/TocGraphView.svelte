@@ -33,6 +33,7 @@
   $: graphSceneLinks = [] as GraphSceneLink[];
 
   const GRAPH_COLUMN_WIDTH = 112;
+  const GRAPH_ROW_COLUMN_WIDTH = GRAPH_COLUMN_WIDTH - 24;
   const GRAPH_ROW_HEIGHT = 72;
 
   async function loadData() {
@@ -131,10 +132,7 @@
               {#if scenesByChapter[chapter.id]?.length > 0}
                 <div class="space-y-3">
                   {#each scenesByChapter[chapter.id] as scene, idx}
-                    <div
-                      class="grid gap-3"
-                      style={`grid-template-columns:${GRAPH_COLUMN_WIDTH - 24}px minmax(0,1fr);`}
-                    >
+                    <div class="grid gap-3" style={`grid-template-columns:${GRAPH_ROW_COLUMN_WIDTH}px minmax(0,1fr);`}>
                       <div aria-hidden="true"></div>
                       <a
                         href={`/cards/scenes/edit/${scene.id}`}
@@ -181,10 +179,7 @@
           </div>
           <div class="space-y-3 p-4">
             {#each scenesByChapter.uncategorized as scene}
-              <div
-                class="grid gap-3"
-                style={`grid-template-columns:${GRAPH_COLUMN_WIDTH - 24}px minmax(0,1fr);`}
-              >
+              <div class="grid gap-3" style={`grid-template-columns:${GRAPH_ROW_COLUMN_WIDTH}px minmax(0,1fr);`}>
                 <div aria-hidden="true"></div>
                 <a
                   href={`/cards/scenes/edit/${scene.id}`}
