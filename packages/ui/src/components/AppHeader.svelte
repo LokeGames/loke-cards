@@ -49,7 +49,7 @@
         <button
           type="button"
           class="rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-          on:click={toggleTheme}
+          onclick={toggleTheme}
           title="Toggle theme (current: {theme})"
         >
           {#if theme === 'light'}
