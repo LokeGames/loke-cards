@@ -14,20 +14,24 @@
   let scenes: Scene[] = [];
   let loading = true;
 
-  $: scenesByChapter = scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
-    const chapterId = scene.chapterId || "uncategorized";
-    if (!acc[chapterId]) {
-      acc[chapterId] = [];
-    }
-    acc[chapterId].push(scene);
-    return acc;
-  }, {});
+  const scenesByChapter = $derived.by(() =>
+    scenes.reduce<Record<string, Scene[]>>((acc, scene) => {
+      const chapterId = scene.chapterId || "uncategorized";
+      if (!acc[chapterId]) {
+        acc[chapterId] = [];
+      }
+      acc[chapterId].push(scene);
+      return acc;
+    }, {}),
+  );
 
-  $: graphSceneNodes = scenes.map<GraphSceneNode>((scene, index) => ({
-    id: scene.id ?? scene.sceneId ?? `scene-${index}`,
-    title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
-    order: index,
-  }));
+  const graphSceneNodes = $derived.by(() =>
+    scenes.map<GraphSceneNode>((scene, index) => ({
+      id: scene.id ?? scene.sceneId ?? `scene-${index}`,
+      title: scene.title ?? scene.sceneId ?? scene.id ?? `Scene ${index + 1}`,
+      order: index,
+    })),
+  );
 
   const sceneIdLookup = $derived.by(() => {
     const byId = new Map<string, string>();
