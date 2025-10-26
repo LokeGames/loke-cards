@@ -14,3 +14,4 @@ export { default as SceneEditorView } from "./components/SceneEditorView.svelte"
 export * from "./lib/codegen";
 // dataClient removed - use db from @loke/shared/database directly
 export * from "./menu";
+export { cardsFrontModule } from "./front-module";
