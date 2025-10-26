@@ -4,18 +4,11 @@
   import { db } from "@loke/shared/database";
   import type { Scene, Chapter } from "@loke/shared";
   import { Plus, BookOpen, FileText, AlertCircle, List } from "lucide-svelte";
-
-  interface GraphSceneNode {
-    id: string;
-    title: string;
-    order: number;
-  }
-
-  interface GraphSceneLink {
-    from: string;
-    to: string;
-    tag: "choice" | "conditional";
-  }
+  import {
+    TocGraphGitgraph,
+    type GraphSceneLink,
+    type GraphSceneNode,
+  } from "@loke/cards/toc-graph-gitgraph";
 
   let chapters: Chapter[] = [];
   let scenes: Scene[] = [];
@@ -38,6 +31,9 @@
 
   // TODO(toc-graph): map real choice/transition data once schema exposes links.
   $: graphSceneLinks = [] as GraphSceneLink[];
+
+  const GRAPH_COLUMN_WIDTH = 112;
+  const GRAPH_ROW_HEIGHT = 72;
 
   async function loadData() {
     loading = true;
