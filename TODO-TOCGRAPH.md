@@ -135,9 +135,9 @@ Notes:
 
 ## 8) Tasks Checklist
 
-* [ ] Add dependency `@gitgraph/js`.
-* [ ] Implement `mapTocToGitgraph.ts` (simple allocator).
-* [ ] Implement `TocGraphGitgraph.svelte` and mount in TOC route.
+* [x] Add dependency `@gitgraph/js`.
+* [x] Implement `mapTocToGitgraph.ts` (simple allocator).
+* [x] Implement `TocGraphGitgraph.svelte` and mount in TOC route.
 * [ ] Provide color palette + small theme tweaks.
 * [ ] Verify alignment with real data.
 * [ ] Add README section (2–3 paragraphs).
