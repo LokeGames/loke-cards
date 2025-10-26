@@ -6,6 +6,38 @@ This package is a **Feature Library** that provides all the necessary components
 
 The primary role of this package is to encapsulate everything related to creating, viewing, and managing scenes, chapters, and states. It is designed to be consumed by the main application shell (`@loke/front`).
 
+## Navigation Integration
+
+This package integrates into the shell's **dual-topbar navigation system**:
+
+### Module Registration
+- Exports `cardsFrontModule` (defined in `src/front-module.ts`)
+- Registered in `@loke/front`'s module list
+- Appears as "Cards" tab in the TopNavBar (Level 2 navigation)
+
+### Internal Navigation
+When the Cards module is active, it renders its own internal workspace:
+- **Module View**: `src/module/CardsModuleView.svelte` orchestrates all cards-specific pages
+- **Route Parsing**: Uses URL segments to determine which internal view to show (scenes list, scene editor, etc.)
+- **View Components**: Located in `src/module/views/` (e.g., `ScenesListView.svelte`, `SceneEditView.svelte`)
+- **Navigation Menu**: Defined in `src/menu.ts`, consumed by the module view to render internal navigation
+
+### Navigation Hierarchy
+```
+AppHeader (Level 1)
+  └─ "Loke Cards" + Theme Toggle
+
+TopNavBar (Level 2)
+  ├─ Dashboard icon
+  ├─ Cards tab (this module) ← active when URL is /cards/*
+  └─ Actions (Project switcher, Settings)
+
+CardsModuleView (Internal)
+  └─ Scenes, Chapters, States, TOC views
+```
+
+This modular approach allows the Cards feature to own its internal navigation while integrating seamlessly into the global shell navigation.
+
 ## Contents
 
 This package should contain:
