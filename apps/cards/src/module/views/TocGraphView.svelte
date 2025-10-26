@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount, tick } from "svelte";
+  import type { Action } from "svelte/action";
   import { afterNavigate } from "$app/navigation";
   import { db } from "@loke/shared/database";
   import type { Scene, Chapter } from "@loke/shared";
@@ -100,6 +101,7 @@
     );
     graphSceneNodes = nodes;
     laneCount = lanes;
+    schedulePositionsUpdate();
   });
 
   const GRAPH_COLUMN_WIDTH = 112;
@@ -170,7 +172,7 @@
     };
   }
 
-  function sceneAnchor(node: HTMLElement, sceneId: string) {
+  const sceneAnchor: Action<HTMLElement, string> = (node, sceneId) => {
     registerSceneAnchor(sceneId)(node);
     return {
       update(newSceneId: string) {
@@ -185,7 +187,7 @@
         registerSceneAnchor(sceneId)(null);
       },
     };
-  }
+  };
 
   onMount(() => {
     anchorObserver = new ResizeObserver(() => schedulePositionsUpdate());
