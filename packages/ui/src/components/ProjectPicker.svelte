@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Folder from '../icons/Folder.svelte';
   import type { Project } from '@loke/shared/types';
+  import { goto } from '$app/navigation';
   import {
     loadProjects,
     switchProject,
@@ -10,7 +11,8 @@
     getProjects,
     getIsLoadingProjects,
     getError,
-    clearError
+    clearError,
+    clearCurrentProject
   } from '@loke/shared/stores/project.svelte';
 
   // State
@@ -168,6 +170,27 @@
                  focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+
+      <!-- View All Projects Button (if a project is selected) -->
+      {#if currentProject}
+        <button
+          type="button"
+          class="view-all-button w-full px-4 py-3 text-sm font-medium text-left flex items-center gap-2
+                 border-b border-gray-200 dark:border-gray-700
+                 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30
+                 text-blue-700 dark:text-blue-300
+                 transition-colors duration-150"
+          onclick={() => {
+            clearCurrentProject();
+            goto('/');
+            isOpen = false;
+          }}
+          disabled={isProcessing}
+        >
+          <span>◀</span>
+          <span>View All Projects</span>
+        </button>
+      {/if}
 
       <!-- Projects List -->
       <div class="projects-list max-h-80 overflow-y-auto">

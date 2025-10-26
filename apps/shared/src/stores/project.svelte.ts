@@ -133,3 +133,10 @@ export function getError() {
 export function clearError() {
   error = null;
 }
+
+/**
+ * Clear current project (go back to dashboard)
+ */
+export function clearCurrentProject() {
+  currentProject = null;
+}
